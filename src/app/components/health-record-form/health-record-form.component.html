@@ -1,0 +1,71 @@
+<div class="container mx-auto p-4">
+  <nz-card class="shadow-md">
+    <h2 class="text-xl font-semibold mb-4">Student Health Record</h2>
+    <form nz-form [formGroup]="healthForm" (ngSubmit)="submitForm()">
+      <nz-form-item>
+        <nz-form-label>Student Name</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="name"
+            placeholder="Enter student name"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Allergies</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="allergies"
+            placeholder="e.g., Peanuts, Pollen"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Chronic Diseases</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="chronicDiseases"
+            placeholder="e.g., Asthma, Diabetes"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Vision</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="vision" placeholder="e.g., 20/20" />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Hearing</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="hearing"
+            placeholder="e.g., Normal"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-label>Vaccinations</nz-form-label>
+        <nz-form-control>
+          <input
+            nz-input
+            formControlName="vaccinations"
+            placeholder="e.g., MMR, Polio"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <button
+        nz-button
+        nzType="primary"
+        type="submit"
+        [disabled]="!healthForm.valid"
+      >
+        Submit
+      </button>
+    </form>
+  </nz-card>
+</div>
