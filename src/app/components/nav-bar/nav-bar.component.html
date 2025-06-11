@@ -1,17 +1,163 @@
-<ul nz-menu nzMode="horizontal" class="bg-blue-600 text-white">
-  <li nz-menu-item><a routerLink="/">Home</a></li>
-  <li nz-menu-item><a routerLink="/health-record">Health Record</a></li>
-  <li nz-menu-item>
-    <a routerLink="/medicine-submission">Medicine Submission</a>
-  </li>
-  <li nz-menu-item><a routerLink="/medical-event">Medical Events</a></li>
-  <li nz-menu-item>
-    <a routerLink="/medicine-inventory">Medicine Inventory</a>
-  </li>
-  <li nz-menu-item><a routerLink="/vaccination">Vaccination</a></li>
-  <li nz-menu-item><a routerLink="/examination">Medical Examination</a></li>
-  <li nz-menu-item><a routerLink="/profile">Profile</a></li>
-  <li nz-menu-item><a routerLink="/dashboard">Dashboard</a></li>
-  <li nz-menu-item><a routerLink="/report">Reports</a></li>
-  <li nz-menu-item><a routerLink="/login">Login</a></li>
-</ul>
+<nav class="bg-white text-gray-800 shadow-md">
+  <div class="container mx-auto px-4 py-2 flex items-center justify-between">
+    <!-- Logo and Menu in same flex row -->
+    <div class="flex items-center space-x-8">
+      <!-- Logo -->
+      <span
+        class="text-xl font-bold text-blue-600 tracking-tight whitespace-nowrap"
+        >Springfield Health</span
+      >
+
+      <!-- Menu -->
+      <ul
+        nz-menu
+        nzMode="horizontal"
+        class="flex space-x-6 bg-transparent text-sm font-medium items-center"
+      >
+        <li nz-menu-item nzSelected>
+          <a routerLink="/" class="text-gray-700 hover:text-blue-600 relative"
+            >Home</a
+          >
+        </li>
+
+        <!-- Health Services Submenu -->
+        <li
+          nz-submenu
+          nzTitle="Health Services"
+          class="text-gray-700 hover:text-blue-600 relative"
+        >
+          <ul>
+            <li nz-menu-group nzTitle="Records & Submissions">
+              <ul>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/health-record"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Health Record</a
+                  >
+                </li>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/medicine-submission"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Medicine Submission</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li nz-menu-group nzTitle="Events & Inventory">
+              <ul>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/medical-event"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Medical Events</a
+                  >
+                </li>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/medicine-inventory"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Medicine Inventory</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li nz-menu-group nzTitle="Procedures">
+              <ul>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/vaccination"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Vaccination</a
+                  >
+                </li>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/examination"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Medical Examination</a
+                  >
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Management -->
+        <li
+          nz-submenu
+          nzTitle="Management"
+          class="text-gray-700 hover:text-blue-600 relative"
+        >
+          <ul>
+            <li nz-menu-item>
+              <a routerLink="/profile" class="text-gray-700 hover:text-blue-600"
+                >Profile</a
+              >
+            </li>
+            <li nz-menu-item>
+              <a
+                routerLink="/dashboard"
+                class="text-gray-700 hover:text-blue-600"
+                >Dashboard</a
+              >
+            </li>
+          </ul>
+        </li>
+
+        <!-- Reports -->
+        <li
+          nz-submenu
+          nzTitle="Reports"
+          class="text-gray-700 hover:text-blue-600 relative"
+        >
+          <ul>
+            <li nz-menu-group nzTitle="Report Options">
+              <ul>
+                <li nz-menu-item>
+                  <a
+                    routerLink="/report"
+                    class="text-gray-700 hover:text-blue-600"
+                    >Reports</a
+                  >
+                </li>
+                <li
+                  nz-submenu
+                  [nzTriggerSubMenuAction]="'click'"
+                  nzTitle="Advanced Reports"
+                >
+                  <ul>
+                    <li nz-menu-item>Summary Report</li>
+                    <li nz-menu-item>Trend Analysis</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        <!-- Login/Logout -->
+        <li nz-menu-item>
+          <a
+            class="text-gray-700 hover:text-blue-600 relative cursor-pointer"
+            (click)="isLoggedIn ? null : openLoginModal()"
+          >
+            {{ isLoggedIn ? "Logout" : "Login" }}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<nz-modal
+  [(nzVisible)]="isLoginModalVisible"
+  nzTitle="Login"
+  [nzFooter]="null"
+  (nzOnCancel)="closeLoginModal()"
+  [nzBodyStyle]="{ padding: '24px' }"
+  class="rounded-lg"
+>
+  <app-login *nzModalContent (loginSuccess)="handleLogin()"></app-login>
+</nz-modal>

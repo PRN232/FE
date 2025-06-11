@@ -1,1 +1,78 @@
-<p>footer works!</p>
+<footer class="bg-blue-600 text-white py-6">
+  <div class="container mx-auto px-4">
+    <div nz-row nzGutter="16">
+      <!-- School Information -->
+      <div nz-col nzXs="24" nzMd="8">
+        <h3 class="text-lg font-semibold mb-4">
+          Springfield School Health Room
+        </h3>
+        <p class="text-sm">
+          123 Healthy Lane, Springfield, ST 12345<br />
+          Phone: (123) 456-7890<br />
+          Email: health&#64;springfieldschool.org
+        </p>
+      </div>
+
+      <!-- Quick Links -->
+      <div nz-col nzXs="24" nzMd="8">
+        <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+        <ul nz-list>
+          <li nz-list-item>
+            <a routerLink="/" class="text-white hover:text-gray-200">Home</a>
+          </li>
+          <li nz-list-item>
+            <a
+              routerLink="/health-record"
+              class="text-white hover:text-gray-200"
+              >Health Record</a
+            >
+          </li>
+          <li nz-list-item>
+            <a routerLink="/vaccination" class="text-white hover:text-gray-200"
+              >Vaccination</a
+            >
+          </li>
+          <li nz-list-item>
+            <a routerLink="/examination" class="text-white hover:text-gray-200"
+              >Medical Examination</a
+            >
+          </li>
+          <li nz-list-item>
+            <a routerLink="/dashboard" class="text-white hover:text-gray-200"
+              >Dashboard</a
+            >
+          </li>
+        </ul>
+      </div>
+
+      <!-- Health Resources -->
+      <div nz-col nzXs="24" nzMd="8">
+        <h3 class="text-lg font-semibold mb-4">Health Resources</h3>
+        <ul nz-list>
+          <li nz-list-item>
+            <a href="#" class="text-white hover:text-gray-200"
+              >School Health Policy</a
+            >
+          </li>
+          <li nz-list-item>
+            <a href="#" class="text-white hover:text-gray-200"
+              >Vaccination Guidelines</a
+            >
+          </li>
+          <li nz-list-item>
+            <a href="#" class="text-white hover:text-gray-200"
+              >Emergency Procedures</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div
+      class="mt-6 text-center text-sm border-t border-white border-opacity-20 pt-4"
+    >
+      <p>&copy; 2025 Springfield School Health System. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

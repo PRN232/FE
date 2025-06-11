@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+import { NzListModule } from 'ng-zorro-antd/list';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-footer',
-  imports: [],
+  imports: [NzGridModule, NzListModule, RouterLink],
   templateUrl: './footer.component.html',
-  styleUrl: './footer.component.css'
+  styleUrls: ['./footer.component.css'],
 })
-export class FooterComponent {
-
-}
+export class FooterComponent {}

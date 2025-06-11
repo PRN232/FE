@@ -1,0 +1,73 @@
+:host {
+  display: block;
+}
+
+nz-menu {
+  background: transparent;
+  line-height: 1.5;
+}
+
+nz-menu-item a,
+nz-submenu nz-menu-title {
+  position: relative;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+nz-menu-item a:hover,
+nz-submenu nz-menu-title:hover {
+  color: #2563eb;
+}
+
+nz-menu-item a::before,
+nz-submenu nz-menu-title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background-color: #2563eb;
+  transition: width 0.3s ease;
+}
+
+nz-menu-item a:hover::before,
+nz-submenu nz-menu-title:hover::before {
+  width: 100%;
+}
+
+nz-submenu {
+  margin-left: 0.5rem;
+}
+
+nz-submenu ul {
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 0;
+  min-width: 12rem;
+}
+
+nz-menu-group {
+  padding: 0.25rem 1rem;
+  color: #6b7280;
+}
+
+nz-menu-group ul nz-menu-item a {
+  padding: 0.5rem 1rem;
+  color: #4b5563;
+}
+
+nz-menu-group ul nz-menu-item a:hover {
+  background-color: #e0e7ff;
+  color: #2563eb;
+}
+
+nz-icon {
+  font-size: 1rem;
+  margin-right: 0.5rem;
+}
