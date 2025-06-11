@@ -1,25 +1,58 @@
-import { Component, Output, EventEmitter } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
+import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzModalModule } from 'ng-zorro-antd/modal';
+import { RegisterComponent } from '../register/register.component';
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, NzButtonModule, NzInputModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    NzButtonModule,
+    NzCheckboxModule,
+    NzFormModule,
+    NzInputModule,
+    NzModalModule,
+    RegisterComponent,
+  ],
 })
 export class LoginComponent {
-  @Output() loginSuccess = new EventEmitter<void>();
-  username = '';
-  password = '';
+  isRegisterModalVisible = false;
+  private fb = inject(NonNullableFormBuilder);
+  validateForm = this.fb.group({
+    username: this.fb.control('', [Validators.required]),
+    password: this.fb.control('', [Validators.required]),
+    remember: this.fb.control(true),
+  });
 
-  submitLogin(): void {
-    if (this.username && this.password) {
-      this.loginSuccess.emit();
+  openRegisterModal(): void {
+    this.isRegisterModalVisible = true;
+  }
+
+  closeRegisterModal(): void {
+    this.isRegisterModalVisible = false;
+  }
+
+  submitForm(): void {
+    if (this.validateForm.valid) {
+      console.log('submit', this.validateForm.value);
     } else {
-      console.log('Please fill in both fields');
+      Object.values(this.validateForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
     }
   }
 }
