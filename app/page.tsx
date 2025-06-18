@@ -139,10 +139,10 @@ const HomePage = () => {
                         </div>
                         <div className="relative">
                             <Image
-                                src="/images/placeholder.svg"
+                                src="/images/placeholder.jpg"
                                 alt="School Health Facility"
                                 width={600}
-                                height={500}
+                                height={600}
                                 className="rounded-lg shadow-lg"
                                 priority
                             />

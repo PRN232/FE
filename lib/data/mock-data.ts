@@ -1,5 +1,23 @@
-import { MedicalExamination, MedicalIncident, MedicineRequest, Student, User, VaccinationCampaign } from "@/types";
-import { Activity, Calendar, FileText, Shield, Users } from "lucide-react";
+import {
+    MedicalExamination,
+    MedicalIncident,
+    MedicineRequest,
+    Student,
+    User,
+    VaccinationCampaign
+} from "@/types";
+import {
+    Activity,
+    Calendar,
+    CheckCircle,
+    FileText,
+    Shield,
+    Users,
+    Star,
+    Award,
+    Heart,
+    Stethoscope
+} from "lucide-react";
 
 export const mockUsers: User[] = [
     {
@@ -302,3 +320,102 @@ export const medicalFeatures = [
         icon: Calendar,
     },
 ]
+
+export const teamMembers = [
+    {
+        id: "1",
+        name: "Bác sĩ Sarah Johnson",
+        role: "Giám đốc Y tế",
+        specialization: "Y học Nhi khoa",
+        experience: "15+ năm",
+        image: "/images/doctor1.jpg",
+        description: "Dẫn dắt đội ngũ y tế của chúng tôi với nhiều kinh nghiệm trong các chương trình sức khỏe trường học.",
+    },
+    {
+        id: "2",
+        name: "Y tá Mary Wilson",
+        role: "Trưởng Y tá",
+        specialization: "Dịch vụ Sức khỏe Trường học",
+        experience: "12+ năm",
+        image: "/images/doctor2.jpg",
+        description: "Phối hợp các dịch vụ sức khỏe hàng ngày và giao thức ứng phó khẩn cấp.",
+    },
+    {
+        id: "3",
+        name: "Bác sĩ Michael Chen",
+        role: "Bác sĩ Trường học",
+        specialization: "Y học Gia đình",
+        experience: "10+ năm",
+        image: "/images/doctor3.jpg",
+        description: "Cung cấp dịch vụ chăm sóc y tế toàn diện và các chương trình giáo dục sức khỏe.",
+    },
+    {
+        id: "4",
+        name: "Lisa Rodriguez",
+        role: "Điều phối viên Sức khỏe",
+        specialization: "Y tế Công cộng",
+        experience: "8+ năm",
+        image: "/images/doctor4.jpg",
+        description: "Quản lý các chương trình tiêm chủng và sáng kiến kiểm tra sức khỏe.",
+    },
+];
+export const services = [
+    {
+        icon: Stethoscope,
+        title: "Khám sức khỏe",
+        description: "Kiểm tra sức khỏe toàn diện hàng năm và kiểm tra định kỳ cho tất cả học sinh.",
+    },
+    {
+        icon: Shield,
+        title: "Chương trình Tiêm chủng",
+        description: "Dịch vụ tiêm chủng đầy đủ theo lịch tiêm chủng quốc gia.",
+    },
+    {
+        icon: Heart,
+        title: "Chăm sóc Khẩn cấp",
+        description: "Phản hồi khẩn cấp 24/7 và dịch vụ sơ cứu trong giờ học.",
+    },
+    {
+        icon: Activity,
+        title: "Theo dõi Sức khỏe",
+        description: "Theo dõi liên tục tình trạng sức khỏe và bệnh mãn tính của học sinh.",
+    },
+    {
+        icon: Users,
+        title: "Giáo dục Sức khỏe",
+        description: "Các chương trình giáo dục thúc đẩy lối sống lành mạnh và phòng ngừa bệnh tật.",
+    },
+    {
+        icon: Calendar,
+        title: "Lịch hẹn",
+        description: "Lịch hẹn trực tuyến dễ dàng cho tư vấn và các cuộc hẹn theo dõi.",
+    },
+];
+
+export const achievements = [
+    {
+        icon: Award,
+        title: "Giải thưởng Xuất sắc Quốc gia về Sức khỏe",
+        year: "2023",
+        description: "Được công nhận vì thực hiện xuất sắc chương trình sức khỏe trường học.",
+    },
+    {
+        icon: Star,
+        title: "100% Phủ sóng Tiêm chủng",
+        year: "2022-2023",
+        description: "Đạt được 100% phủ sóng tiêm chủng cho tất cả học sinh đăng ký.",
+    },
+    {
+        icon: CheckCircle,
+        title: "Cơ sở Y tế Được Công nhận",
+        year: "2021",
+        description: "Được Hiệp hội Sức khỏe Trường học Quốc gia chứng nhận.",
+    },
+];
+
+export const stats = [
+    { number: "2,500+", label: "Học sinh Được Phục vụ" },
+    { number: "15+", label: "Năm Hoạt động" },
+    { number: "24/7", label: "Phản hồi Khẩn cấp" },
+    { number: "100%", label: "Sự Hài lòng của Phụ huynh" },
+];
