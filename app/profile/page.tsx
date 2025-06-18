@@ -1,5 +1,7 @@
 "use client"
 
+import {FormEvent} from "react";
+
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -30,7 +32,6 @@ export default function ProfilePage() {
     const [successMessage, setSuccessMessage] = useState("")
     const [errorMessage, setErrorMessage] = useState("")
 
-    // Profile form state
     const [profileData, setProfileData] = useState({
         firstName: user?.name?.split(" ")[0] || "",
         lastName: user?.name?.split(" ")[1] || "",
@@ -43,7 +44,7 @@ export default function ProfilePage() {
         role: user?.role || "parent",
     })
 
-    const handleProfileSubmit = async (e: React.FormEvent) => {
+    const handleProfileSubmit = async (e: FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
         setErrorMessage("")
@@ -201,7 +202,9 @@ export default function ProfilePage() {
                                         <Label htmlFor="role">Role</Label>
                                         <Select
                                             value={profileData.role}
-                                            onValueChange={(value) => setProfileData({ ...profileData, role: value })}
+                                            onValueChange={(value) =>
+                                                setProfileData({ ...profileData, role: value as "parent" | "medical_staff" | "admin" })
+                                            }
                                             disabled={isLoading}
                                         >
                                             <SelectTrigger>
