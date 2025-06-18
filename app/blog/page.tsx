@@ -5,16 +5,16 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Search, Calendar, User, ArrowRight } from "lucide-react"
 import { mockBlogPosts } from "@/lib/data/mock-data"
-import Image from "next/image";
+import Image from "next/image"
 
 const categories = [
-    "All",
-    "Health Screening",
-    "Allergies",
-    "Vaccination",
-    "Nutrition",
-    "Mental Health",
-    "Emergency Care",
+    "Tất cả",
+    "Khám sức khỏe",
+    "Dị ứng",
+    "Tiêm chủng",
+    "Dinh dưỡng",
+    "Sức khỏe tinh thần",
+    "Sơ cứu khẩn cấp",
 ]
 
 export default function BlogPage() {
@@ -22,22 +22,22 @@ export default function BlogPage() {
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Health Education Blog</h2>
-                    <p className="text-muted-foreground">Expert advice and resources for school health management</p>
+                    <h2 className="text-3xl font-bold tracking-tight">Blog Giáo Dục Sức Khỏe</h2>
+                    <p className="text-muted-foreground">Lời khuyên từ chuyên gia và tài nguyên về quản lý sức khỏe học đường</p>
                 </div>
             </div>
 
-            {/* Search and Filter */}
+            {/* Tìm kiếm và Bộ lọc */}
             <div className="flex flex-col sm:flex-row gap-4">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Search articles..." className="pl-10" />
+                    <Input placeholder="Tìm bài viết..." className="pl-10" />
                 </div>
                 <div className="flex gap-2 overflow-x-auto">
                     {categories.map((category) => (
                         <Button
                             key={category}
-                            variant={category === "All" ? "default" : "outline"}
+                            variant={category === "Tất cả" ? "default" : "outline"}
                             size="sm"
                             className="whitespace-nowrap"
                         >
@@ -47,41 +47,40 @@ export default function BlogPage() {
                 </div>
             </div>
 
-            {/* Featured Article */}
+            {/* Bài viết nổi bật */}
             <Card className="overflow-hidden">
                 <div className="md:flex">
                     <div className="md:w-1/3">
                         <Image
                             src="/placeholder.svg?height=300&width=400"
-                            alt="Featured article"
+                            alt="Bài viết nổi bật"
                             className="h-48 w-full object-cover md:h-full"
                             width={400}
-                            height={400}
+                            height={300}
                         />
                     </div>
                     <div className="p-6 md:w-2/3">
                         <div className="flex items-center space-x-2 mb-2">
-                            <Badge>Featured</Badge>
-                            <Badge variant="outline">Health Screening</Badge>
+                            <Badge>Nổi bật</Badge>
+                            <Badge variant="outline">Khám sức khỏe</Badge>
                         </div>
-                        <h3 className="text-2xl font-bold mb-2">Comprehensive Guide to School Health Screenings</h3>
+                        <h3 className="text-2xl font-bold mb-2">Hướng dẫn toàn diện về Khám sức khỏe học đường</h3>
                         <p className="text-muted-foreground mb-4">
-                            Everything parents and educators need to know about annual health screenings, including preparation tips,
-                            what to expect, and how to interpret results.
+                            Mọi điều phụ huynh và giáo viên cần biết về khám sức khỏe định kỳ: cách chuẩn bị, quy trình và cách hiểu kết quả.
                         </p>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                                 <div className="flex items-center space-x-1">
                                     <User className="h-4 w-4" />
-                                    <span>Dr. Sarah Johnson</span>
+                                    <span>TS. Sarah Johnson</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                     <Calendar className="h-4 w-4" />
-                                    <span>September 20, 2023</span>
+                                    <span>20 Tháng 9, 2023</span>
                                 </div>
                             </div>
                             <Button>
-                                Read Article
+                                Đọc bài
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </div>
@@ -89,7 +88,7 @@ export default function BlogPage() {
                 </div>
             </Card>
 
-            {/* Blog Posts Grid */}
+            {/* Lưới bài viết */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {mockBlogPosts.map((post) => (
                     <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -99,13 +98,13 @@ export default function BlogPage() {
                                 alt={post.title}
                                 className="h-full w-full object-cover"
                                 width={300}
-                                height={300}
+                                height={200}
                             />
                         </div>
                         <CardHeader>
                             <div className="flex items-center justify-between mb-2">
                                 <Badge variant="outline">{post.category}</Badge>
-                                <span className="text-xs text-muted-foreground">{post.publishedAt.toLocaleDateString()}</span>
+                                <span className="text-xs text-muted-foreground">{post.publishedAt.toLocaleDateString("vi-VN")}</span>
                             </div>
                             <CardTitle className="line-clamp-2">{post.title}</CardTitle>
                         </CardHeader>
@@ -118,7 +117,7 @@ export default function BlogPage() {
                                 </div>
                                 <Button variant="ghost" size="sm" asChild>
                                     <Link href={`/blog/${post.id}`}>
-                                        Read More
+                                        Đọc tiếp
                                         <ArrowRight className="ml-1 h-3 w-3" />
                                     </Link>
                                 </Button>
@@ -128,10 +127,10 @@ export default function BlogPage() {
                 ))}
             </div>
 
-            {/* Load More */}
+            {/* Nút tải thêm */}
             <div className="text-center">
                 <Button variant="outline" size="lg">
-                    Load More Articles
+                    Tải thêm bài viết
                 </Button>
             </div>
         </div>

@@ -1,9 +1,9 @@
-import { User, Student, HealthRecord, MedicineRequest, MedicalIncident, VaccinationCampaign, MedicalExamination } from '../types'
+import {MedicalExamination, MedicalIncident, MedicineRequest, Student, User, VaccinationCampaign} from "@/types";
 
 export const mockUsers: User[] = [
     {
         id: '1',
-        name: 'Dr. Sarah Johnson',
+        name: 'Bác sĩ Sarah Johnson',
         email: 'sarah.johnson@school.edu',
         role: 'medical_staff',
         avatar: '/placeholder.svg?height=40&width=40',
@@ -19,7 +19,7 @@ export const mockUsers: User[] = [
     },
     {
         id: '3',
-        name: 'Admin User',
+        name: 'Người quản trị',
         email: 'admin@school.edu',
         role: 'admin',
         avatar: '/placeholder.svg?height=40&width=40',
@@ -32,30 +32,30 @@ export const mockStudents: Student[] = [
         id: '1',
         name: 'Emma Smith',
         dateOfBirth: new Date('2015-03-15'),
-        grade: '3rd Grade',
+        grade: 'Lớp 3',
         class: '3A',
         parentId: '2',
         avatar: '/placeholder.svg?height=40&width=40',
         healthRecord: {
             id: '1',
             studentId: '1',
-            allergies: ['Peanuts', 'Shellfish'],
-            chronicDiseases: ['Asthma'],
+            allergies: ['Đậu phộng', 'Hải sản có vỏ'],
+            chronicDiseases: ['Hen suyễn'],
             treatmentHistory: [
                 {
                     id: '1',
                     date: new Date('2023-09-15'),
-                    condition: 'Common Cold',
-                    treatment: 'Rest and fluids',
-                    doctor: 'Dr. Johnson',
-                    notes: 'Recovered well'
+                    condition: 'Cảm lạnh thông thường',
+                    treatment: 'Nghỉ ngơi và uống nhiều nước',
+                    doctor: 'Bác sĩ Johnson',
+                    notes: 'Phục hồi tốt'
                 }
             ],
             vision: {
                 leftEye: '20/20',
                 rightEye: '20/25',
                 testDate: new Date('2023-08-01'),
-                notes: 'Slight weakness in right eye'
+                notes: 'Mắt phải hơi yếu'
             },
             hearing: {
                 result: 'normal',
@@ -67,7 +67,7 @@ export const mockStudents: Student[] = [
                     vaccine: 'MMR',
                     date: new Date('2023-06-01'),
                     batch: 'MMR-2023-001',
-                    administeredBy: 'Dr. Sarah Johnson',
+                    administeredBy: 'Bác sĩ Sarah Johnson',
                     nextDue: new Date('2028-06-01')
                 }
             ],
@@ -78,7 +78,7 @@ export const mockStudents: Student[] = [
         id: '2',
         name: 'Michael Johnson',
         dateOfBirth: new Date('2014-07-22'),
-        grade: '4th Grade',
+        grade: 'Lớp 4',
         class: '4B',
         parentId: '2',
         avatar: '/placeholder.svg?height=40&width=40',
@@ -103,7 +103,7 @@ export const mockStudents: Student[] = [
                     vaccine: 'DTaP',
                     date: new Date('2023-05-15'),
                     batch: 'DTAP-2023-002',
-                    administeredBy: 'Dr. Sarah Johnson',
+                    administeredBy: 'Bác sĩ Sarah Johnson',
                     nextDue: new Date('2028-05-15')
                 }
             ],
@@ -117,25 +117,25 @@ export const mockMedicineRequests: MedicineRequest[] = [
         id: '1',
         studentId: '1',
         parentId: '2',
-        medicineName: 'Albuterol Inhaler',
-        dosage: '2 puffs',
-        frequency: 'As needed',
-        duration: 'Ongoing',
-        instructions: 'Use when experiencing asthma symptoms',
+        medicineName: 'Ống hít Albuterol',
+        dosage: '2 nhát',
+        frequency: 'Khi cần thiết',
+        duration: 'Liên tục',
+        instructions: 'Sử dụng khi có triệu chứng hen suyễn',
         status: 'approved',
         requestDate: new Date('2023-09-01'),
-        approvedBy: 'Dr. Sarah Johnson',
-        notes: 'Keep in health room for emergency use'
+        approvedBy: 'Bác sĩ Sarah Johnson',
+        notes: 'Để tại phòng y tế dùng khi khẩn cấp'
     },
     {
         id: '2',
         studentId: '2',
         parentId: '2',
-        medicineName: 'Children\'s Tylenol',
+        medicineName: 'Tylenol trẻ em',
         dosage: '160mg',
-        frequency: 'Every 6 hours',
-        duration: '3 days',
-        instructions: 'For fever management',
+        frequency: 'Mỗi 6 giờ',
+        duration: '3 ngày',
+        instructions: 'Sử dụng khi sốt',
         status: 'pending',
         requestDate: new Date('2023-09-20')
     }
@@ -146,25 +146,25 @@ export const mockMedicalIncidents: MedicalIncident[] = [
         id: '1',
         studentId: '1',
         type: 'accident',
-        description: 'Student fell during recess and scraped knee',
+        description: 'Học sinh bị ngã trong giờ ra chơi và trầy đầu gối',
         severity: 'low',
-        treatmentGiven: 'Cleaned wound, applied bandage',
-        medicineUsed: ['Antiseptic', 'Bandage'],
-        handledBy: 'Dr. Sarah Johnson',
+        treatmentGiven: 'Làm sạch vết thương, băng bó',
+        medicineUsed: ['Thuốc sát trùng', 'Băng gạc'],
+        handledBy: 'Bác sĩ Sarah Johnson',
         parentNotified: true,
         date: new Date('2023-09-18'),
         followUpRequired: false,
-        status: 'resolved'
+        status: 'open'
     },
     {
         id: '2',
         studentId: '2',
         type: 'fever',
-        description: 'Student reported feeling unwell with fever of 101°F',
+        description: 'Học sinh cảm thấy không khỏe, nhiệt độ 101°F',
         severity: 'medium',
-        treatmentGiven: 'Temperature monitoring, rest in health room',
-        medicineUsed: ['Thermometer'],
-        handledBy: 'Dr. Sarah Johnson',
+        treatmentGiven: 'Theo dõi nhiệt độ, nghỉ ngơi tại phòng y tế',
+        medicineUsed: ['Nhiệt kế'],
+        handledBy: 'Bác sĩ Sarah Johnson',
         parentNotified: true,
         date: new Date('2023-09-20'),
         followUpRequired: true,
@@ -175,9 +175,9 @@ export const mockMedicalIncidents: MedicalIncident[] = [
 export const mockVaccinationCampaigns: VaccinationCampaign[] = [
     {
         id: '1',
-        name: 'Fall 2023 Flu Vaccination',
-        vaccine: 'Influenza',
-        targetGrades: ['K', '1st', '2nd', '3rd', '4th', '5th'],
+        name: 'Chiến dịch tiêm vắc-xin cúm mùa Thu 2023',
+        vaccine: 'Cúm',
+        targetGrades: ['Mẫu giáo', 'Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5'],
         scheduledDate: new Date('2023-10-15'),
         consentDeadline: new Date('2023-10-10'),
         status: 'consent_collection',
@@ -187,9 +187,9 @@ export const mockVaccinationCampaigns: VaccinationCampaign[] = [
     },
     {
         id: '2',
-        name: 'HPV Vaccination Program',
+        name: 'Chương trình tiêm vắc-xin HPV',
         vaccine: 'HPV',
-        targetGrades: ['6th', '7th'],
+        targetGrades: ['Lớp 6', 'Lớp 7'],
         scheduledDate: new Date('2023-11-01'),
         consentDeadline: new Date('2023-10-25'),
         status: 'planning',
@@ -202,9 +202,9 @@ export const mockVaccinationCampaigns: VaccinationCampaign[] = [
 export const mockMedicalExaminations: MedicalExamination[] = [
     {
         id: '1',
-        name: 'Annual Health Screening',
+        name: 'Khám sức khỏe định kỳ hàng năm',
         type: 'annual',
-        targetGrades: ['K', '1st', '2nd', '3rd', '4th', '5th'],
+        targetGrades: ['Mẫu giáo', 'Lớp 1', 'Lớp 2', 'Lớp 3', 'Lớp 4', 'Lớp 5'],
         scheduledDate: new Date('2023-10-01'),
         notificationSent: true,
         status: 'in_progress',
@@ -213,9 +213,9 @@ export const mockMedicalExaminations: MedicalExamination[] = [
     },
     {
         id: '2',
-        name: 'Vision and Hearing Test',
+        name: 'Kiểm tra thị lực và thính lực',
         type: 'vision',
-        targetGrades: ['1st', '3rd', '5th'],
+        targetGrades: ['Lớp 1', 'Lớp 3', 'Lớp 5'],
         scheduledDate: new Date('2023-09-25'),
         notificationSent: true,
         status: 'completed',
@@ -227,29 +227,29 @@ export const mockMedicalExaminations: MedicalExamination[] = [
 export const mockBlogPosts = [
     {
         id: '1',
-        title: 'Preparing Your Child for the School Health Screening',
-        excerpt: 'Tips and information to help your child feel comfortable during their annual health check-up.',
-        content: 'Annual health screenings are an important part of ensuring your child\'s well-being...',
-        author: 'Dr. Sarah Johnson',
+        title: 'Chuẩn bị cho trẻ tham gia khám sức khỏe tại trường',
+        excerpt: 'Những mẹo và thông tin giúp trẻ cảm thấy thoải mái trong buổi khám sức khỏe định kỳ.',
+        content: 'Khám sức khỏe hàng năm là một phần quan trọng giúp đảm bảo sức khỏe cho trẻ...',
+        author: 'Bác sĩ Sarah Johnson',
         publishedAt: new Date('2023-09-15'),
-        category: 'Health Screening'
+        category: 'Khám sức khỏe'
     },
     {
         id: '2',
-        title: 'Managing Allergies in the School Environment',
-        excerpt: 'A comprehensive guide for parents on how to work with school staff to keep allergic children safe.',
-        content: 'Food allergies and environmental allergies can pose serious challenges in school settings...',
-        author: 'Nurse Mary Wilson',
+        title: 'Quản lý dị ứng tại môi trường học đường',
+        excerpt: 'Hướng dẫn toàn diện cho phụ huynh về cách phối hợp với nhà trường để bảo vệ trẻ bị dị ứng.',
+        content: 'Dị ứng thực phẩm và môi trường có thể gây khó khăn nghiêm trọng trong môi trường học đường...',
+        author: 'Y tá Mary Wilson',
         publishedAt: new Date('2023-09-10'),
-        category: 'Allergies'
+        category: 'Dị ứng'
     },
     {
         id: '3',
-        title: 'The Importance of Vaccination in Schools',
-        excerpt: 'Understanding why vaccines are crucial for maintaining a healthy school community.',
-        content: 'Vaccines play a vital role in protecting not just individual students, but the entire school community...',
-        author: 'Dr. Sarah Johnson',
+        title: 'Tầm quan trọng của tiêm chủng trong trường học',
+        excerpt: 'Tại sao vắc-xin lại quan trọng trong việc giữ gìn sức khỏe cộng đồng trường học.',
+        content: 'Vắc-xin đóng vai trò then chốt trong việc bảo vệ không chỉ từng học sinh mà còn cả cộng đồng trường học...',
+        author: 'Bác sĩ Sarah Johnson',
         publishedAt: new Date('2023-09-05'),
-        category: 'Vaccination'
+        category: 'Tiêm chủng'
     }
 ]
