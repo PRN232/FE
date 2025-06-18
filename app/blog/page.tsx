@@ -17,7 +17,7 @@ const categories = [
     "Sơ cứu khẩn cấp",
 ]
 
-export default function BlogPage() {
+const BlogPage = () => {
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
             <div className="flex items-center justify-between">
@@ -136,3 +136,5 @@ export default function BlogPage() {
         </div>
     )
 }
+
+export default BlogPage

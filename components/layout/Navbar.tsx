@@ -3,7 +3,7 @@
 import { ComponentType, ComponentPropsWithoutRef } from "react";
 
 import Link from "next/link";
-import { Bell, User, LogOut, Settings, Users, FileText, BookOpen } from "lucide-react";
+import { Bell, User, LogOut, Users, FileText, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -207,15 +207,6 @@ const Navbar = () => {
                                             >
                                                 <User className="mr-2 h-4 w-4" />
                                                 <span>Hồ sơ</span>
-                                            </Link>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem asChild>
-                                            <Link
-                                                href="/settings"
-                                                className="w-full cursor-pointer focus:bg-accent focus:text-accent-foreground"
-                                            >
-                                                <Settings className="mr-2 h-4 w-4" />
-                                                <span>Cài đặt</span>
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />

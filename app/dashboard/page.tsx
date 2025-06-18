@@ -10,7 +10,7 @@ import {
     mockMedicalExaminations,
 } from "@/lib/data/mock-data"
 
-export default function DashboardPage() {
+const DashboardPage = () => {
     const totalStudents = mockStudents.length
     const activeIncidents = mockMedicalIncidents.filter((incident) => incident.status === "open").length
     const upcomingVaccinations = mockVaccinationCampaigns.filter(
@@ -34,12 +34,12 @@ export default function DashboardPage() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+                        <CardTitle className="text-sm font-medium">Tổng số học sinh</CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{totalStudents}</div>
-                        <p className="text-xs text-muted-foreground">+2 from last month</p>
+                        <p className="text-xs text-muted-foreground">+2 từ tháng trước</p>
                     </CardContent>
                 </Card>
 
@@ -50,29 +50,29 @@ export default function DashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{activeIncidents}</div>
-                        <p className="text-xs text-muted-foreground">-1 from yesterday</p>
+                        <p className="text-xs text-muted-foreground">-1 từ ngày hôm qua</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Vaccination Campaigns</CardTitle>
+                        <CardTitle className="text-sm font-medium">Chiến dịch tiêm chủng</CardTitle>
                         <Shield className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{upcomingVaccinations}</div>
-                        <p className="text-xs text-muted-foreground">In progress</p>
+                        <p className="text-xs text-muted-foreground">Đang triển khai</p>
                     </CardContent>
                 </Card>
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Health Examinations</CardTitle>
+                        <CardTitle className="text-sm font-medium">Kiểm tra sức khỏe</CardTitle>
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{pendingExaminations}</div>
-                        <p className="text-xs text-muted-foreground">Scheduled this month</p>
+                        <p className="text-xs text-muted-foreground">Lịch trình trong tháng</p>
                     </CardContent>
                 </Card>
             </div>
@@ -81,8 +81,8 @@ export default function DashboardPage() {
                 {/* Recent Medical Incidents */}
                 <Card className="col-span-4">
                     <CardHeader>
-                        <CardTitle>Recent Medical Incidents</CardTitle>
-                        <CardDescription>Latest medical incidents requiring attention</CardDescription>
+                        <CardTitle>Các sự cố y tế gần đây</CardTitle>
+                        <CardDescription>Các sự cố cần được chú ý</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -126,8 +126,8 @@ export default function DashboardPage() {
                 {/* Vaccination Progress */}
                 <Card className="col-span-3">
                     <CardHeader>
-                        <CardTitle>Vaccination Campaigns</CardTitle>
-                        <CardDescription>Current vaccination campaign progress</CardDescription>
+                        <CardTitle>Chiến dịch tiêm chủng</CardTitle>
+                        <CardDescription>TIến trình chiến dịch tiêm chủng hiện tại</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
@@ -192,3 +192,5 @@ export default function DashboardPage() {
         </div>
     )
 }
+
+export default DashboardPage

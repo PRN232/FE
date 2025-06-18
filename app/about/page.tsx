@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import TeamMemberGrid from "@/components/TeamMemberCard";
-import HealthService from "@/components/HealthService";
-import Achievement from "@/components/Achievement";
-import Stat from "@/components/Stat";
-import MissionAndVision from "@/components/MissionAndVision";
-import HeroSection from "@/components/HeroSection";
-import Facility from "@/components/Facility";
-import Contact from "@/components/Contact";
+import TeamMemberGrid from "@/components/AboutUs/TeamMemberCard";
+import HealthService from "@/components/AboutUs/HealthService";
+import Achievement from "@/components/AboutUs/Achievement";
+import Stat from "@/components/AboutUs/Stat";
+import MissionAndVision from "@/components/AboutUs/MissionAndVision";
+import HeroSection from "@/components/AboutUs/HeroSection";
+import Facility from "@/components/AboutUs/Facility";
+import Contact from "@/components/AboutUs/Contact";
 
 const AboutUs = () => {
     return (

@@ -9,7 +9,7 @@ import ProfileTab from "@/components/Tab/ProfileTab";
 import SecurityTab from "@/components/Tab/SecurityTab";
 import { useAuth } from "@/lib/auth/auth-context";
 
-export default function ProfilePage() {
+const ProfilePage = () => {
     const { user } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
@@ -63,3 +63,5 @@ export default function ProfilePage() {
         </div>
     );
 }
+
+export default ProfilePage
