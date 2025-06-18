@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { ComponentPropsWithoutRef, ComponentType } from "react"
+import { ComponentType, ComponentPropsWithoutRef } from "react";
 
-import Link from "next/link"
-import { Bell, User, LogOut, Settings, Users, Activity, FileText, BookOpen, Shield, Calendar } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Bell, User, LogOut, Settings, Users, FileText, BookOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -21,61 +21,16 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-
-const parentFeatures = [
-    {
-        title: "Hồ sơ sức khỏe",
-        href: "/parents/health-records",
-        description: "Quản lý thông tin sức khỏe, dị ứng và lịch sử y tế của con bạn.",
-        icon: FileText,
-    },
-    {
-        title: "Yêu cầu thuốc",
-        href: "/parents/medicine-requests",
-        description: "Gửi và theo dõi yêu cầu cấp phát thuốc cho con bạn.",
-        icon: Shield,
-    },
-    {
-        title: "Cuộc hẹn khám",
-        href: "/parents/appointments",
-        description: "Đặt lịch và quản lý các cuộc hẹn y tế, tư vấn sức khỏe.",
-        icon: Calendar,
-    },
-]
-
-const medicalFeatures = [
-    {
-        title: "Sự cố y tế",
-        href: "/medical-staff/incidents",
-        description: "Ghi nhận và quản lý sự cố y tế và tình huống khẩn cấp.",
-        icon: Activity,
-    },
-    {
-        title: "Kho thuốc",
-        href: "/medical-staff/medicine-inventory",
-        description: "Quản lý yêu cầu và theo dõi tồn kho thuốc.",
-        icon: Shield,
-    },
-    {
-        title: "Chiến dịch tiêm chủng",
-        href: "/medical-staff/vaccination",
-        description: "Tổ chức và giám sát các chương trình tiêm chủng.",
-        icon: Users,
-    },
-    {
-        title: "Khám sức khỏe",
-        href: "/medical-staff/examination",
-        description: "Lên lịch và thực hiện khám sức khỏe định kỳ.",
-        icon: Calendar,
-    },
-]
+} from "@/components/ui/navigation-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { medicalFeatures, parentFeatures } from "@/lib/data/mock-data";
+import { useAuth } from "@/lib/auth/auth-context";
+import { useRouter } from "next/navigation";
 
 function ListItem({ title, children, href, icon: Icon, ...props }: ComponentPropsWithoutRef<"li"> & {
-    href: string
-    icon?: ComponentType<{ className?: string }>
+    href: string;
+    icon?: ComponentType<{ className?: string }>;
 }) {
     return (
         <li {...props}>
@@ -92,10 +47,22 @@ function ListItem({ title, children, href, icon: Icon, ...props }: ComponentProp
                 </Link>
             </NavigationMenuLink>
         </li>
-    )
+    );
 }
 
-export function Navbar() {
+const Navbar = () => {
+    const { isAuthenticated, user, logout } = useAuth();
+    const router = useRouter();
+
+    const handleLogin = () => {
+        router.push("/login");
+    };
+
+    const handleLogout = () => {
+        logout();
+        router.push("/");
+    };
+
     return (
         <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
             <div className="container px-4 sm:px-6">
@@ -104,7 +71,7 @@ export function Navbar() {
                     <div className="flex items-center">
                         <div className="flex-shrink-0">
                             <Link href="/" className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-primary">Chăm sóc sức khỏe học đường</span>
+                                <span className="text-xl font-bold text-primary">HealthCare School</span>
                             </Link>
                         </div>
 
@@ -119,7 +86,7 @@ export function Navbar() {
 
                                     <NavigationMenuItem>
                                         <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                            <Link href="/dashboard">Bảng điều khiển</Link>
+                                            <Link href="/dashboard">Dashboard</Link>
                                         </NavigationMenuLink>
                                     </NavigationMenuItem>
 
@@ -137,7 +104,7 @@ export function Navbar() {
                                     </NavigationMenuItem>
 
                                     <NavigationMenuItem>
-                                        <NavigationMenuTrigger>Nhân viên y tế</NavigationMenuTrigger>
+                                        <NavigationMenuTrigger>Nhân viên Y tế</NavigationMenuTrigger>
                                         <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
                                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                                 {medicalFeatures.map((feature) => (
@@ -160,21 +127,21 @@ export function Navbar() {
                                                             href="/blog"
                                                         >
                                                             <BookOpen className="h-6 w-6" />
-                                                            <div className="mb-2 mt-4 text-lg font-medium text-blue-900">Giáo dục sức khỏe</div>
+                                                            <div className="mb-2 mt-4 text-lg font-medium text-blue-900">Giáo dục Sức khỏe</div>
                                                             <p className="text-sm leading-tight text-blue-700">
-                                                                Lời khuyên chuyên môn và tài nguyên về chăm sóc sức khỏe học đường.
+                                                                Lời khuyên và tài nguyên chuyên gia về quản lý sức khỏe trường học.
                                                             </p>
                                                         </Link>
                                                     </NavigationMenuLink>
                                                 </li>
-                                                <ListItem href="/blog" title="Blog sức khỏe" icon={BookOpen}>
-                                                    Các bài viết mới nhất về sức khỏe và phúc lợi học sinh.
+                                                <ListItem href="/blog" title="Blog Sức khỏe" icon={BookOpen}>
+                                                    Bài viết mới nhất về sức khỏe và sự phát triển của học sinh.
                                                 </ListItem>
                                                 <ListItem href="/documents" title="Tài liệu" icon={FileText}>
-                                                    Các mẫu đơn, hướng dẫn và tài liệu quan trọng.
+                                                    Mẫu đơn sức khỏe, hướng dẫn và tài liệu quan trọng.
                                                 </ListItem>
-                                                <ListItem href="/about" title="Giới thiệu" icon={Users}>
-                                                    Tìm hiểu về chương trình y tế học đường của chúng tôi.
+                                                <ListItem href="/about" title="Về Chúng tôi" icon={Users}>
+                                                    Tìm hiểu về chương trình sức khỏe trường học của chúng tôi.
                                                 </ListItem>
                                             </ul>
                                         </NavigationMenuContent>
@@ -184,71 +151,94 @@ export function Navbar() {
                         </div>
                     </div>
 
-                    {/* Bên phải - Điều khiển người dùng */}
+                    {/* Bên phải - Điều khiển Người dùng */}
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="relative rounded-full hover:bg-muted/50"
-                            aria-label="Thông báo"
-                        >
-                            <Bell className="h-[1.2rem] w-[1.2rem]" />
-                            <Badge
-                                variant="destructive"
-                                className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
-                            >
-                                3
-                            </Badge>
-                        </Button>
-
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                        {isAuthenticated ? (
+                            <>
                                 <Button
                                     variant="ghost"
-                                    className="relative h-8 w-8 rounded-full focus-visible:ring-2 focus-visible:ring-ring"
-                                    aria-label="Menu người dùng"
+                                    size="icon"
+                                    className="relative rounded-full hover:bg-muted/50"
+                                    aria-label="Thông báo"
                                 >
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src="/placeholder.svg" alt="Ảnh đại diện người dùng" />
-                                        <AvatarFallback className="bg-primary/10 text-primary">JD</AvatarFallback>
-                                    </Avatar>
+                                    <Bell className="h-[1.2rem] w-[1.2rem]" />
+                                    <Badge
+                                        variant="destructive"
+                                        className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
+                                    >
+                                        3
+                                    </Badge>
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                className="w-56 bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg"
-                                align="end"
-                                forceMount
-                                sideOffset={8}
-                            >
-                                <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">John Doe</p>
-                                        <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile" className="w-full cursor-pointer focus:bg-accent focus:text-accent-foreground">
-                                        <User className="mr-2 h-4 w-4" />
-                                        <span>Hồ sơ cá nhân</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/settings" className="w-full cursor-pointer focus:bg-accent focus:text-accent-foreground">
-                                        <Settings className="mr-2 h-4 w-4" />
-                                        <span>Cài đặt</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                    <LogOut className="mr-2 h-4 w-4" />
-                                    <span>Đăng xuất</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            className="relative h-8 w-8 rounded-full focus-visible:ring-2 focus-visible:ring-ring"
+                                            aria-label="Menu Người dùng"
+                                        >
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={user?.avatar || "/images/placeholder.svg"} alt="Hồ sơ Người dùng" />
+                                                <AvatarFallback className="bg-primary/10 text-primary">
+                                                    {user?.name
+                                                        ?.split(" ")
+                                                        .map((n) => n[0])
+                                                        .join("") || "U"}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        className="w-56 bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg"
+                                        align="start"
+                                        sideOffset={8}
+                                    >
+                                        <DropdownMenuLabel className="font-normal">
+                                            <div className="flex flex-col space-y-1">
+                                                <p className="text-sm font-medium leading-none">{user?.name}</p>
+                                                <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                                            </div>
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link
+                                                href="/profile"
+                                                className="w-full cursor-pointer focus:bg-accent focus:text-accent-foreground"
+                                            >
+                                                <User className="mr-2 h-4 w-4" />
+                                                <span>Hồ sơ</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link
+                                                href="/settings"
+                                                className="w-full cursor-pointer focus:bg-accent focus:text-accent-foreground"
+                                            >
+                                                <Settings className="mr-2 h-4 w-4" />
+                                                <span>Cài đặt</span>
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem
+                                            className="text-destructive focus:text-destructive cursor-pointer"
+                                            onClick={handleLogout}
+                                        >
+                                            <LogOut className="mr-2 h-4 w-4" />
+                                            <span>Đăng xuất</span>
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </>
+                        ) : (
+                            <Button onClick={handleLogin} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                                Đăng nhập
+                            </Button>
+                        )}
                     </div>
                 </div>
             </div>
         </nav>
-    )
-}
+    );
+};
+
+export default Navbar;

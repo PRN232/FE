@@ -1,4 +1,5 @@
-import {MedicalExamination, MedicalIncident, MedicineRequest, Student, User, VaccinationCampaign} from "@/types";
+import { MedicalExamination, MedicalIncident, MedicineRequest, Student, User, VaccinationCampaign } from "@/types";
+import { Activity, Calendar, FileText, Shield, Users } from "lucide-react";
 
 export const mockUsers: User[] = [
     {
@@ -252,4 +253,52 @@ export const mockBlogPosts = [
         publishedAt: new Date('2023-09-05'),
         category: 'Tiêm chủng'
     }
+]
+
+export const parentFeatures = [
+    {
+        title: "Hồ sơ Sức khỏe",
+        href: "/parents/health-records",
+        description: "Quản lý thông tin sức khỏe, dị ứng và tiền sử y tế của con bạn.",
+        icon: FileText,
+    },
+    {
+        title: "Yêu cầu Thuốc",
+        href: "/parents/medicine-requests",
+        description: "Gửi và theo dõi yêu cầu quản lý thuốc cho con bạn.",
+        icon: Shield,
+    },
+    {
+        title: "Lịch hẹn",
+        href: "/parents/appointments",
+        description: "Lên lịch và quản lý các cuộc hẹn y tế và tư vấn.",
+        icon: Calendar,
+    },
+]
+
+export const medicalFeatures = [
+    {
+        title: "Sự cố Y tế",
+        href: "/medical-staff/incidents",
+        description: "Ghi nhận và quản lý các sự cố y tế và tình huống khẩn cấp.",
+        icon: Activity,
+    },
+    {
+        title: "Kho Thuốc",
+        href: "/medical-staff/medicine-inventory",
+        description: "Quản lý yêu cầu thuốc và theo dõi kho thuốc.",
+        icon: Shield,
+    },
+    {
+        title: "Chiến dịch Tiêm chủng",
+        href: "/medical-staff/vaccination",
+        description: "Tổ chức và giám sát các chương trình tiêm chủng.",
+        icon: Users,
+    },
+    {
+        title: "Khám sức khỏe",
+        href: "/medical-staff/examination",
+        description: "Lên lịch và thực hiện các đợt khám sức khỏe định kỳ.",
+        icon: Calendar,
+    },
 ]

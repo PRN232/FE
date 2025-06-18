@@ -53,7 +53,10 @@ const HomePage = () => {
                             Giải pháp số toàn diện để quản lý hồ sơ sức khỏe học sinh, sự cố y tế, tiêm chủng và khám sức khỏe trong các cơ sở giáo dục.
                         </p>
                         <div className="mt-10 flex items-center justify-center gap-x-6">
-                            <Button size="lg" variant="secondary">
+                            <Button
+                                size="lg"
+                                variant="outline"
+                                className="text-white border-white hover:bg-white hover:text-blue-600">
                                 Bắt đầu ngay
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
