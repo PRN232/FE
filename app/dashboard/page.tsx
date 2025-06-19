@@ -141,8 +141,8 @@ const DashboardPage = () => {
                                         <div className="flex justify-between text-xs text-muted-foreground">
                                             <span>Consent Collection</span>
                                             <span>
-                        {campaign.consentsReceived}/{campaign.studentsEligible}
-                      </span>
+                                                {campaign.consentsReceived}/{campaign.studentsEligible}
+                                            </span>
                                         </div>
                                         <Progress value={(campaign.consentsReceived / campaign.studentsEligible) * 100} className="h-2" />
                                     </div>
