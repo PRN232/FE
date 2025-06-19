@@ -50,17 +50,23 @@ const Feature = () => {
 
                 <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     {features.map((feature, index) => (
-                        <Card key={index} className="relative overflow-hidden">
+                        <Card
+                            key={index}
+                            className="relative overflow-hidden border rounded-xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 group"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             <CardHeader>
-                                <div className="flex items-center space-x-2">
-                                    <div className="rounded-lg bg-primary/10 p-2">
+                                <div className="flex items-center space-x-4">
+                                    <div className="rounded-xl bg-primary/10 p-3 group-hover:bg-primary/20 transition-colors duration-300">
                                         <feature.icon className="h-6 w-6 text-primary" />
                                     </div>
-                                    <CardTitle className="text-xl">{feature.title}</CardTitle>
+                                    <CardTitle className="text-xl text-black group-hover:text-primary transition-colors duration-300">
+                                        {feature.title}
+                                    </CardTitle>
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <CardDescription className="text-base">
+                                <CardDescription className="text-base text-black">
                                     {feature.description}
                                 </CardDescription>
                             </CardContent>
@@ -71,4 +77,5 @@ const Feature = () => {
         </section>
     )
 }
+
 export default Feature
