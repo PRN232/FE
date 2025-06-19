@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import {Users, FileText, BookOpen } from "lucide-react";
 import { medicalFeatures, parentFeatures } from "@/lib/data/mock-data";
+import {useAuth} from "@/lib/auth/auth-context";
 
 function ListItem({ title, children, href, icon: Icon, ...props }: ComponentPropsWithoutRef<"li"> & {
     href: string;
@@ -34,7 +35,12 @@ function ListItem({ title, children, href, icon: Icon, ...props }: ComponentProp
     );
 }
 
-const LeftSide = () => {
+const LeftSide = ({ user }: { user: { role: string } | null }) => {
+    const {isAuthenticated} = useAuth();
+    const isParent = user?.role === "parent";
+    const isMedicalStaff = user?.role === "medical_staff";
+    const idAdmin = user?.role === "admin";
+
     return (
         <div className="flex items-center">
             <div className="flex-shrink-0">
@@ -43,7 +49,7 @@ const LeftSide = () => {
                 </Link>
             </div>
 
-            <div className="hidden md:ml-10 md:block"> {/* Increased left margin */}
+            <div className="hidden md:ml-10 md:block">
                 <NavigationMenu>
                     <NavigationMenuList>
                         <NavigationMenuItem>
@@ -52,56 +58,52 @@ const LeftSide = () => {
                             </NavigationMenuLink>
                         </NavigationMenuItem>
 
-                        <NavigationMenuItem>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                <Link href="/dashboard" className="text-xl">Dashboard</Link>
-                            </NavigationMenuLink>
-                        </NavigationMenuItem>
+                        {isAuthenticated && (
+                            <>
+                                {idAdmin && (
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                            <Link href="/dashboard" className="text-xl">Dashboard</Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
+                                )}
 
-                        <NavigationMenuItem>
-                            <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
-                            <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                    {parentFeatures.map((feature) => (
-                                        <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
-                                            {feature.description}
-                                        </ListItem>
-                                    ))}
-                                </ul>
-                            </NavigationMenuContent>
-                        </NavigationMenuItem>
+                                {!isMedicalStaff && (
+                                    <NavigationMenuItem>
+                                        <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
+                                        <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                                {parentFeatures.map((feature) => (
+                                                    <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                        {feature.description}
+                                                    </ListItem>
+                                                ))}
+                                            </ul>
+                                        </NavigationMenuContent>
+                                    </NavigationMenuItem>
+                                )}
 
-                        <NavigationMenuItem>
-                            <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
-                            <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                    {medicalFeatures.map((feature) => (
-                                        <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
-                                            {feature.description}
-                                        </ListItem>
-                                    ))}
-                                </ul>
-                            </NavigationMenuContent>
-                        </NavigationMenuItem>
+                                {!isParent && (
+                                    <NavigationMenuItem>
+                                        <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
+                                        <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                                {medicalFeatures.map((feature) => (
+                                                    <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                        {feature.description}
+                                                    </ListItem>
+                                                ))}
+                                            </ul>
+                                        </NavigationMenuContent>
+                                    </NavigationMenuItem>
+                                )}
+                            </>
+                        )}
 
                         <NavigationMenuItem>
                             <NavigationMenuTrigger className="text-lg">Tài nguyên</NavigationMenuTrigger>
                             <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                                    <li className="row-span-3">
-                                        <NavigationMenuLink asChild>
-                                            <Link
-                                                className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-blue-50 to-blue-100 p-6 no-underline outline-none focus:shadow-md border border-blue-200"
-                                                href="/blog"
-                                            >
-                                                <BookOpen className="h-6 w-6" />
-                                                <div className="mb-2 mt-4 text-lg font-medium text-blue-900">Giáo dục Sức khỏe</div>
-                                                <p className="text-sm leading-tight text-blue-700">
-                                                    Lời khuyên và tài nguyên chuyên gia về quản lý sức khỏe trường học.
-                                                </p>
-                                            </Link>
-                                        </NavigationMenuLink>
-                                    </li>
+                                <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[600px] lg:grid-cols-[.75fr_1fr]">
                                     <ListItem href="/blog" title="Blog Sức khỏe" icon={BookOpen}>
                                         Bài viết mới nhất về sức khỏe và sự phát triển của học sinh.
                                     </ListItem>
@@ -118,6 +120,6 @@ const LeftSide = () => {
                 </NavigationMenu>
             </div>
         </div>
-    )
-}
+    );
+};
 export default LeftSide

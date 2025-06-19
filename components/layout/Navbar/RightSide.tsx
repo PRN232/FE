@@ -96,8 +96,9 @@ const RightSide = ({ onLogin, onLogout }: RightSideProps) => {
                 </>
             ) : (
                 <Button
+                    variant="outline"
                     onClick={onLogin}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-6 py-3"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-6 py-3 rounded-md shadow-md transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/70"
                 >
                     Đăng nhập
                 </Button>

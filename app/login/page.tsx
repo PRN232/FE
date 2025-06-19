@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -12,14 +12,14 @@ import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
 
 const LoginPage = () => {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [showPassword, setShowPassword] = useState(false)
-    const [error, setError] = useState("")
-    const { login, isLoading } = useAuth()
-    const router = useRouter()
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+    const { login, isLoading, user } = useAuth();
+    const router = useRouter();
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
         setError("")
 
@@ -30,9 +30,15 @@ const LoginPage = () => {
 
         const success = await login(email, password)
         if (success) {
-            router.push("/dashboard")
+            if (user?.role === "parent") {
+                router.push("/");
+            } else if (user?.role === "medical_staff") {
+                router.push("/medical-staff/incidents");
+            } else {
+                router.push("/dashboard");
+            }
         } else {
-            setError("Invalid email or password")
+            setError("Invalid email or password");
         }
     }
 
