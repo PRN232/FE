@@ -2,8 +2,8 @@
 
 import { useAuth } from "@/lib/auth/auth-context";
 import { useRouter } from "next/navigation";
-import LeftSide from "@/components/layout/Navbar/LeftSide";
-import RightSide from "@/components/layout/Navbar/RightSide";
+import LeftSide from "@/components/Layout/Navbar/LeftSide";
+import RightSide from "@/components/Layout/Navbar/RightSide";
 
 const Navbar = () => {
     const { logout } = useAuth();
