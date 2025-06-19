@@ -175,7 +175,6 @@ const ProfileTab = () => {
                                     <SelectItem value="parent">Parent/Guardian</SelectItem>
                                     <SelectItem value="medical_staff">Medical Staff</SelectItem>
                                     <SelectItem value="teacher">Teacher</SelectItem>
-                                    <SelectItem value="admin">Administrator</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

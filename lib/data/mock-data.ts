@@ -286,12 +286,6 @@ export const parentFeatures = [
         description: "Gửi và theo dõi yêu cầu quản lý thuốc cho con bạn.",
         icon: Shield,
     },
-    {
-        title: "Lịch hẹn",
-        href: "/parents/appointments",
-        description: "Lên lịch và quản lý các cuộc hẹn y tế và tư vấn.",
-        icon: Calendar,
-    },
 ]
 
 export const medicalFeatures = [

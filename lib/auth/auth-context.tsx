@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             name: "John Doe",
             email: email,
             role: "parent",
-            avatar: "/images/placeholder.svg",
+            avatar: "/images/placeholder.jpg",
             createdAt: new Date(),
         }
 
