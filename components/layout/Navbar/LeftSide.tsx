@@ -107,7 +107,7 @@ const LeftSide = ({ user }: { user: { role: string } | null }) => {
                                     <ListItem href="/blog" title="Blog Sức khỏe" icon={BookOpen}>
                                         Bài viết mới nhất về sức khỏe và sự phát triển của học sinh.
                                     </ListItem>
-                                    <ListItem href="/documents" title="Tài liệu" icon={FileText}>
+                                    <ListItem href="/document" title="Tài liệu" icon={FileText}>
                                         Mẫu đơn sức khỏe, hướng dẫn và tài liệu quan trọng.
                                     </ListItem>
                                     <ListItem href="/about" title="Về Chúng tôi" icon={Users}>

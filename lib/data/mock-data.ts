@@ -16,7 +16,9 @@ import {
     Star,
     Award,
     Heart,
-    Stethoscope
+    Stethoscope,
+    AlertTriangle,
+    BookOpen,
 } from "lucide-react";
 
 export const mockUsers: User[] = [
@@ -413,3 +415,72 @@ export const stats = [
     { number: "24/7", label: "Phản hồi Khẩn cấp" },
     { number: "100%", label: "Sự Hài lòng của Phụ huynh" },
 ];
+
+export const documents = [
+    {
+        id: "1",
+        title: "Student Health Record Form",
+        description: "Complete health information form for new student enrollment",
+        category: "Forms",
+        type: "PDF",
+        size: "2.3 MB",
+        lastUpdated: new Date("2023-09-01"),
+        icon: FileText,
+        color: "bg-blue-500",
+    },
+    {
+        id: "2",
+        title: "Vaccination Consent Form",
+        description: "Parental consent form for school vaccination programs",
+        category: "Vaccination",
+        type: "PDF",
+        size: "1.8 MB",
+        lastUpdated: new Date("2023-09-15"),
+        icon: Shield,
+        color: "bg-green-500",
+    },
+    {
+        id: "3",
+        title: "Medicine Administration Authorization",
+        description: "Authorization form for administering medication to students",
+        category: "Medicine",
+        type: "PDF",
+        size: "1.5 MB",
+        lastUpdated: new Date("2023-08-20"),
+        icon: Heart,
+        color: "bg-red-500",
+    },
+    {
+        id: "4",
+        title: "Emergency Contact Information",
+        description: "Emergency contact details and medical information form",
+        category: "Emergency",
+        type: "PDF",
+        size: "1.2 MB",
+        lastUpdated: new Date("2023-09-10"),
+        icon: AlertTriangle,
+        color: "bg-orange-500",
+    },
+    {
+        id: "5",
+        title: "Health Screening Guidelines",
+        description: "Comprehensive guidelines for annual health screenings",
+        category: "Guidelines",
+        type: "PDF",
+        size: "3.1 MB",
+        lastUpdated: new Date("2023-08-15"),
+        icon: BookOpen,
+        color: "bg-purple-500",
+    },
+    {
+        id: "6",
+        title: "Allergy Management Plan",
+        description: "Template for creating individual allergy management plans",
+        category: "Allergies",
+        type: "PDF",
+        size: "2.7 MB",
+        lastUpdated: new Date("2023-09-05"),
+        icon: AlertTriangle,
+        color: "bg-yellow-500",
+    },
+]
