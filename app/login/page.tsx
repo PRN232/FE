@@ -10,11 +10,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/lib/auth/auth-context"
+import { Checkbox } from "@/components/ui/checkbox"
+import Credentials from "@/components/Credentials";
+import Branding from "@/components/Branding";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [rememberMe, setRememberMe] = useState(false);
     const [error, setError] = useState("");
     const { login, isLoading, user } = useAuth();
     const router = useRouter();
@@ -43,71 +47,110 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="max-h-screen flex">
+        <div className="min-h-screen flex bg-gradient-to-br from-red-50 to-white">
             {/* Left side - Login Form */}
             <div className="flex-1 flex items-center justify-center p-6">
                 <div className="w-full max-w-md space-y-6">
                     {/* Back to Home */}
                     <Link
                         href="/"
-                        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+                        className="inline-flex items-center text-sm text-muted-foreground hover:text-red-600 transition-colors group"
                     >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
+                        <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                        Trở về trang chủ
                     </Link>
 
-                    <Card>
+                    <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
-                            <CardDescription className="text-center">Sign in to your HealthCare School account</CardDescription>
+                            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                                Chào mừng đến HealthCare School
+                            </CardTitle>
+                            <CardDescription className="text-center">
+                                Đăng nhập để tiếp tục
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="email" className="text-gray-700">Email</Label>
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="Enter your email"
+                                        placeholder="Nhập email của bạn"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         disabled={isLoading}
                                         required
+                                        className="focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200"
                                     />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="password">Password</Label>
-                                    <div className="relative">
+                                    <Label htmlFor="password" className="text-gray-700">Mật khẩu</Label>
+                                    <div className="relative group">
                                         <Input
                                             id="password"
                                             type={showPassword ? "text" : "password"}
-                                            placeholder="Enter your password"
+                                            placeholder="Nhập mật khẩu"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
                                             disabled={isLoading}
                                             required
+                                            className="focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200 pr-10"
                                         />
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             size="sm"
-                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-gray-400 hover:text-red-600 transition-colors"
                                             onClick={() => setShowPassword(!showPassword)}
                                             disabled={isLoading}
                                         >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4 transition-all duration-200" />
+                                            ) : (
+                                                <Eye className="h-4 w-4 transition-all duration-200" />
+                                            )}
                                         </Button>
                                     </div>
                                 </div>
 
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="rememberMe"
+                                            checked={rememberMe}
+                                            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                                            className="h-4 w-4 rounded border-gray-300 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
+                                        />
+                                        <Label htmlFor="rememberMe" className="text-sm font-medium text-gray-700">
+                                            Ghi nhớ đăng nhập
+                                        </Label>
+                                    </div>
+                                    <Link
+                                        href="/forgot-password"
+                                        className="text-sm font-medium text-red-600 hover:text-red-800 hover:underline transition-colors"
+                                    >
+                                        Quên mật khẩu?
+                                    </Link>
+                                </div>
+
                                 {error && (
-                                    <Alert variant="destructive">
-                                        <AlertDescription>{error}</AlertDescription>
+                                    <Alert variant="destructive" className="border-red-500">
+                                        <AlertDescription className="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                            </svg>
+                                            {error}
+                                        </AlertDescription>
                                     </Alert>
                                 )}
 
-                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                <Button
+                                    type="submit"
+                                    className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
+                                    disabled={isLoading}
+                                >
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -119,69 +162,25 @@ const LoginPage = () => {
                                 </Button>
                             </form>
 
-                            <div className="mt-6 text-center text-sm">
-                                <Link href="/forgot-password" className="text-primary hover:underline">
-                                    Forgot your password?
-                                </Link>
-                            </div>
-
-                            <div className="mt-4 text-center text-sm text-muted-foreground">
-                                Don't have an account?{" "}
-                                <Link href="/register" className="text-primary hover:underline">
-                                    Contact your school administrator
+                            <div className="mt-6 text-center text-sm text-gray-600">
+                                Chưa có tài khoản?{" "}
+                                <Link
+                                    href="/register"
+                                    className="font-medium text-red-600 hover:text-red-800 hover:underline transition-colors"
+                                >
+                                    Đăng ký
                                 </Link>
                             </div>
                         </CardContent>
                     </Card>
 
                     {/* Demo Credentials */}
-                    <Card className="bg-muted/50">
-                        <CardHeader>
-                            <CardTitle className="text-sm">Demo Credentials</CardTitle>
-                        </CardHeader>
-                        <CardContent className="text-sm space-y-2">
-                            <div>
-                                <strong>Email:</strong> any valid email
-                            </div>
-                            <div>
-                                <strong>Password:</strong> any password (6+ characters)
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <Credentials />
                 </div>
             </div>
 
             {/* Right side - Image/Branding */}
-            <div className="hidden lg:flex lg:flex-1 lg:relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-600" />
-                <div className="relative flex flex-col justify-center items-center text-white p-12">
-                    <div className="max-w-md text-center space-y-6">
-                        <h1 className="text-4xl font-bold">HealthCare School</h1>
-                        <p className="text-lg text-blue-100">
-                            Comprehensive digital solution for managing student health records, medical incidents, and health
-                            programs.
-                        </p>
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Secure health record management</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Real-time incident tracking</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Vaccination program management</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Parent-school communication</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Branding />
         </div>
     )
 }
