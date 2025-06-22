@@ -391,7 +391,7 @@ export const services = [
 export const achievements = [
     {
         icon: Award,
-        title: "Giải thưởng Xuất sắc Quốc gia về Sức khỏe",
+        title: "Giải thưởng Xuất sắc về Sức khỏe",
         year: "2023",
         description: "Được công nhận vì thực hiện xuất sắc chương trình sức khỏe trường học.",
     },

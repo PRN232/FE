@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,7 @@ const ForgotPasswordPage = () => {
         length: false,
     });
 
-    const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
         const password = e.target.value;
         setNewPassword(password);
 
@@ -42,7 +42,7 @@ const ForgotPasswordPage = () => {
         });
     };
 
-    const handleEmailSubmit = async (e: React.FormEvent) => {
+    const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError("");
 
@@ -65,7 +65,7 @@ const ForgotPasswordPage = () => {
         setCurrentStep("code");
     };
 
-    const handleCodeSubmit = async (e: React.FormEvent) => {
+    const handleCodeSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError("");
 
@@ -94,7 +94,7 @@ const ForgotPasswordPage = () => {
         }
     };
 
-    const handlePasswordReset = async (e: React.FormEvent) => {
+    const handlePasswordReset = async (e: FormEvent) => {
         e.preventDefault();
         setError("");
 
@@ -114,7 +114,7 @@ const ForgotPasswordPage = () => {
         }
 
         if (!token) {
-            Swal.fire({
+            await Swal.fire({
                 icon: "error",
                 title: "Không tìm thấy token",
                 text: "Vui lòng đăng nhập để đặt lại mật khẩu.",
@@ -128,9 +128,8 @@ const ForgotPasswordPage = () => {
         setIsLoading(true);
 
         try {
-            // Simulate API call (replace with actual resetPassword call if implemented)
             await new Promise((resolve) => setTimeout(resolve, 1500));
-            Swal.fire({
+            await Swal.fire({
                 icon: "success",
                 title: "Đặt lại mật khẩu thành công!",
                 showConfirmButton: false,
@@ -142,7 +141,7 @@ const ForgotPasswordPage = () => {
                 error instanceof Error
                     ? error.message
                     : "Đã xảy ra lỗi không mong muốn";
-            Swal.fire({
+            await Swal.fire({
                 icon: "error",
                 title: "Không thể đặt lại mật khẩu",
                 text: errorMessage || "Vui lòng thử lại.",
@@ -271,7 +270,7 @@ const ForgotPasswordPage = () => {
 
                 <div className="mt-4 p-3 bg-muted/50 rounded-lg">
                     <p className="text-xs text-muted-foreground text-center">
-                        <strong>Demo:</strong> Sử dụng mã "123456" hoặc bất kỳ số 6 chữ số nào
+                        <strong>Demo:</strong> Sử dụng mã &quot;123456&quot; hoặc bất kỳ số 6 chữ số nào
                     </p>
                 </div>
             </CardContent>
@@ -285,7 +284,9 @@ const ForgotPasswordPage = () => {
                     <KeyRound className="h-6 w-6 text-purple-600" />
                 </div>
                 <CardTitle className="text-2xl font-bold text-center">Đặt lại Mật khẩu</CardTitle>
-                <CardDescription className="text-center">Nhập mật khẩu mới của bạn bên dưới</CardDescription>
+                <CardDescription className="text-center">
+                    Nhập mật khẩu mới của bạn bên dưới
+                </CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handlePasswordReset} className="space-y-4">
@@ -382,7 +383,6 @@ const ForgotPasswordPage = () => {
             {/* Left side - Form */}
             <div className="flex-1 flex items-center justify-center p-8">
                 <div className="w-full max-w-md space-y-6">
-                    {/* Back to Login */}
                     {currentStep === "email" && (
                         <Link
                             href="/login"
@@ -415,7 +415,7 @@ const ForgotPasswordPage = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-pink-600" />
                 <div className="relative flex flex-col justify-center items-center text-white p-12">
                     <div className="max-w-md text-center space-y-6">
-                        <h1 className="text-4xl font-bold">Đặt lại Mật khẩu An toàn</h1>
+                        <h1 className="text-4xl font-bold">Đặt lại mật khẩu an toàn</h1>
                         <p className="text-lg text-purple-100">
                             Chúng tôi rất coi trọng bảo mật. Quy trình đặt lại mật khẩu của chúng tôi đảm bảo tài khoản của bạn được bảo vệ trong khi cung cấp cho bạn quyền truy cập dễ dàng để đặt lại thông tin đăng nhập.
                         </p>

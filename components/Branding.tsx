@@ -7,7 +7,9 @@ const Branding = () => {
             <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-10" />
             <div className="relative flex flex-col justify-center items-center text-white p-12">
                 <div className="max-w-md text-center space-y-6">
-                    <h1 className="text-4xl font-bold tracking-tight drop-shadow-md">HealthCare School</h1>
+                    <h1 className="text-4xl font-bold tracking-tight drop-shadow-md">
+                        HealthCare School
+                    </h1>
                     <p className="text-lg text-red-100/90">
                         Comprehensive digital solution for managing student health records, medical incidents, and health
                         programs.
