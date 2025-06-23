@@ -18,7 +18,7 @@ import {
     Eye,
 } from "lucide-react"
 import { getBlogPostById } from "@/lib/service/Blog"
-import Content from "@/components/Blog/Content";
+import Content from "@/components/Blog/BlogDetail/Content";
 
 interface BlogDetailPageProps {
     params: Promise<{ id: string }>
