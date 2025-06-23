@@ -1,18 +1,21 @@
-"use client"
+"use client";
 
-import { useState, FormEvent } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react"
-import { useAuth } from "@/lib/auth/auth-context"
-import { Checkbox } from "@/components/ui/checkbox"
+import { useState, useEffect, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
+
+import { Checkbox } from "@/components/ui/checkbox";
 import Credentials from "@/components/Credentials";
 import Branding from "@/components/Branding";
+
+import { useAuth } from "@/lib/auth/auth-context";
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -24,27 +27,31 @@ const LoginPage = () => {
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
-        setError("")
+        e.preventDefault();
+        setError("");
 
         if (!email || !password) {
-            setError("Please fill in all fields")
-            return
+            setError("Please fill in all fields");
+            return;
         }
 
-        const success = await login(email, password)
-        if (success) {
-            if (user?.role === "parent") {
-                router.push("/");
-            } else if (user?.role === "medical_staff") {
-                router.push("/medical-staff/incidents");
-            } else if (user?.role === "admin") {
-                router.push("/dashboard");
-            }
-        } else {
+        const success = await login(email, password);
+        if (!success) {
             setError("Invalid email or password");
         }
-    }
+    };
+
+    useEffect(() => {
+        if (user && !error) {
+            if (user.role === "parent") {
+                router.push("/");
+            } else if (user.role === "medical_staff") {
+                router.push("/medical-staff/incidents");
+            } else if (user.role === "admin") {
+                router.push("/dashboard");
+            }
+        }
+    }, [user, error, router]);
 
     return (
         <div className="min-h-screen flex bg-gradient-to-br from-red-50 to-white">
@@ -182,7 +189,7 @@ const LoginPage = () => {
             {/* Right side - Image/Branding */}
             <Branding />
         </div>
-    )
-}
+    );
+};
 
-export default LoginPage
+export default LoginPage;
