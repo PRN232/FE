@@ -92,6 +92,16 @@ export interface MedicalIncident {
     status: "open" | "resolved"
 }
 
+export interface Medication {
+    id: string;
+    name: string;
+    type: string;
+    description: string;
+    stockQuantity: number;
+    expiryDate: Date;
+    storageInstructions: string;
+}
+
 export interface VaccinationCampaign {
     id: string
     name: string

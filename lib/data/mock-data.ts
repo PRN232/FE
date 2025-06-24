@@ -1,6 +1,7 @@
 import {
     MedicalExamination,
     MedicalIncident,
+    Medication,
     MedicineRequest,
     Student,
     User,
@@ -193,6 +194,13 @@ export const mockMedicalIncidents: MedicalIncident[] = [
     }
 ]
 
+export const mockMedicines: Medication[] = [
+  { id: 'med1', name: 'Paracetamol 500mg', type: 'Giảm đau, hạ sốt', description: 'Viên nén 500mg', stockQuantity: 200, expiryDate: new Date('2025-12-31'), storageInstructions: 'Nơi khô ráo, thoáng mát' },
+  { id: 'med2', name: 'Băng gạc y tế', type: 'Vật tư y tế', description: 'Cuộn băng gạc vô trùng', stockQuantity: 50, expiryDate: new Date('2026-06-30'), storageInstructions: 'Nơi khô ráo, sạch sẽ' },
+  { id: 'med3', name: 'Thuốc sát trùng Povidine', type: 'Dung dịch sát khuẩn', description: 'Chai 100ml, dung dịch 10%', stockQuantity: 10, expiryDate: new Date('2024-10-01'), storageInstructions: 'Tránh ánh nắng trực tiếp' },
+  { id: 'med4', name: 'Berberin', type: 'Kháng sinh', description: 'Viên trị tiêu chảy, lỵ', stockQuantity: 500, expiryDate: new Date('2025-08-15'), storageInstructions: 'Nơi khô ráo, nhiệt độ phòng' },
+];
+
 export const mockVaccinationCampaigns: VaccinationCampaign[] = [
     {
         id: '1',
@@ -217,7 +225,19 @@ export const mockVaccinationCampaigns: VaccinationCampaign[] = [
         studentsEligible: 120,
         consentsReceived: 0,
         vaccinated: 0
-    }
+    },
+    {
+        id: '3',
+        name: 'Tiêm nhắc Sởi-Quai bị-Rubella',
+        vaccine: 'MMR',
+        targetGrades: ['Lớp 1'],
+        scheduledDate: new Date('2023-09-20'),
+        consentDeadline: new Date('2023-09-15'),
+        status: 'completed',
+        studentsEligible: 80,
+        consentsReceived: 75,
+        vaccinated: 72
+    },
 ]
 
 export const mockMedicalExaminations: MedicalExamination[] = [
