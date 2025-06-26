@@ -504,3 +504,122 @@ export const documents = [
         color: "bg-yellow-500",
     },
 ]
+
+// Sample student health data
+export const studentHealthData = {
+    id: "ST001",
+    name: "Nguyễn Văn An",
+    class: "10A1",
+    dateOfBirth: "2008-05-15",
+    bloodType: "O+",
+    height: "165 cm",
+    weight: "55 kg",
+    bmi: "20.2",
+    parentContact: "Nguyễn Thị Bình - 0987654321",
+    emergencyContact: "Nguyễn Văn Cường - 0912345678",
+    lastUpdated: "2024-01-15",
+}
+
+export const allergies = [
+    { id: 1, allergen: "Penicillin", severity: "high", symptoms: "Phát ban, khó thở", dateReported: "2023-08-15" },
+    { id: 2, allergen: "Peanuts", severity: "medium", symptoms: "Ngứa, sưng môi", dateReported: "2023-09-20" },
+    { id: 3, allergen: "Dust mites", severity: "low", symptoms: "Hắt hơi, chảy nước mũi", dateReported: "2023-10-10" },
+]
+
+export const chronicConditions = [
+    { id: 1, condition: "Asthma", status: "controlled", medication: "Ventolin Inhaler", lastCheckup: "2024-01-10" },
+    { id: 2, condition: "Myopia", status: "stable", medication: "Glasses", lastCheckup: "2023-12-15" },
+]
+
+export const vaccinationHistory = [
+    {
+        id: 1,
+        vaccine: "COVID-19 (Pfizer)",
+        dose: "Dose 1",
+        date: "2023-06-15",
+        nextDue: "2023-09-15",
+        status: "completed",
+    },
+    {
+        id: 2,
+        vaccine: "COVID-19 (Pfizer)",
+        dose: "Dose 2",
+        date: "2023-09-15",
+        nextDue: "2024-03-15",
+        status: "completed",
+    },
+    { id: 3, vaccine: "Hepatitis B", dose: "Booster", date: "2023-11-20", nextDue: "2028-11-20", status: "completed" },
+    { id: 4, vaccine: "Tetanus", dose: "Booster", date: "2024-01-05", nextDue: "2034-01-05", status: "completed" },
+]
+
+export const medicalHistory = [
+    {
+        id: 1,
+        date: "2024-01-10",
+        type: "Routine Checkup",
+        diagnosis: "Healthy",
+        doctor: "Dr. Trần Văn A",
+        notes: "Tình trạng sức khỏe tốt",
+    },
+    {
+        id: 2,
+        date: "2023-12-20",
+        type: "Sick Visit",
+        diagnosis: "Common Cold",
+        doctor: "Dr. Lê Thị B",
+        notes: "Cảm lạnh thông thường, đã khỏi",
+    },
+    {
+        id: 3,
+        date: "2023-11-15",
+        type: "Vision Test",
+        diagnosis: "Myopia progression",
+        doctor: "Dr. Phạm Văn C",
+        notes: "Cận thị tăng nhẹ, cần thay kính",
+    },
+]
+
+export const medicalRequests = [
+    {
+        id: "MR001",
+        studentName: "Nguyễn Văn An",
+        class: "10A1",
+        requestType: "Medicine Administration",
+        medicine: "Paracetamol 500mg",
+        dosage: "1 viên, 3 lần/ngày",
+        duration: "3 ngày",
+        reason: "Sốt cao, đau đầu",
+        status: "pending",
+        requestDate: "2024-01-15",
+        parentName: "Nguyễn Thị Bình",
+        urgency: "medium",
+    },
+    {
+        id: "MR002",
+        studentName: "Trần Thị Mai",
+        class: "9B2",
+        requestType: "Emergency Contact",
+        medicine: "Ventolin Inhaler",
+        dosage: "2 nhả khi khó thở",
+        duration: "Khi cần thiết",
+        reason: "Hen suyễn cấp tính",
+        status: "approved",
+        requestDate: "2024-01-14",
+        parentName: "Trần Văn Cường",
+        urgency: "high",
+    },
+    {
+        id: "MR003",
+        studentName: "Lê Minh Tuấn",
+        class: "11C1",
+        requestType: "Vaccination Follow-up",
+        medicine: "Vitamin C",
+        dosage: "1 viên/ngày",
+        duration: "7 ngày",
+        reason: "Tăng cường miễn dịch sau tiêm",
+        status: "completed",
+        requestDate: "2024-01-13",
+        parentName: "Lê Thị Hoa",
+        urgency: "low",
+    },
+];
