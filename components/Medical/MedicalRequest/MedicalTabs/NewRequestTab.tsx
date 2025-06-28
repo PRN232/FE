@@ -185,7 +185,7 @@ const NewRequestTab = ({
                                         mode="single"
                                         selected={date}
                                         onSelect={setDate}
-                                        initialFocus
+                                        autoFocus={true}
                                     />
                                 </PopoverContent>
                             </Popover>
