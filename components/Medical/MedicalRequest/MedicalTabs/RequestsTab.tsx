@@ -73,7 +73,7 @@ const RequestsTab = ({
                 <CardHeader className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-t-lg">
                     <CardTitle className="flex items-center">
                         <Search className="w-5 h-5 mr-2" />
-                        Search & Filter Requests
+                        Tìm kiếm và Lọc
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -113,12 +113,13 @@ const RequestsTab = ({
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-4">
                                     <div
-                                        className={`w-3 h-3 rounded-full ${getUrgencyColor(
-                                            request.urgency
-                                        )}`}
+                                        className={`w-3 h-3 rounded-full 
+                                        ${getUrgencyColor( request.urgency )}`}
                                     ></div>
                                     <div>
-                                        <CardTitle className="text-red-800">{request.studentName}</CardTitle>
+                                        <CardTitle className="text-red-700">
+                                            {request.studentName}
+                                        </CardTitle>
                                         <CardDescription className="text-red-600">
                                             {request.class} • Request ID: {request.id}
                                         </CardDescription>
@@ -131,7 +132,9 @@ const RequestsTab = ({
                                         {request.status === "completed" && "Hoàn thành"}
                                         {request.status === "rejected" && "Từ chối"}
                                     </Badge>
-                                    <Badge variant="outline" className="border-red-200 text-red-700">
+                                    <Badge
+                                        variant="outline"
+                                        className="border-red-200 text-red-700">
                                         {request.requestType}
                                     </Badge>
                                 </div>
@@ -143,8 +146,12 @@ const RequestsTab = ({
                                     <div className="flex items-start space-x-3">
                                         <Pill className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
-                                            <p className="font-semibold text-gray-800">Medicine Details</p>
-                                            <p className="text-gray-600">{request.medicine}</p>
+                                            <p className="font-semibold text-gray-800">
+                                                Medicine Details
+                                            </p>
+                                            <p className="text-gray-600">
+                                                {request.medicine}
+                                            </p>
                                             <p className="text-sm text-gray-500">
                                                 Liều dùng: {request.dosage} • Thời gian: {request.duration}
                                             </p>
@@ -153,8 +160,12 @@ const RequestsTab = ({
                                     <div className="flex items-start space-x-3">
                                         <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
-                                            <p className="font-semibold text-gray-800">Reason</p>
-                                            <p className="text-gray-600">{request.reason}</p>
+                                            <p className="font-semibold text-gray-800">
+                                                Reason
+                                            </p>
+                                            <p className="text-gray-600">
+                                                {request.reason}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -162,15 +173,23 @@ const RequestsTab = ({
                                     <div className="flex items-start space-x-3">
                                         <User className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
-                                            <p className="font-semibold text-gray-800">Parent Contact</p>
-                                            <p className="text-gray-600">{request.parentName}</p>
+                                            <p className="font-semibold text-gray-800">
+                                                Parent Contact
+                                            </p>
+                                            <p className="text-gray-600">
+                                                {request.parentName}
+                                            </p>
                                         </div>
                                     </div>
                                     <div className="flex items-start space-x-3">
                                         <CalendarIcon className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
-                                            <p className="font-semibold text-gray-800">Request Date</p>
-                                            <p className="text-gray-600">{request.requestDate}</p>
+                                            <p className="font-semibold text-gray-800">
+                                                Request Date
+                                            </p>
+                                            <p className="text-gray-600">
+                                                {request.requestDate}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -186,7 +205,9 @@ const RequestsTab = ({
                                 </Button>
                                 {request.status === "pending" && (
                                     <>
-                                        <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                                        <Button
+                                            size="sm"
+                                            className="bg-green-600 hover:bg-green-700">
                                             Approve
                                         </Button>
                                         <Button

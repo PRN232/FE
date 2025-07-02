@@ -1,14 +1,14 @@
 "use client";
 
-import React, {
+import {
   createContext,
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  ReactNode
 } from "react";
 import type { User } from "@/types";
-import { mockUsers } from "@/lib/data/mock-data";
+import { authenticate } from "@/lib/service/auth";
 
 interface AuthContextType {
   user: User | null;
@@ -16,6 +16,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
+  error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,10 +24,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
-    if (savedUser) {
+    const savedToken = localStorage.getItem("token");
+    if (savedUser && savedToken) {
       setUser(JSON.parse(savedUser));
     }
     setIsLoading(false);
@@ -34,22 +37,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const foundUser = mockUsers.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
-    );
-
-    if (foundUser && password && password.length >= 6) {
-      const loggedInUser: User = { ...foundUser, createdAt: new Date() };
-
-      setUser(loggedInUser);
-      localStorage.setItem("user", JSON.stringify(loggedInUser));
+    setError(null);
+    const result = await authenticate(email, password);
+    if (result.success && result.user && result.token) {
+      setUser(result.user);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      localStorage.setItem("token", result.token);
       setIsLoading(false);
       return true;
     }
-
+    setError("Invalid email or password");
     setIsLoading(false);
     return false;
   };
@@ -57,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   const value = {
@@ -65,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     isAuthenticated: !!user,
+    error
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
