@@ -8,12 +8,17 @@ import {
   ReactNode
 } from "react";
 import type { User } from "@/types";
-import { authenticate } from "@/lib/service/auth";
+import { authenticate, changePassword } from "@/lib/service/auth";
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  passwordChange: (
+      userId: number,
+      currentPassword: string,
+      newPassword: string,
+      confirmPassword: string) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
   error: string | null;
@@ -57,11 +62,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("token");
   };
 
+  const passwordChange = async (
+      userId: number,
+      currentPassword: string,
+      newPassword: string,
+      confirmPassword: string): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    const result = await changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+        confirmPassword
+    );
+    if (result.success) {
+      setIsLoading(false);
+      return true;
+    }
+    setError(result.error || "Failed to change password");
+    setIsLoading(false);
+    return false;
+  };
+
   const value = {
     user,
     isLoading,
     login,
     logout,
+    passwordChange,
     isAuthenticated: !!user,
     error
   };

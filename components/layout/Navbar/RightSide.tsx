@@ -20,7 +20,10 @@ interface RightSideProps {
     onLogout: () => void;
 }
 
-const RightSide = ({ onLogin, onLogout }: RightSideProps) => {
+const RightSide = ({
+                       onLogin,
+                       onLogout
+}: RightSideProps) => {
     const { isAuthenticated, user } = useAuth();
 
     return (
@@ -47,11 +50,15 @@ const RightSide = ({ onLogin, onLogout }: RightSideProps) => {
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="relative h-9 w-9 rounded-full focus-visible:ring-2 focus-visible:ring-ring"
+                                    className="relative h-9 w-9 rounded-full
+                                    focus-visible:ring-2 focus-visible:ring-ring"
                                     aria-label="Menu Người dùng"
                                 >
                                     <Avatar className="h-9 w-9">
-                                        <AvatarImage src={user?.avatar || "/images/placeholder.svg"} alt="Hồ sơ Người dùng" />
+                                        <AvatarImage
+                                            src={user?.avatar || "/images/placeholder.svg"}
+                                            alt="Hồ sơ Người dùng"
+                                        />
                                         <AvatarFallback className="bg-primary/10 text-primary text-base">
                                             {user?.name
                                                 ?.split(" ")
@@ -68,15 +75,20 @@ const RightSide = ({ onLogin, onLogout }: RightSideProps) => {
                             >
                                 <DropdownMenuLabel className="font-normal p-3">
                                     <div className="flex flex-col space-y-1.5">
-                                        <p className="text-base font-medium leading-none">{user?.name}</p>
-                                        <p className="text-sm leading-none text-muted-foreground">{user?.email}</p>
+                                        <p className="text-base font-medium leading-none">
+                                            {user?.name}
+                                        </p>
+                                        <p className="text-sm leading-none text-muted-foreground">
+                                            {user?.email}
+                                        </p>
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild className="px-3 py-2">
                                     <Link
                                         href="/profile"
-                                        className="w-full cursor-pointer focus:bg-accent focus:text-accent-foreground text-base"
+                                        className="w-full cursor-pointer focus:bg-accent
+                                        focus:text-accent-foreground text-base"
                                     >
                                         <User className="mr-3 h-5 w-5" />
                                         <span>Hồ sơ</span>
@@ -84,7 +96,8 @@ const RightSide = ({ onLogin, onLogout }: RightSideProps) => {
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                    className="text-destructive focus:text-destructive cursor-pointer px-3 py-2 text-base"
+                                    className="text-destructive focus:text-destructive
+                                    cursor-pointer px-3 py-2 text-base"
                                     onClick={onLogout}
                                 >
                                     <LogOut className="mr-3 h-5 w-5" />
