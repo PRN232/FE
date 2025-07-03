@@ -71,7 +71,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (
+      email:
+      string,
+      password: string
+  ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     const result = await authenticate(email, password);
@@ -102,7 +106,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-    const result = await changePassword(userId, currentPassword, newPassword, confirmPassword);
+    const result = await changePassword(
+        userId,
+        currentPassword,
+        newPassword,
+        confirmPassword
+    );
     if (result.success) {
       setIsLoading(false);
       return true;
@@ -121,7 +130,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-    const result = await createUser(email, username, password, role, phoneNumber);
+    const result = await createUser(
+        email,
+        username,
+        password,
+        role,
+        phoneNumber
+    );
     if (result.success && result.user) {
       setIsLoading(false);
       return true;
@@ -163,7 +178,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const deleteU = async (id: number): Promise<boolean> => {
+  const deleteU = async (
+      id: number
+  ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     const result = await deleteUser(id);
