@@ -417,21 +417,21 @@ export const achievements = [
     },
     {
         icon: Star,
-        title: "100% Phủ sóng Tiêm chủng",
+        title: "100% Phủ sóng tiêm chủng",
         year: "2022-2023",
         description: "Đạt được 100% phủ sóng tiêm chủng cho tất cả học sinh đăng ký.",
     },
     {
         icon: CheckCircle,
-        title: "Cơ sở Y tế Được Công nhận",
+        title: "Cơ sở Y tế được công nhận",
         year: "2021",
-        description: "Được Hiệp hội Sức khỏe Trường học Quốc gia chứng nhận.",
+        description: "Được hiệp hội Sức khỏe Trường học Quốc gia chứng nhận.",
     },
 ];
 
 export const stats = [
-    { number: "2,500+", label: "Học sinh Được Phục vụ" },
-    { number: "15+", label: "Năm Hoạt động" },
+    { number: "2,500+", label: "Học sinh được Phục vụ" },
+    { number: "15+", label: "Năm hoạt động" },
     { number: "24/7", label: "Phản hồi Khẩn cấp" },
     { number: "100%", label: "Sự Hài lòng của Phụ huynh" },
 ];

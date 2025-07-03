@@ -22,23 +22,15 @@ const LoginPage = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
-    const [error, setError] = useState("");
-    const { login, isLoading, user } = useAuth();
+    const { login, isLoading, user, error } = useAuth();
     const router = useRouter();
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        setError("");
-
         if (!email || !password) {
-            setError("Please fill in all fields");
             return;
         }
-
-        const success = await login(email, password);
-        if (!success) {
-            setError("Invalid email or password");
-        }
+        await login(email, password);
     };
 
     useEffect(() => {
@@ -145,8 +137,17 @@ const LoginPage = () => {
                                 {error && (
                                     <Alert variant="destructive" className="border-red-500">
                                         <AlertDescription className="flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                className="h-4 w-4 mr-2"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                    clipRule="evenodd"
+                                                />
                                             </svg>
                                             {error}
                                         </AlertDescription>
