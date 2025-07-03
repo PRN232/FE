@@ -11,12 +11,12 @@ import type { User } from "@/types";
 import {
   authenticate,
   changePassword,
-} from "@/lib/service/auth";
+} from "@/lib/service/auth/auth";
 import {
   createUser,
   updateUser,
   deleteUser,
-} from "@/lib/service/user";
+} from "@/lib/service/user/user";
 
 interface AuthContextType {
   user: User | null;
