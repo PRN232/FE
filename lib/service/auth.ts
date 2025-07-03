@@ -2,11 +2,12 @@ import type { User } from "@/types";
 
 export const authenticate = async (
     email: string,
-    password: string): Promise<{
-    success: boolean;
-    user?: User;
-    token?: string
-}> => {
+    password: string): Promise<
+    {
+        success: boolean;
+        user?: User;
+        token?: string
+    }> => {
     try {
         const response = await fetch(`
         ${process.env.NEXT_PUBLIC_API_URL}/Auth/login`,

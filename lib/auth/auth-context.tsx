@@ -13,12 +13,16 @@ import { authenticate, changePassword } from "@/lib/service/auth";
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (
+      email: string,
+      password: string
+  ) => Promise<boolean>;
   passwordChange: (
       userId: number,
       currentPassword: string,
       newPassword: string,
-      confirmPassword: string) => Promise<boolean>;
+      confirmPassword: string
+  ) => Promise<boolean>;
   logout: () => void;
   isAuthenticated: boolean;
   error: string | null;
