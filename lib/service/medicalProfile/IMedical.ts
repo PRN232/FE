@@ -1,4 +1,4 @@
-interface ApiMedicalProfile {
+export interface ApiMedicalProfile {
     id: number;
     studentId: number;
     lastUpdated: string;
