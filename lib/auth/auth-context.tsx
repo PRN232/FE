@@ -17,37 +17,7 @@ import {
   updateUser,
   deleteUser,
 } from "@/lib/service/user/user";
-
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  passwordChange: (
-      userId: number,
-      currentPassword: string,
-      newPassword: string,
-      confirmPassword: string
-  ) => Promise<boolean>;
-  logout: () => void;
-  isAuthenticated: boolean;
-  error: string | null;
-  createU: (
-      email: string,
-      username: string,
-      password: string,
-      role: number,
-      phoneNumber: string
-  ) => Promise<boolean>;
-  updateU: (
-      id: number,
-      email: string,
-      username: string,
-      password: string,
-      role: number,
-      phoneNumber: string
-  ) => Promise<boolean>;
-  deleteU: (id: number) => Promise<boolean>;
-}
+import {AuthContextType} from "./iAuth";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -98,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("token");
   };
 
-  const passwordChange = async (
+  const change = async (
       userId: number,
       currentPassword: string,
       newPassword: string,
@@ -121,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const createU = async (
+  const create = async (
       email: string,
       username: string,
       password: string,
@@ -146,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const updateU = async (
+  const update = async (
       id: number,
       email: string,
       username: string,
@@ -178,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const deleteU = async (
+  const del = async (
       id: number
   ): Promise<boolean> => {
     setIsLoading(true);
@@ -201,10 +171,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     login,
     logout,
-    passwordChange,
-    createU,
-    updateU,
-    deleteU,
+    change,
+    create,
+    update,
+    del,
     isAuthenticated: !!user,
     error,
   };
