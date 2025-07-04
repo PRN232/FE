@@ -125,3 +125,61 @@ export const getChildrenByParentId = async (
         };
     }
 };
+
+export const updateParent = async (
+    parentId: number,
+    data: { fullName?: string; phoneNumber?: string; address?: string }
+): Promise<{
+    success: boolean;
+    parent?: User;
+    error?: string;
+}> => {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/Parent/${parentId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    accept: "*/*",
+                    ...(token && { Authorization: `Bearer ${token}` }),
+                },
+                body: JSON.stringify(data),
+            });
+
+        if (!response.ok) {
+            const text = await response.text();
+            console.error("Update parent failed:", text);
+            return {
+                success: false,
+                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
+            };
+        }
+
+        const responseData = await response.json();
+        if (responseData.success) {
+            const updatedParentResult = await getParentByUserId(parentId);
+            if (updatedParentResult.success && updatedParentResult.parent) {
+                return {
+                    success: true,
+                    parent: updatedParentResult.parent
+                };
+            }
+            return {
+                success: true,
+                parent: undefined
+            };
+        }
+        return {
+            success: false,
+            error: "Update failed despite success flag"
+        };
+    } catch (error) {
+        console.error("Update parent error:", error);
+        return {
+            success: false,
+            error: "An error occurred while updating parent data"
+        };
+    }
+};

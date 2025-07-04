@@ -2,7 +2,7 @@ export interface User {
     id: string
     name: string
     email: string
-    role: "child" | "parent" | "medical_staff" | "admin"
+    role: "student" | "child" | "parent" | "medical_staff" | "admin"
     avatar?: string
     createdAt: Date
 }
