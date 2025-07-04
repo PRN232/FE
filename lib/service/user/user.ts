@@ -1,14 +1,5 @@
 import type { User } from "@/types";
-
-interface ApiUser {
-    id?: number | string;
-    username: string;
-    email: string;
-    createdAt?: string | Date;
-    role: number;
-    isActive?: boolean;
-    phoneNumber?: string;
-}
+import type { ApiUser } from "./IUser";
 
 const mapApiUserToUser = (
     apiUser: ApiUser
