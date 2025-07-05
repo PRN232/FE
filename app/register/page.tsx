@@ -101,7 +101,7 @@ const RegisterPage = () => {
 
         if (isSuccess) {
             setTimeout(() => {
-                router.push("/login?message=registration-success");
+                router.push("/login");
             }, 2000);
         }
     };
