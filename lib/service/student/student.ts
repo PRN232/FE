@@ -9,6 +9,7 @@ const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     id: apiStudent.id.toString(),
     name: apiStudent.fullName,
     email: "",
+    phoneNumber: "",
     avatar: undefined,
     createdAt: new Date(apiStudent.dateOfBirth),
     role: "student",

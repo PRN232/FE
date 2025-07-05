@@ -7,6 +7,7 @@ const mapApiUserToUser = (
     id: apiUser.id?.toString() || "",
     name: apiUser.username,
     email: apiUser.email,
+    phoneNumber: apiUser.phoneNumber || "",
     avatar: undefined,
     createdAt: apiUser.createdAt ? new Date(apiUser.createdAt) : new Date(),
     role: apiUser.role === 0 ? "parent" : apiUser.role === 1 ? "medical_staff" : "admin",

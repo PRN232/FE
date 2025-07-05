@@ -7,6 +7,8 @@ const mapApiParentToUser = (
     id: apiParent.userId.toString(),
     name: apiParent.fullName || apiParent.userId.toString(),
     email: apiParent.email || "",
+    phoneNumber: apiParent.phoneNumber || "",
+    address: apiParent.address || "",
     avatar: undefined,
     createdAt: new Date(),
     role: "parent",
@@ -18,6 +20,7 @@ const mapApiChildToUser = (
     id: apiChild.id.toString(),
     name: apiChild.fullName,
     email: "",
+    phoneNumber: "",
     avatar: undefined,
     createdAt: new Date(apiChild.dateOfBirth),
     role: "child",
@@ -28,13 +31,12 @@ export const getParentByUserId = async (
 ): Promise<{
     success: boolean;
     parent?: User;
-    children?: User[];
     error?: string;
 }> => {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Parent/by-user/${userId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Parent/${userId}`,
             {
                 method: "GET",
                 headers: {
@@ -56,11 +58,9 @@ export const getParentByUserId = async (
         const data = await response.json();
         if (data.success && data.data) {
             const parent = mapApiParentToUser(data.data);
-            const children = data.data.children?.map(mapApiChildToUser) || [];
             return {
                 success: true,
                 parent,
-                children
             };
         }
         return {
@@ -86,7 +86,7 @@ export const getChildrenByParentId = async (
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Parent/${parentId}/children`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Parent/${parentId}/children`,
             {
                 method: "GET",
                 headers: {
@@ -137,7 +137,7 @@ export const updateParent = async (
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Parent/${parentId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Parent/${parentId}`,
             {
                 method: "PUT",
                 headers: {

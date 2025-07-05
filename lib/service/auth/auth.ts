@@ -79,6 +79,7 @@ export const authenticate = async (
                 id: decodedToken.sub.toString(),
                 name: decodedToken.email || "Unknown",
                 email: decodedToken.email,
+                phoneNumber: "",
                 role: normalizedRole,
                 avatar: undefined,
                 createdAt: new Date(),
