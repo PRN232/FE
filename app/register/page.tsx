@@ -1,115 +1,110 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Loader2, Eye, EyeOff, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react"
+import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2, Eye, EyeOff, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
+import SignUpInfo from "@/components/SignUpInfo";
 
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        fullName: "",
         email: "",
+        username: "",
         password: "",
-        confirmPassword: "",
-        role: "",
-        schoolCode: "",
         phoneNumber: "",
-        agreeToTerms: false,
-    })
-    const [showPassword, setShowPassword] = useState(false)
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-    const [errors, setErrors] = useState<Record<string, string>>({})
-    const [isLoading, setIsLoading] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false)
-    const router = useRouter()
+        address: "",
+    });
+    const [showPassword, setShowPassword] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const router = useRouter();
+    const { signup } = useAuth();
 
     const validateForm = () => {
-        const newErrors: Record<string, string> = {}
+        const newErrors: Record<string, string> = {};
 
-        if (!formData.firstName.trim()) {
-            newErrors.firstName = "First name is required"
+        if (!formData.fullName.trim()) {
+            newErrors.fullName = "Full name is required";
         }
 
-        if (!formData.lastName.trim()) {
-            newErrors.lastName = "Last name is required"
+        if (!formData.username.trim()) {
+            newErrors.username = "Username is required";
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = "Email is required"
+            newErrors.email = "Email is required";
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = "Please enter a valid email address"
+            newErrors.email = "Please enter a valid email address";
         }
 
         if (!formData.password) {
-            newErrors.password = "Password is required"
+            newErrors.password = "Password is required";
         } else if (formData.password.length < 8) {
-            newErrors.password = "Password must be at least 8 characters long"
+            newErrors.password = "Password must be at least 8 characters long";
         } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(formData.password)) {
-            newErrors.password = "Password must contain at least one uppercase letter, one lowercase letter, and one number"
-        }
-
-        if (!formData.confirmPassword) {
-            newErrors.confirmPassword = "Please confirm your password"
-        } else if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = "Passwords do not match"
-        }
-
-        if (!formData.role) {
-            newErrors.role = "Please select your role"
-        }
-
-        if (!formData.schoolCode.trim()) {
-            newErrors.schoolCode = "School code is required"
+            newErrors.password = "Password must contain at least one uppercase letter, one lowercase letter, and one number";
         }
 
         if (!formData.phoneNumber.trim()) {
-            newErrors.phoneNumber = "Phone number is required"
-        } else if (!/^\+?[\d\s\-$$$$]{10,}$/.test(formData.phoneNumber)) {
-            newErrors.phoneNumber = "Please enter a valid phone number"
+            newErrors.phoneNumber = "Phone number is required";
+        } else if (!/^\+?[\d\s\-]{10,}$/.test(formData.phoneNumber)) {
+            newErrors.phoneNumber = "Please enter a valid phone number";
         }
 
-        if (!formData.agreeToTerms) {
-            newErrors.agreeToTerms = "You must agree to the terms and conditions"
+        if (!formData.address.trim()) {
+            newErrors.address = "Address is required";
         }
 
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
-    }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
-    const handleInputChange = (field: string, value: string | boolean) => {
-        setFormData((prev) => ({ ...prev, [field]: value }))
+    const handleInputChange = (field: string, value: string) => {
+        setFormData((prev) => ({ ...prev, [field]: value }));
         if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: "" }))
+            setErrors((prev) => ({ ...prev, [field]: "" }));
         }
-    }
+    };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
 
         if (!validateForm()) {
-            return
+            return;
         }
 
-        setIsLoading(true)
+        setIsLoading(true);
 
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        const result = await signup(
+            formData.fullName,
+            formData.email,
+            formData.username,
+            formData.password,
+            formData.phoneNumber,
+            formData.address
+        );
 
-        setIsSuccess(true)
-        setIsLoading(false)
+        if (result.success) {
+            setIsSuccess(true);
+        } else if (result.error) {
+            setErrors((prev) => ({ ...prev, general: result.error || "Registration failed" }));
+        }
 
-        setTimeout(() => {
-            router.push("/login?message=registration-success")
-        }, 2000)
-    }
+        setIsLoading(false);
+
+        if (isSuccess) {
+            setTimeout(() => {
+                router.push("/login?message=registration-success");
+            }, 2000);
+        }
+    };
 
     if (isSuccess) {
         return (
@@ -119,22 +114,23 @@ const RegisterPage = () => {
                         <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
                             <CheckCircle className="h-6 w-6 text-green-600" />
                         </div>
-                        <CardTitle className="text-2xl font-bold text-green-600">Registration Successful!</CardTitle>
+                        <CardTitle className="text-2xl font-bold text-green-600">
+                            Đăng ký thanh công
+                        </CardTitle>
                         <CardDescription>
-                            Your account has been created successfully. You will be redirected to the login page shortly.
+                            Tài khoản của bạn đã đăng ký thanh cong. Vui lóng đăng nhập với tài khoản mẫu.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="text-center">
-                        <p className="text-sm text-muted-foreground mb-4">
-                            Please check your email for account verification instructions.
-                        </p>
                         <Button asChild className="w-full">
-                            <Link href="/login">Go to Login</Link>
+                            <Link href="/login">
+                                Đi đến Đăng nhập
+                            </Link>
                         </Button>
                     </CardContent>
                 </Card>
             </div>
-        )
+        );
     }
 
     return (
@@ -148,52 +144,37 @@ const RegisterPage = () => {
                         className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Home
+                        Trờ về trang chính
                     </Link>
 
                     <Card>
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
-                            <CardDescription className="text-center">Join the HealthCare School community</CardDescription>
+                            <CardTitle className="text-2xl font-bold text-center">
+                                Tạo tài khoản
+                            </CardTitle>
+                            <CardDescription className="text-center">
+                                Tham gia hệ thống quản lý sức khỏe học đường của chúng tôi.
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
-                                {/* Name Fields */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="firstName">First Name</Label>
-                                        <Input
-                                            id="firstName"
-                                            placeholder="John"
-                                            value={formData.firstName}
-                                            onChange={(e) => handleInputChange("firstName", e.target.value)}
-                                            disabled={isLoading}
-                                            className={errors.firstName ? "border-red-500" : ""}
-                                        />
-                                        {errors.firstName && (
-                                            <p className="text-xs text-red-500 flex items-center">
-                                                <AlertCircle className="h-3 w-3 mr-1" />
-                                                {errors.firstName}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="lastName">Last Name</Label>
-                                        <Input
-                                            id="lastName"
-                                            placeholder="Doe"
-                                            value={formData.lastName}
-                                            onChange={(e) => handleInputChange("lastName", e.target.value)}
-                                            disabled={isLoading}
-                                            className={errors.lastName ? "border-red-500" : ""}
-                                        />
-                                        {errors.lastName && (
-                                            <p className="text-xs text-red-500 flex items-center">
-                                                <AlertCircle className="h-3 w-3 mr-1" />
-                                                {errors.lastName}
-                                            </p>
-                                        )}
-                                    </div>
+                                {/* Full Name */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="fullName">Họ và Tên</Label>
+                                    <Input
+                                        id="fullName"
+                                        placeholder="John Doe"
+                                        value={formData.fullName}
+                                        onChange={(e) => handleInputChange("fullName", e.target.value)}
+                                        disabled={isLoading}
+                                        className={errors.fullName ? "border-red-500" : ""}
+                                    />
+                                    {errors.fullName && (
+                                        <p className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-1" />
+                                            {errors.fullName}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Email */}
@@ -216,55 +197,28 @@ const RegisterPage = () => {
                                     )}
                                 </div>
 
-                                {/* Role Selection */}
-                                <div className="space-y-2 ">
-                                    <Label htmlFor="role">Role</Label>
-                                    <Select
-                                        value={formData.role}
-                                        onValueChange={(value) => handleInputChange("role", value)}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger className={errors.role ? "border-red-500" : ""}>
-                                            <SelectValue placeholder="Select your role" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white">
-                                            <SelectItem value="parent">Parent/Guardian</SelectItem>
-                                            <SelectItem value="medical_staff">Medical Staff</SelectItem>
-                                            <SelectItem value="teacher">Teacher</SelectItem>
-                                            <SelectItem value="admin">Administrator</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.role && (
-                                        <p className="text-xs text-red-500 flex items-center">
-                                            <AlertCircle className="h-3 w-3 mr-1" />
-                                            {errors.role}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* School Code */}
+                                {/* Username */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="schoolCode">School Code</Label>
+                                    <Label htmlFor="username">Tên đăng nhập</Label>
                                     <Input
-                                        id="schoolCode"
-                                        placeholder="Enter your school code"
-                                        value={formData.schoolCode}
-                                        onChange={(e) => handleInputChange("schoolCode", e.target.value)}
+                                        id="username"
+                                        placeholder="johndoe"
+                                        value={formData.username}
+                                        onChange={(e) => handleInputChange("username", e.target.value)}
                                         disabled={isLoading}
-                                        className={errors.schoolCode ? "border-red-500" : ""}
+                                        className={errors.username ? "border-red-500" : ""}
                                     />
-                                    {errors.schoolCode && (
+                                    {errors.username && (
                                         <p className="text-xs text-red-500 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
-                                            {errors.schoolCode}
+                                            {errors.username}
                                         </p>
                                     )}
-                                    <p className="text-xs text-muted-foreground">Contact your school administrator for the school code</p>
                                 </div>
 
                                 {/* Phone Number */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="phoneNumber">Phone Number</Label>
+                                    <Label htmlFor="phoneNumber">Số điện thoại</Label>
                                     <Input
                                         id="phoneNumber"
                                         type="tel"
@@ -282,14 +236,32 @@ const RegisterPage = () => {
                                     )}
                                 </div>
 
+                                {/* Address */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="address">Địa chỉ</Label>
+                                    <Input
+                                        id="address"
+                                        value={formData.address}
+                                        onChange={(e) => handleInputChange("address", e.target.value)}
+                                        disabled={isLoading}
+                                        className={errors.address ? "border-red-500" : ""}
+                                    />
+                                    {errors.address && (
+                                        <p className="text-xs text-red-500 flex items-center">
+                                            <AlertCircle className="h-3 w-3 mr-1" />
+                                            {errors.address}
+                                        </p>
+                                    )}
+                                </div>
+
                                 {/* Password */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="password">Password</Label>
+                                    <Label htmlFor="password">Mật khẩu</Label>
                                     <div className="relative">
                                         <Input
                                             id="password"
                                             type={showPassword ? "text" : "password"}
-                                            placeholder="Create a strong password"
+                                            placeholder="••••••••"
                                             value={formData.password}
                                             onChange={(e) => handleInputChange("password", e.target.value)}
                                             disabled={isLoading}
@@ -314,61 +286,10 @@ const RegisterPage = () => {
                                     )}
                                 </div>
 
-                                {/* Confirm Password */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirmPassword">Confirm Password</Label>
-                                    <div className="relative">
-                                        <Input
-                                            id="confirmPassword"
-                                            type={showConfirmPassword ? "text" : "password"}
-                                            placeholder="Confirm your password"
-                                            value={formData.confirmPassword}
-                                            onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                                            disabled={isLoading}
-                                            className={errors.confirmPassword ? "border-red-500" : ""}
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            disabled={isLoading}
-                                        >
-                                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        </Button>
-                                    </div>
-                                    {errors.confirmPassword && (
-                                        <p className="text-xs text-red-500 flex items-center">
-                                            <AlertCircle className="h-3 w-3 mr-1" />
-                                            {errors.confirmPassword}
-                                        </p>
-                                    )}
-                                </div>
-
-                                {/* Terms and Conditions */}
-                                <div className="flex items-center space-x-2">
-                                    <Checkbox
-                                        id="agreeToTerms"
-                                        checked={formData.agreeToTerms}
-                                        onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked as boolean)}
-                                        disabled={isLoading}
-                                    />
-                                    <Label htmlFor="agreeToTerms" className="text-sm">
-                                        I agree to the{" "}
-                                        <Link href="/terms" className="text-primary hover:underline">
-                                            Terms of Service
-                                        </Link>{" "}
-                                        and{" "}
-                                        <Link href="/privacy" className="text-primary hover:underline">
-                                            Privacy Policy
-                                        </Link>
-                                    </Label>
-                                </div>
-                                {errors.agreeToTerms && (
+                                {errors.general && (
                                     <p className="text-xs text-red-500 flex items-center">
                                         <AlertCircle className="h-3 w-3 mr-1" />
-                                        {errors.agreeToTerms}
+                                        {errors.general}
                                     </p>
                                 )}
 
@@ -379,15 +300,15 @@ const RegisterPage = () => {
                                             Creating Account...
                                         </>
                                     ) : (
-                                        "Create Account"
+                                        "Tạo tài khoản"
                                     )}
                                 </Button>
                             </form>
 
                             <div className="mt-6 text-center text-sm text-muted-foreground">
-                                Already have an account?{" "}
+                                Đã có tài khoản?{" "}
                                 <Link href="/login" className="text-primary hover:underline">
-                                    Sign in here
+                                    Đăng nhập ở đây
                                 </Link>
                             </div>
                         </CardContent>
@@ -396,37 +317,9 @@ const RegisterPage = () => {
             </div>
 
             {/* Right side - Information */}
-            <div className="hidden lg:flex lg:flex-1 lg:relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-600 to-blue-600" />
-                <div className="relative flex flex-col justify-center items-center text-white p-12">
-                    <div className="max-w-md text-center space-y-6">
-                        <h1 className="text-4xl font-bold">Join Our Community</h1>
-                        <p className="text-lg text-green-100">
-                            Become part of our comprehensive school health management system and ensure the best care for students.
-                        </p>
-                        <div className="space-y-4">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Access to comprehensive health records</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Real-time communication with medical staff</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Easy medicine request management</span>
-                            </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-white rounded-full" />
-                                <span>Vaccination tracking and reminders</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <SignUpInfo />
         </div>
-    )
-}
+    );
+};
 
-export default RegisterPage
+export default RegisterPage;

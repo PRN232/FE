@@ -1,16 +1,63 @@
 import type { User } from "@/types";
+import {JwtPayload} from "./JWTPayload";
+import {jwtDecode} from "jwt-decode";
+
+export const register = async (
+    fullName: string,
+    email: string,
+    username: string,
+    password: string,
+    phoneNumber: string,
+    address: string,
+): Promise<{
+    success: boolean;
+    error?: string;
+}> => {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/Auth/register-parent`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    accept: "*/*",
+                },
+                body: JSON.stringify({
+                    fullName,
+                    email,
+                    username,
+                    password,
+                    phoneNumber,
+                    address,
+                }),
+            }
+        );
+        const data = await response.json();
+        if (data.success) {
+            return { success: true };
+        }
+        return {
+            success: false,
+            error: data.message || "Registration failed"
+        };
+    } catch (error) {
+        console.error("Register failed:", error);
+        return { success: false };
+    }
+};
 
 export const authenticate = async (
     email: string,
-    password: string): Promise<
-    {
-        success: boolean;
-        user?: User;
-        token?: string
-    }> => {
+    password: string
+): Promise<{
+    success: boolean;
+    user?: User;
+    token?: string;
+    error?: string;
+}> => {
     try {
-        const response = await fetch(`
-        ${process.env.NEXT_PUBLIC_API_URL}/Auth/login`,
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/Auth/login`,
             {
                 method: "POST",
                 headers: {
@@ -20,26 +67,29 @@ export const authenticate = async (
                 body: JSON.stringify({
                     email,
                     password,
-                    rememberMe: true
+                    rememberMe: true,
                 }),
             });
         const data = await response.json();
-        if (data.success) {
+        if (data.success && data.data && data.data.success && data.data.token) {
+            const decodedToken: JwtPayload = jwtDecode(data.data.token);
+            const roleFromToken = decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            const normalizedRole: User["role"] = roleFromToken.toLowerCase() as User["role"];
             const mappedUser: User = {
-                id: data.user.id.toString(),
-                name: data.user.username,
-                email: data.user.email,
-                role: data.user.role === 0 ? "parent" : data.user.role === 1 ? "medical_staff" : "admin",
+                id: decodedToken.sub.toString(),
+                name: decodedToken.email || "Unknown",
+                email: decodedToken.email,
+                role: normalizedRole,
                 avatar: undefined,
-                createdAt: new Date(data.user.createdAt),
+                createdAt: new Date(),
             };
             return {
                 success: true,
                 user: mappedUser,
-                token: data.token
+                token: data.data.token,
             };
         }
-        return { success: false };
+        return { success: false, error: data.message || "Login failed" };
     } catch (error) {
         console.error("Login failed:", error);
         return { success: false };
@@ -50,7 +100,8 @@ export const changePassword = async (
     userId: number,
     currentPassword: string,
     newPassword: string,
-    confirmPassword: string): Promise<{
+    confirmPassword: string
+): Promise<{
     success: boolean;
     message?: string;
     error?: string;
@@ -61,12 +112,12 @@ export const changePassword = async (
             return { success: false, error: "No authentication token found" };
         }
 
-        const response = await fetch(`
-        ${process.env.NEXT_PUBLIC_API_URL}/Auth/change-password`,
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/Auth/change-password`,
             {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                     accept: "*/*",
                     Authorization: `Bearer ${token}`,
                 },
@@ -74,31 +125,31 @@ export const changePassword = async (
                     userId,
                     currentPassword,
                     newPassword,
-                    confirmPassword
+                    confirmPassword,
                 }),
             });
         const data = await response.json();
         if (data.success) {
             return {
                 success: true,
-                message: data.message || "Password changed successfully"
+                message: data.message || "Password changed successfully",
             };
         }
         return {
             success: false,
-            error: data.errorMessage || "Failed to change password"
+            error: data.errorMessage || "Failed to change password",
         };
     } catch (error) {
         console.error("Password change failed:", error);
         if (error instanceof SyntaxError) {
             return {
                 success: false,
-                error: "Invalid response from server"
+                error: "Invalid response from server",
             };
         }
         return {
             success: false,
-            error: "An error occurred while changing the password"
+            error: "An error occurred while changing the password",
         };
     }
 };

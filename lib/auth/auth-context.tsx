@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { User } from "@/types";
 import {
+  register,
   authenticate,
   changePassword,
 } from "@/lib/service/auth/auth";
@@ -27,10 +28,10 @@ import {
   getStudentsByParentId,
 } from "@/lib/service/student/student";
 import {
-  getMedicalProfileByStudentId
+  getMedicalProfileByStudentId,
 } from "@/lib/service/medicalProfile/medical";
-import {AuthContextType} from "./iAuth";
-import {ApiMedicalProfile} from "@/lib/service/medicalProfile/IMedical";
+import { AuthContextType } from "./iAuth";
+import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -54,11 +55,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (
-      email:
-      string,
-      password: string
-  ): Promise<boolean> => {
+  const signup = async (
+      fullName: string,
+      email: string,
+      username: string,
+      password: string,
+      phoneNumber: string,
+      address: string
+  ): Promise<{
+    success: boolean;
+    error?: string
+  }> => {
+    setIsLoading(true);
+    setError(null);
+    const result = await register(
+        fullName,
+        email,
+        username,
+        password,
+        phoneNumber,
+        address
+    );
+    if (result.success) {
+      setIsLoading(false);
+      return { success: true };
+    }
+    setError(result.error || "Failed to register user");
+    setIsLoading(false);
+    return { success: false, error: result.error || "Failed to register user" };
+  };
+
+  const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     const result = await authenticate(email, password);
@@ -69,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
       return true;
     }
-    setError("Invalid email or password");
+    setError(result.error || "Invalid email or password");
     setIsLoading(false);
     return false;
   };
@@ -89,12 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-    const result = await changePassword(
-        userId,
-        currentPassword,
-        newPassword,
-        confirmPassword
-    );
+    const result = await changePassword(userId, currentPassword, newPassword, confirmPassword);
     if (result.success) {
       setIsLoading(false);
       return true;
@@ -113,13 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-    const result = await createUser(
-        email,
-        username,
-        password,
-        role,
-        phoneNumber
-    );
+    const result = await createUser(email, username, password, role, phoneNumber);
     if (result.success && result.user) {
       setIsLoading(false);
       return true;
@@ -139,15 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
-
-    const result = await updateUser(
-        id,
-        email,
-        username,
-        password,
-        role,
-        phoneNumber
-    );
+    const result = await updateUser(id, email, username, password, role, phoneNumber);
     if (result.success && result.user) {
       setIsLoading(false);
       if (user?.id === id.toString()) {
@@ -161,9 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return false;
   };
 
-  const del = async (
-      id: number
-  ): Promise<boolean> => {
+  const del = async (id: number): Promise<boolean> => {
     setIsLoading(true);
     setError(null);
     const result = await deleteUser(id);
@@ -285,6 +291,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     user,
     isLoading,
+    signup,
     login,
     logout,
     change,

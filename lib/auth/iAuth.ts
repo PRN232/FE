@@ -4,6 +4,17 @@ import {ApiMedicalProfile} from "@/lib/service/medicalProfile/IMedical";
 export interface AuthContextType {
     user: User | null;
     isLoading: boolean;
+    signup: (
+        fullName: string,
+        email: string,
+        username: string,
+        password: string,
+        phoneNumber: string,
+        address: string,
+    ) => Promise<{
+        success: boolean;
+        error?: string;
+    }>;
     login: (email: string, password: string) => Promise<boolean>;
     change: (
         userId: number,
