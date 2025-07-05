@@ -7,6 +7,7 @@ import type {
     CreateStudentRequest,
     UpdateStudentRequest
 } from "./IStudent";
+import type { ChildDTO } from "@/lib/service/parent/IParent";
 
 const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     id: apiStudent.id.toString(),
@@ -16,6 +17,22 @@ const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     avatar: undefined,
     createdAt: new Date(apiStudent.dateOfBirth),
     role: "student",
+});
+
+const mapApiStudentToChildDTO = (
+    apiStudent: ApiStudent
+): ChildDTO => ({
+    id: apiStudent.id,
+    studentCode: apiStudent.studentCode,
+    fullName: apiStudent.fullName,
+    dateOfBirth: new Date(apiStudent.dateOfBirth),
+    age: apiStudent.age,
+    gender: apiStudent.gender,
+    className: apiStudent.className,
+    parentId: apiStudent.parentId,
+    parentName: apiStudent.parentName,
+    parentPhone: apiStudent.parentPhone,
+    hasMedicalProfile: apiStudent.hasMedicalProfile,
 });
 
 export const createStudent = async (
@@ -28,7 +45,7 @@ export const createStudent = async (
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Student`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Student`,
             {
                 method: "POST",
                 headers: {
@@ -71,13 +88,13 @@ export const updateStudent = async (
     studentData: UpdateStudentRequest
 ): Promise<{
     success: boolean;
-    student?: User;
+    student?: ChildDTO;
     error?: string;
 }> => {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Student?id=${studentId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Student?id=${studentId}`,
             {
                 method: "PUT",
                 headers: {
@@ -86,14 +103,15 @@ export const updateStudent = async (
                     ...(token && { Authorization: `Bearer ${token}` }),
                 },
                 body: JSON.stringify(studentData),
-            });
+            }
+        );
 
         if (!response.ok) {
             const text = await response.text();
             console.error("Update student failed:", text);
             return {
                 success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
+                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`,
             };
         }
 
@@ -105,18 +123,18 @@ export const updateStudent = async (
             }
             return {
                 success: true,
-                student: undefined
+                student: undefined,
             };
         }
         return {
             success: false,
-            error: "Update failed despite success flag"
+            error: "Update failed despite success flag",
         };
     } catch (error) {
         console.error("Update student error:", error);
         return {
             success: false,
-            error: "An error occurred while updating student"
+            error: "An error occurred while updating student",
         };
     }
 };
@@ -125,13 +143,13 @@ export const getStudentById = async (
     studentId: number
 ): Promise<{
     success: boolean;
-    student?: User;
+    student?: ChildDTO;
     error?: string;
 }> => {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Student/${studentId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Student/${studentId}`,
             {
                 method: "GET",
                 headers: {
@@ -152,7 +170,7 @@ export const getStudentById = async (
 
         const data = await response.json();
         if (data.success && data.data) {
-            const student = mapApiStudentToUser(data.data);
+            const student = mapApiStudentToChildDTO(data.data);
             return { success: true, student };
         }
         return {
@@ -178,7 +196,7 @@ export const getStudentsByClass = async (
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Student/class/${className}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Student/class/${className}`,
             {
                 method: "GET",
                 headers: {

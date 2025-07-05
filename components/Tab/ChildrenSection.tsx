@@ -11,15 +11,20 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ChildDTO } from "@/lib/service/parent/IParent";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
+import ViewChildProfile from "@/components/Tab/ViewChildProfile";
 
 interface ChildrenSectionProps {
     user: { id: string | number } | null | undefined;
 }
 
-const ChildrenSection = ({ user }: ChildrenSectionProps) => {
+const ChildrenSection = ({
+                             user
+                         }: ChildrenSectionProps) => {
     const [childrenData, setChildrenData] = useState<ChildDTO[]>([]);
     const [childrenLoading, setChildrenLoading] = useState(true);
     const [fetchError, setFetchError] = useState<string | null>(null);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
 
     useEffect(() => {
         const loadChildrenData = async () => {
@@ -27,7 +32,6 @@ const ChildrenSection = ({ user }: ChildrenSectionProps) => {
                 try {
                     setChildrenLoading(true);
                     const childrenResponse = await getChildrenByParentId(Number(user.id));
-                    console.log(childrenResponse);
 
                     if (childrenResponse.success && childrenResponse.children) {
                         const mappedChildren = childrenResponse.children.map((user) => ({
@@ -45,16 +49,18 @@ const ChildrenSection = ({ user }: ChildrenSectionProps) => {
                         }));
                         setChildrenData(mappedChildren);
                     }
-                    setChildrenLoading(false);
                 } catch (error) {
                     setFetchError("Failed to load user data");
                     console.error(error);
+                } finally {
                     setChildrenLoading(false);
                 }
             }
         };
 
-        loadChildrenData();
+        (async () => {
+            await loadChildrenData();
+        })();
     }, [user?.id]);
 
     if (fetchError) {
@@ -73,6 +79,16 @@ const ChildrenSection = ({ user }: ChildrenSectionProps) => {
             </Card>
         );
     }
+
+    const handleViewProfile = (id: number) => {
+        setSelectedChildId(id);
+        setIsProfileOpen(true);
+    };
+
+    const handleCloseProfile = () => {
+        setIsProfileOpen(false);
+        setSelectedChildId(null);
+    };
 
     return (
         <>
@@ -142,10 +158,7 @@ const ChildrenSection = ({ user }: ChildrenSectionProps) => {
                                                 variant="outline"
                                                 size="sm"
                                                 className="border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 bg-transparent"
-                                                onClick={() => {
-                                                    // Handle view/edit child profile
-                                                    console.log("View child profile:", child.id);
-                                                }}
+                                                onClick={() => handleViewProfile(child.id)}
                                             >
                                                 Xem hồ sơ
                                             </Button>
@@ -169,8 +182,14 @@ const ChildrenSection = ({ user }: ChildrenSectionProps) => {
                     </div>
                 </div>
             )}
+
+            <ViewChildProfile
+                isOpen={isProfileOpen}
+                onClose={handleCloseProfile}
+                childId={selectedChildId}
+            />
         </>
     );
 };
 
-export default ChildrenSection;
+export default ChildrenSection
