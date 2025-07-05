@@ -1,10 +1,10 @@
 export interface User {
-    id: string
-    name: string
-    email: string
-    role: "student" | "child" | "parent" | "medical_staff" | "admin"
-    avatar?: string
-    createdAt: Date
+    id: string;
+    name: string;
+    email: string;
+    role: "student" | "child" | "parent" | "medical_staff" | "admin";
+    avatar?: string;
+    createdAt: Date;
 }
 
 export interface Student {
