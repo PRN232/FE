@@ -5,14 +5,14 @@ export interface ApiParent {
     phoneNumber: string | null;
     address: string | null;
     email: string | null;
-    children?: ApiChild[];
+    children?: ChildDTO[];
 }
 
-export interface ApiChild {
+export interface ChildDTO {
     id: number;
     studentCode: string;
     fullName: string;
-    dateOfBirth: string;
+    dateOfBirth: Date;
     age: number;
     gender: string;
     className: string;

@@ -17,7 +17,7 @@ export interface Student {
     class: string
     parentId: string
     avatar?: string
-    healthRecord: HealthRecord
+    healthRecord: HealthRecord | null
 }
 
 export interface HealthRecord {

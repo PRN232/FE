@@ -1,5 +1,5 @@
 import type { User } from "@/types";
-import type { ApiParent, ApiChild } from "./IParent";
+import type { ApiParent, ChildDTO } from "./IParent";
 
 const mapApiParentToUser = (
     apiParent: ApiParent
@@ -14,16 +14,20 @@ const mapApiParentToUser = (
     role: "parent",
 });
 
-const mapApiChildToUser = (
-    apiChild: ApiChild
-): User => ({
-    id: apiChild.id.toString(),
-    name: apiChild.fullName,
-    email: "",
-    phoneNumber: "",
-    avatar: undefined,
-    createdAt: new Date(apiChild.dateOfBirth),
-    role: "child",
+const mapApiChildToChildDTO = (
+    child: ChildDTO
+): ChildDTO => ({
+    id: child.id,
+    studentCode: child.studentCode,
+    fullName: child.fullName,
+    dateOfBirth: new Date(child.dateOfBirth),
+    age: child.age,
+    gender: child.gender,
+    className: child.className,
+    parentId: child.parentId,
+    parentName: child.parentName,
+    parentPhone: child.parentPhone,
+    hasMedicalProfile: child.hasMedicalProfile,
 });
 
 export const getParentByUserId = async (
@@ -80,7 +84,7 @@ export const getChildrenByParentId = async (
     parentId: number
 ): Promise<{
     success: boolean;
-    children?: User[];
+    children?: ChildDTO[];
     error?: string;
 }> => {
     try {
@@ -107,7 +111,7 @@ export const getChildrenByParentId = async (
 
         const data = await response.json();
         if (data.success && data.data) {
-            const children = data.data.map((child: ApiChild) => mapApiChildToUser(child));
+            const children = data.data.map((child: ChildDTO) => mapApiChildToChildDTO(child));
             return {
                 success: true,
                 children

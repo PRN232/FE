@@ -1,4 +1,7 @@
-import type { User } from "@/types";
+import type {
+    Student,
+    User
+} from "@/types";
 import type {
     ApiStudent,
     CreateStudentRequest,
@@ -216,13 +219,13 @@ export const getStudentsByParentId = async (
     parentId: number
 ): Promise<{
     success: boolean;
-    students?: User[];
+    students?: Student[];
     error?: string;
 }> => {
     try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/Student/parent/${parentId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/Student/parent/${parentId}`,
             {
                 method: "GET",
                 headers: {

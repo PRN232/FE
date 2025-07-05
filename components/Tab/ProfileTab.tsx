@@ -1,33 +1,16 @@
 "use client";
 
-import {
-    useState,
-    useEffect,
-    FormEvent
-} from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    Phone,
-    Mail,
-    CheckCircle,
-    AlertCircle,
-} from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Phone, Mail, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Loader2, Save } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-    getParentByUserId,
-    updateParent
-} from "@/lib/service/parent/parent";
+import { getParentByUserId, updateParent } from "@/lib/service/parent/parent";
+import ChildrenSection from "./ChildrenSection"; // Adjust the import path as needed
 
 const ProfileTab = () => {
     const { user } = useAuth();
@@ -45,23 +28,27 @@ const ProfileTab = () => {
     useEffect(() => {
         const loadUserData = async () => {
             if (user?.id) {
-                const fetchedUser = await getParentByUserId(Number(user.id));
-                console.log(fetchedUser)
-
-                console.log(fetchedUser);
-                if (fetchedUser) {
-                    setProfileData({
-                        username: fetchedUser.parent?.name || "",
-                        email: fetchedUser.parent?.email || "",
-                        phone: fetchedUser.parent?.phoneNumber ||  "",
-                        address: fetchedUser.parent?.address || "",
-                    });
-                } else {
+                try {
+                    const fetchedUser = await getParentByUserId(Number(user.id));
+                    if (fetchedUser) {
+                        setProfileData({
+                            username: fetchedUser.parent?.name || "",
+                            email: fetchedUser.parent?.email || "",
+                            phone: fetchedUser.parent?.phoneNumber || "",
+                            address: fetchedUser.parent?.address || "",
+                        });
+                    } else {
+                        setFetchError("Failed to load user data");
+                    }
+                    setIsLoading(false);
+                } catch (error) {
                     setFetchError("Failed to load user data");
+                    console.error(error);
+                    setIsLoading(false);
                 }
             }
-            setIsLoading(false);
         };
+
         loadUserData().catch((error) => {
             setFetchError("Failed to load user data");
             setIsLoading(false);
@@ -76,8 +63,9 @@ const ProfileTab = () => {
         setSuccessMessage("");
 
         const { username, email, phone, address } = profileData;
+
         if (!username || !email || !phone || !address) {
-            setErrorMessage("Vui lý nhập đầy đủ thống tin cá nhân.");
+            setErrorMessage("Vui lòng nhập đầy đủ thông tin cá nhân.");
             setIsLoading(false);
             return;
         }
@@ -88,7 +76,7 @@ const ProfileTab = () => {
                 phoneNumber: profileData.phone,
                 address: profileData.address,
             });
-            setSuccessMessage("Thay đổi thống tin cá nhân thành công!");
+            setSuccessMessage("Thay đổi thông tin cá nhân thành công!");
         } catch (error) {
             setErrorMessage("Cập nhật thông tin thất bại. Vui lòng thử lại.");
             console.error(error);
@@ -107,7 +95,8 @@ const ProfileTab = () => {
                 </CardHeader>
                 <CardContent>
                     <div className="flex justify-center items-center h-64">
-                        <Loader2 className="h-8 w-8 animate-spin" />
+                        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+                        <span className="ml-2 text-gray-600">Đang tải thông tin...</span>
                     </div>
                 </CardContent>
             </Card>
@@ -119,9 +108,7 @@ const ProfileTab = () => {
             <Card>
                 <CardHeader>
                     <CardTitle>Thông tin cá nhân</CardTitle>
-                    <CardDescription>
-                        Cập nhật thông tin cá nhân của bạn.
-                    </CardDescription>
+                    <CardDescription>Cập nhật thông tin cá nhân của bạn.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Alert variant="destructive" className="mt-4">
@@ -147,13 +134,10 @@ const ProfileTab = () => {
                         <Input
                             id="fullName"
                             value={profileData.username}
-                            onChange={(e) =>
-                                setProfileData({ ...profileData, username: e.target.value })
-                            }
+                            onChange={(e) => setProfileData({ ...profileData, username: e.target.value })}
                             disabled={isLoading}
                         />
                     </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <Label htmlFor="email">Email Address</Label>
@@ -164,9 +148,7 @@ const ProfileTab = () => {
                                     type="email"
                                     className="pl-10"
                                     value={profileData.email}
-                                    onChange={(e) =>
-                                        setProfileData({ ...profileData, email: e.target.value })
-                                    }
+                                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
                                     disabled={isLoading}
                                     readOnly
                                 />
@@ -181,27 +163,21 @@ const ProfileTab = () => {
                                     type="tel"
                                     className="pl-10"
                                     value={profileData.phone}
-                                    onChange={(e) =>
-                                        setProfileData({ ...profileData, phone: e.target.value })
-                                    }
+                                    onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                                     disabled={isLoading}
                                 />
                             </div>
                         </div>
                     </div>
-
                     <div className="space-y-2">
-                        <Label htmlFor="fullName">Địa chỉ</Label>
+                        <Label htmlFor="address">Địa chỉ</Label>
                         <Input
                             id="address"
                             value={profileData.address}
-                            onChange={(e) =>
-                                setProfileData({ ...profileData, address: e.target.value })
-                            }
+                            onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
                             disabled={isLoading}
                         />
                     </div>
-
                     <Button type="submit" disabled={isLoading}>
                         {isLoading ? (
                             <>
@@ -215,7 +191,6 @@ const ProfileTab = () => {
                             </>
                         )}
                     </Button>
-
                     {successMessage && (
                         <Alert className="mt-4 border-green-200 bg-green-50">
                             <CheckCircle className="h-4 w-4 text-green-600" />
@@ -229,6 +204,7 @@ const ProfileTab = () => {
                         </Alert>
                     )}
                 </form>
+                <ChildrenSection user={user} />
             </CardContent>
         </Card>
     );
