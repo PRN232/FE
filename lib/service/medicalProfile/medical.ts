@@ -1,47 +1,60 @@
-import {MedicalProfileResponse} from "@/lib/service/medicalProfile/IMedical";
+import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
+
+export interface MedicalProfileResponse {
+    success: boolean;
+    profile?: ApiMedicalProfile;
+    error?: string;
+    message?: string;
+    errors?: string[];
+}
 
 export const getMedicalProfileByStudentId = async (
     studentId: number
 ): Promise<MedicalProfileResponse> => {
     try {
-        const token = localStorage.getItem("token");
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/MedicalProfile/by-student/${studentId}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/MedicalProfile/by-student/${studentId}`,
             {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
                 },
             }
         );
 
         if (!response.ok) {
             const text = await response.text();
-            console.error("Get medical profile failed:", text);
+            console.error(`Get medical profile failed for studentId ${studentId}:`, text);
             return {
                 success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
+                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`,
             };
         }
 
         const data = await response.json();
-        if (data.success && data.data) {
+        console.log("Raw API response:", data);
+
+        if (data.success && (data.data || data.profile)) {
             return {
                 success: true,
-                profile: data.data
+                profile: (data.data || data.profile) as ApiMedicalProfile,
+                message: data.message,
+                errors: data.errors || [],
             };
         }
+
         return {
             success: false,
-            error: "No medical profile data returned"
+            error: "No medical profile data returned",
+            message: data.message,
+            errors: data.errors || [],
         };
     } catch (error) {
-        console.error("Get medical profile error:", error);
+        console.error(`Get medical profile error for studentId ${studentId}:`, error);
         return {
             success: false,
-            error: "An error occurred while fetching medical profile"
+            error: "An error occurred while fetching medical profile",
         };
     }
 };

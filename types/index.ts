@@ -4,7 +4,7 @@ export interface User {
     email: string;
     phoneNumber: string;
     address?: string;
-    role: "student" | "child" | "parent" | "medical_staff" | "admin";
+    role: "student" | "child" | "parent" | "schoolnurse" | "admin";
     avatar?: string;
     createdAt: Date;
 }

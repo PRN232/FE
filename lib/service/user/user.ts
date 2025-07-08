@@ -10,7 +10,7 @@ const mapApiUserToUser = (
     phoneNumber: apiUser.phoneNumber || "",
     avatar: undefined,
     createdAt: apiUser.createdAt ? new Date(apiUser.createdAt) : new Date(),
-    role: apiUser.role === 0 ? "parent" : apiUser.role === 1 ? "medical_staff" : "admin",
+    role: apiUser.role === 0 ? "parent" : apiUser.role === 1 ? "schoolnurse" : "admin",
 });
 
 const fetchUser = async (

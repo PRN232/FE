@@ -38,7 +38,7 @@ function ListItem({ title, children, href, icon: Icon, ...props }: ComponentProp
 const LeftSide = ({ user }: { user: { role: string } | null }) => {
     const {isAuthenticated} = useAuth();
     const isParent = user?.role === "parent";
-    const isMedicalStaff = user?.role === "medical_staff";
+    const isMedicalStaff = user?.role === "schoolnurse";
     const idAdmin = user?.role === "admin";
 
     return (

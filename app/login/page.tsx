@@ -37,7 +37,7 @@ const LoginPage = () => {
         if (user && !error) {
             if (user.role === "parent") {
                 router.push("/");
-            } else if (user.role === "medical_staff") {
+            } else if (user.role === "schoolnurse") {
                 router.push("/medical-staff/incidents");
             } else if (user.role === "admin") {
                 router.push("/dashboard");

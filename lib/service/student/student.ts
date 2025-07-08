@@ -9,7 +9,9 @@ import type {
 } from "./IStudent";
 import type { ChildDTO } from "@/lib/service/parent/IParent";
 
-const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
+const mapApiStudentToUser = (
+    apiStudent: ApiStudent
+): User => ({
     id: apiStudent.id.toString(),
     name: apiStudent.fullName,
     email: "",
@@ -20,7 +22,7 @@ const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
 });
 
 const mapApiStudentToChildDTO = (
-    apiStudent: ApiStudent
+    apiStudent: ChildDTO
 ): ChildDTO => ({
     id: apiStudent.id,
     studentCode: apiStudent.studentCode,
@@ -171,7 +173,10 @@ export const getStudentById = async (
         const data = await response.json();
         if (data.success && data.data) {
             const student = mapApiStudentToChildDTO(data.data);
-            return { success: true, student };
+            return {
+                success: true,
+                student
+            };
         }
         return {
             success: false,

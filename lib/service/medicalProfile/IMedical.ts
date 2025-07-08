@@ -2,10 +2,38 @@ export interface ApiMedicalProfile {
     id: number;
     studentId: number;
     lastUpdated: string;
-    allergies: string[];
-    chronicDiseases: string[];
-    medicalHistories: string[];
-    vaccinationRecords: string[];
+    allergies: {
+        id: number;
+        medicalProfileId: number;
+        allergyName: string;
+        severity: string;
+        symptoms: string;
+        treatment: string;
+    }[];
+    chronicDiseases: {
+        id: number;
+        medicalProfileId: number;
+        diseaseName: string;
+        medication: string;
+        instructions: string;
+    }[];
+    medicalHistories: {
+        id: number;
+        medicalProfileId: number;
+        condition: string;
+        treatment: string;
+        treatmentDate: string;
+        doctor: string;
+        notes: string;
+    }[];
+    vaccinationRecords: {
+        id: number;
+        medicalProfileId: number;
+        vaccineName: string;
+        vaccinationDate: string;
+        doctor: string;
+        notes: string;
+    }[];
     height: number | null;
     weight: number | null;
     bloodPressure: string | null;
@@ -15,10 +43,4 @@ export interface ApiMedicalProfile {
     requiresFollowup: boolean | null;
     recommendations: string | null;
     lastCheckupDate: string | null;
-}
-
-export interface MedicalProfileResponse {
-    success: boolean;
-    profile?: ApiMedicalProfile;
-    error?: string;
 }

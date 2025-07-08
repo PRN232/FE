@@ -4,7 +4,6 @@ import {
     Medication,
     MedicineRequest,
     Student,
-    User,
     VaccinationCampaign
 } from "@/types";
 import {
@@ -21,33 +20,6 @@ import {
     AlertTriangle,
     BookOpen,
 } from "lucide-react";
-
-export const mockUsers: User[] = [
-    {
-        id: '1',
-        name: 'Bác sĩ Sarah Johnson',
-        email: 'sarah.johnson@school.edu',
-        role: 'medical_staff',
-        avatar: '/placeholder.svg?height=40&width=40',
-        createdAt: new Date('2023-01-15')
-    },
-    {
-        id: '2',
-        name: 'John Smith',
-        email: 'john.smith@email.com',
-        role: 'parent',
-        avatar: '/placeholder.svg?height=40&width=40',
-        createdAt: new Date('2023-02-20')
-    },
-    {
-        id: '3',
-        name: 'Người quản trị',
-        email: 'admin@school.edu',
-        role: 'admin',
-        avatar: '/placeholder.svg?height=40&width=40',
-        createdAt: new Date('2023-01-01')
-    }
-]
 
 export const mockStudents: Student[] = [
     {
