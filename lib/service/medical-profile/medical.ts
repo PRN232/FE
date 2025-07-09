@@ -1,4 +1,4 @@
-import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
+import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
 
 export interface MedicalProfileResponse {
     success: boolean;

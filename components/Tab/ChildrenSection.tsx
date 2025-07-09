@@ -124,18 +124,28 @@ const ChildrenSection = ({
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
                                                 <div>
                                                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Tuổi</p>
-                                                    <p className="text-sm font-semibold text-gray-900">{child.age} tuổi</p>
+                                                    <p className="text-sm font-semibold text-gray-900">
+                                                        {child.age} tuổi
+                                                    </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Giới tính</p>
-                                                    <p className="text-sm font-semibold text-gray-900">{child.gender}</p>
+                                                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                                        Giới tính
+                                                    </p>
+                                                    <p className="text-sm font-semibold text-gray-900">
+                                                        {child.gender}
+                                                    </p>
                                                 </div>
                                                 <div>
                                                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Lớp</p>
-                                                    <p className="text-sm font-semibold text-gray-900">{child.className}</p>
+                                                    <p className="text-sm font-semibold text-gray-900">
+                                                        {child.className}
+                                                    </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Ngày sinh</p>
+                                                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                                                        Ngày sinh
+                                                    </p>
                                                     <p className="text-sm font-semibold text-gray-900">
                                                         {new Date(child.dateOfBirth).toLocaleDateString("vi-VN")}
                                                     </p>

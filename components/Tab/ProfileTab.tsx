@@ -140,7 +140,7 @@ const ProfileTab = () => {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email Address</Label>
+                            <Label htmlFor="email">Email</Label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
@@ -155,7 +155,9 @@ const ProfileTab = () => {
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="phone">Phone Number</Label>
+                            <Label htmlFor="phone">
+                                Số diện thoại
+                            </Label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input

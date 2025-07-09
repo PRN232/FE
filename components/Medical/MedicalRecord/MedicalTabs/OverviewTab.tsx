@@ -13,7 +13,7 @@ import {
     Activity,
     Stethoscope,
 } from "lucide-react";
-import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
+import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
 
 const OverviewTab = ({
                          profile

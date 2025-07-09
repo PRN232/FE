@@ -7,7 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Edit, Plus } from "lucide-react";
-import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
+import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
 
 interface ConditionsTabProps {
     profile?: ApiMedicalProfile;

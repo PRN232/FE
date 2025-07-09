@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { calculateBMI, getBMICategory } from "@/lib/utils";
 import { ChildDTO } from "@/lib/service/parent/IParent";
-import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
+import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
 
 const StudentInfoCard = ({
                              child,

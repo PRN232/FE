@@ -39,7 +39,7 @@ import { getChildrenByParentId } from "@/lib/service/parent/parent";
 import {
     getMedicalProfileByStudentId,
     MedicalProfileResponse
-} from "@/lib/service/medicalProfile/medical";
+} from "@/lib/service/medical-profile/medical";
 
 const HealthRecord = () => {
     const [selectedStudent, setSelectedStudent] = useState("");
@@ -133,7 +133,7 @@ const HealthRecord = () => {
             case "conditions":
                 return <ConditionsTab profile={profile} />;
             case "vaccinations":
-                return <VaccinationsTab profile={profile} />;
+                return <VaccinationsTab />;
             default:
                 return <OverviewTab profile={profile} />;
         }

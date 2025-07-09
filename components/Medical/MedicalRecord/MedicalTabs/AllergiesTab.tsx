@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
     Card,
     CardContent,
@@ -6,33 +9,70 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, Edit, Plus } from "lucide-react";
-
+import {
+    AlertTriangle,
+    Plus,
+    Edit,
+} from "lucide-react";
 import {
     getSeverityColor,
-    getSeverityText
+    getSeverityText,
 } from "@/lib/utils";
-import { ApiMedicalProfile } from "@/lib/service/medicalProfile/IMedical";
+import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
+import { AllergyFormData } from "@/components/Medical/HealthCheckUpForm/Allergies";
+import Allergies from "@/components/Medical/HealthCheckUpForm/Allergies";
 
 interface AllergiesTabProps {
     profile?: ApiMedicalProfile;
+    onUpdate?: () => void;
 }
 
-const AllergiesTab = ({
-                          profile
-                      }: AllergiesTabProps) => {
-    const allergies = profile?.allergies || [];
+interface Allergy {
+    id: number;
+    medicalProfileId: number;
+    allergyName: string;
+    severity: string;
+    symptoms: string;
+    treatment: string;
+}
+
+const AllergiesTab = ({ profile, onUpdate }: AllergiesTabProps) => {
+    const [allergies, setAllergies] = useState<Allergy[]>(
+        profile?.allergies || []
+    ); // Initialize with profile allergies
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const hasAllergies = allergies.length > 0;
+
+    const handleAddAllergy = async (formData: AllergyFormData) => {
+    if (!profile?.id) {
+        throw new Error("Không tìm thấy thông tin hồ sơ y tế.");
+    }
+        const response = await fetch(
+            `https://localhost:7106/api/medicalprofiles/${profile.id}/allergies`,
+            {
+                method: "POST",
+                headers: {
+                    accept: "*/*",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Có lỗi xảy ra khi thêm dị ứng.");
+        }
+
+        // Update local state with new allergy
+        setAllergies([...allergies, result.data]);
+        onUpdate?.();
+    };
 
     return (
         <div className="space-y-6">
             <Card className="shadow-lg border-0 bg-white/90 backdrop-blur hover:shadow-xl transition-all duration-300 group overflow-hidden">
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-50/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                {/* Decorative border */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-orange-500" />
-
                 <CardHeader className="bg-gradient-to-r from-red-50 to-red-100/80 border-b border-red-200">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <CardTitle className="flex items-center text-red-800">
@@ -42,6 +82,7 @@ const AllergiesTab = ({
                             <span>Thông tin dị ứng</span>
                         </CardTitle>
                         <Button
+                            onClick={() => setIsDialogOpen(true)}
                             className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-300"
                             size="sm"
                         >
@@ -50,55 +91,54 @@ const AllergiesTab = ({
                         </Button>
                     </div>
                 </CardHeader>
-
                 <CardContent className="p-6">
                     {hasAllergies ? (
                         <div className="space-y-4">
                             {allergies.map((allergy) => (
                                 <div
                                     key={allergy.id}
-                                    className="p-4 border border-red-200 rounded-lg bg-red-50/50 hover:bg-red-100/30 transition-colors duration-200 group relative overflow-hidden"
+                                    className="relative p-4 border border-red-200 rounded-lg bg-gradient-to-r from-red-50 to-white hover:shadow-md transition-all duration-200"
                                 >
-                                    {/* Hover effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-red-100/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3 relative z-10">
-                                        <h3 className="font-semibold text-gray-800">
-                                            {allergy.allergyName}
-                                        </h3>
-                                        <div className="flex items-center space-x-2">
-                                            <Badge
-                                                className={getSeverityColor(allergy.severity)}
-                                                variant="outline"
-                                            >
-                                                {getSeverityText(allergy.severity)}
-                                            </Badge>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="border-red-200 text-red-700 hover:bg-red-200 transition-colors duration-200"
-                                            >
-                                                <Edit className="w-4 h-4" />
-                                            </Button>
+                                    <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-red-500 to-red-600 rounded-l-lg" />
+                                    <div className="pl-4">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex-1">
+                                                <h3 className="font-semibold text-gray-900">{allergy.allergyName}</h3>
+                                                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-3">
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Mức độ</p>
+                                                        <p className="text-sm font-semibold text-gray-900">
+                                                            {getSeverityText(allergy.severity)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col items-end space-y-2">
+                                                <Badge className={getSeverityColor(allergy.severity)} variant="outline">
+                                                    {getSeverityText(allergy.severity)}
+                                                </Badge>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 bg-transparent"
+                                                >
+                                                    <Edit className="w-4 h-4" />
+                                                </Button>
+                                            </div>
                                         </div>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-4 relative z-10">
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-700 mb-1">
-                                                CTriệu chứng:
-                                            </p>
-                                            <p className="text-gray-600 text-sm bg-white/80 p-2 rounded">
-                                                {allergy.symptoms || "Không có thông tin"}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-700 mb-1">
-                                                Điều trị:
-                                            </p>
-                                            <p className="text-gray-600 text-sm bg-white/80 p-2 rounded">
-                                                {allergy.treatment || "Không có thông tin"}
-                                            </p>
+                                        <div className="grid md:grid-cols-2 gap-4 mt-3">
+                                            <div>
+                                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Triệu chứng</p>
+                                                <p className="text-sm text-gray-600 bg-white/80 p-2 rounded">
+                                                    {allergy.symptoms || "Không có thông tin"}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Điều trị</p>
+                                                <p className="text-sm text-gray-600 bg-white/80 p-2 rounded">
+                                                    {allergy.treatment || "Không có thông tin"}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -112,6 +152,7 @@ const AllergiesTab = ({
                             <h3 className="mt-4 text-sm font-medium text-gray-900">Không có dị ứng nào được ghi nhận</h3>
                             <p className="mt-1 text-sm text-gray-500 mb-4">Nhấn nút thêm dị ứng để bổ sung thông tin</p>
                             <Button
+                                onClick={() => setIsDialogOpen(true)}
                                 className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
                                 size="sm"
                             >
@@ -122,6 +163,13 @@ const AllergiesTab = ({
                     )}
                 </CardContent>
             </Card>
+
+            <Allergies
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                onSubmit={handleAddAllergy}
+                profileId={profile?.id || 0}
+            />
         </div>
     );
 };
