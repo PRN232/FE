@@ -26,7 +26,6 @@ import {
     AlertTriangle,
     HeartPulse,
     Syringe,
-    History
 } from "lucide-react";
 
 import StudentInfoCard from "@/components/Medical/MedicalRecord/StudentInfoCard";
@@ -34,7 +33,6 @@ import OverviewTab from "@/components/Medical/MedicalRecord/MedicalTabs/Overview
 import AllergiesTab from "@/components/Medical/MedicalRecord/MedicalTabs/AllergiesTab";
 import ConditionsTab from "@/components/Medical/MedicalRecord/MedicalTabs/ConditionsTab";
 import VaccinationsTab from "@/components/Medical/MedicalRecord/MedicalTabs/VaccinationsTab";
-import HistoryTab from "@/components/Medical/MedicalRecord/MedicalTabs/HistoryTab";
 import { User as UserType } from "@/types";
 import { ChildDTO } from "@/lib/service/parent/IParent";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
@@ -136,16 +134,12 @@ const HealthRecord = () => {
                 return <ConditionsTab profile={profile} />;
             case "vaccinations":
                 return <VaccinationsTab profile={profile} />;
-            case "history":
-                return <HistoryTab profile={profile} />;
             default:
                 return <OverviewTab profile={profile} />;
         }
     };
 
     const selectedChild = children.find((child) => child.id.toString() === selectedStudent);
-
-    console.log(selectedChild)
 
     if (!user && error) {
         return (
@@ -247,66 +241,57 @@ const HealthRecord = () => {
                             className="space-y-6"
                         >
                             <div className="relative">
-                                <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm rounded-lg overflow-hidden border border-red-100">
+                                <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm rounded-lg overflow-hidden border border-red-100">
                                     <TabsTrigger
                                         value="overview"
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <User className="w-4 h-4" />
-                      Tổng quan
-                    </span>
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                          <User className="w-4 h-4" />
+                                          Tổng quan
+                                        </span>
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="allergies"
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <AlertTriangle className="w-4 h-4" />
-                      Dị ứng
-                    </span>
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                          <AlertTriangle className="w-4 h-4" />
+                                          Dị ứng
+                                        </span>
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="conditions"
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <HeartPulse className="w-4 h-4" />
-                      Tình trạng
-                    </span>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                          <HeartPulse className="w-4 h-4" />
+                                          Tình trạng
+                                        </span>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10
+                                        opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="vaccinations"
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <Syringe className="w-4 h-4" />
-                      Vaccine
-                    </span>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    </TabsTrigger>
-                                    <TabsTrigger
-                                        value="history"
-                                        className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
-                                    >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <History className="w-4 h-4" />
-                      Lịch sử
-                    </span>
+                                        <span className="relative z-10 flex items-center justify-center gap-2">
+                                            <Syringe className="w-4 h-4" />
+                                            Vaccine
+                                        </span>
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
                                 </TabsList>
                                 {/* Animated underline for active tab */}
                                 <div className="absolute bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-red-600 transition-all duration-300"
                                      style={{
-                                         width: '20%',
+                                         width: '25%',
                                          left: activeTab === 'overview' ? '0%' :
-                                             activeTab === 'allergies' ? '20%' :
-                                                 activeTab === 'conditions' ? '40%' :
-                                                     activeTab === 'vaccinations' ? '60%' : '80%'
+                                             activeTab === 'allergies' ? '25%' :
+                                                 activeTab === 'conditions' ? '50%' :
+                                                     activeTab === 'vaccinations' ? '75%' : '0%'
                                      }} />
                             </div>
 

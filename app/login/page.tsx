@@ -53,7 +53,8 @@ const LoginPage = () => {
                     {/* Back to Home */}
                     <Link
                         href="/"
-                        className="inline-flex items-center text-sm text-muted-foreground hover:text-red-600 transition-colors group"
+                        className="inline-flex items-center text-sm
+                        text-muted-foreground hover:text-red-600 transition-colors group"
                     >
                         <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                         Trở về trang chủ
@@ -61,7 +62,9 @@ const LoginPage = () => {
 
                     <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow duration-300">
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                            <CardTitle
+                                className="text-2xl font-bold text-center bg-gradient-to-r
+                                from-red-600 to-orange-600 bg-clip-text text-transparent">
                                 Chào mừng đến HealthCare School
                             </CardTitle>
                             <CardDescription className="text-center">

@@ -1,9 +1,18 @@
 import type { User } from "@/types";
 import type { ApiUser } from "./IUser";
 
-const mapApiUserToUser = (
-    apiUser: ApiUser
-): User => ({
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/Users`;
+
+const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return {
+        "Content-Type": "application/json",
+        accept: "*/*",
+        ...(token && { Authorization: `Bearer ${token}` }),
+    };
+};
+
+const mapApiUserToUser = (apiUser: ApiUser): User => ({
     id: apiUser.id?.toString() || "",
     name: apiUser.username,
     email: apiUser.email,
@@ -13,61 +22,45 @@ const mapApiUserToUser = (
     role: apiUser.role === 0 ? "parent" : apiUser.role === 1 ? "schoolnurse" : "admin",
 });
 
-const fetchUser = async (
-    url: string
-): Promise<User | null> => {
+const fetchUser = async (url: string): Promise<User | null> => {
     try {
         const response = await fetch(url, {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                accept: "*/*",
-            },
+            headers: getAuthHeaders(),
         });
+
         const data = await response.json();
-        if (response.ok) {
-            if (Array.isArray(data)) {
-                return data.length > 0 ? mapApiUserToUser(data[0]) : null;
-            }
-            return mapApiUserToUser(data);
+        if (!response.ok) {
+            console.error("Fetch user error:", data.message || "Fetch user failed");
+            return null;
         }
-        console.error("Fetch failed:", await response.text());
-        return null;
+
+        return Array.isArray(data) ? (data.length > 0 ? mapApiUserToUser(data[0]) : null) : mapApiUserToUser(data);
     } catch (error) {
-        console.error("Fetch error:", error);
+        console.error("Fetch user error:", error);
         return null;
     }
 };
 
-export const getUserById = async (
-    id: number
-): Promise<User | null> => {
-    return fetchUser(
-        `${process.env.NEXT_PUBLIC_API_URL}/Users/${id}`
-    );
-};
+export const getUserById = (id: number): Promise<User | null> =>
+    fetchUser(`${API_URL}/${id}`);
 
-export const getUsersByRole = async (
-    role: string
-): Promise<User[] | null> => {
+export const getUsersByRole = async (role: string): Promise<User[] | null> => {
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Users/roles/${role}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                },
-            });
+        const response = await fetch(`${API_URL}/roles/${role}`, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
+
         const data = await response.json();
-        if (response.ok && Array.isArray(data)) {
-            return data.map((apiUser: ApiUser) => mapApiUserToUser(apiUser));
+        if (!response.ok) {
+            console.error("Fetch users by role error:", data.message || "Fetch users by role failed");
+            return null;
         }
-        console.error("Fetch failed:", await response.text());
-        return null;
+
+        return Array.isArray(data) ? data.map(mapApiUserToUser) : [];
     } catch (error) {
-        console.error("Fetch error:", error);
+        console.error("Fetch users by role error:", error);
         return null;
     }
 };
@@ -78,58 +71,25 @@ export const createUser = async (
     password: string,
     role: number,
     phoneNumber: string
-): Promise<{
-    success: boolean;
-    user?: User;
-    error?: string;
-}> => {
+): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Users`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-                body: JSON.stringify({
-                    email,
-                    username,
-                    password,
-                    role,
-                    phoneNumber
-                }),
-            });
-
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Create user failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
-            };
-        }
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ email, username, password, role, phoneNumber }),
+        });
 
         const data = await response.json();
-        if (data) {
-            const mappedUser: User = mapApiUserToUser(data);
-            return {
-                success: true,
-                user: mappedUser
-            };
+        if (!response.ok) {
+            const errorMessage = data.message || "Create user failed";
+            console.error("Create user error:", errorMessage);
+            return { success: false, error: errorMessage };
         }
-        return {
-            success: false,
-            error: "No user data returned"
-        };
+
+        return { success: true, user: mapApiUserToUser(data) };
     } catch (error) {
         console.error("Create user error:", error);
-        return {
-            success: false,
-            error: "An error occurred while creating the user"
-        };
+        return { success: false, error: String(error) };
     }
 };
 
@@ -140,93 +100,47 @@ export const updateUser = async (
     password: string,
     role: number,
     phoneNumber: string
-): Promise<{
-    success: boolean;
-    user?: User;
-    error?: string;
-}> => {
+): Promise<{ success: boolean; user?: User; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Users/${id}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-            body: JSON.stringify({
-                id,
-                email,
-                username,
-                password,
-                role,
-                phoneNumber
-            }),
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: "PUT",
+            headers: getAuthHeaders(),
+            body: JSON.stringify({ id, email, username, password, role, phoneNumber }),
         });
 
+        const data = await response.json();
         if (!response.ok) {
-            const text = await response.text();
-            console.error("Update user failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
-            };
+            const errorMessage = data.message || "Update user failed";
+            console.error("Update user error:", errorMessage);
+            return { success: false, error: errorMessage };
         }
 
-        const data = await response.json();
-        if (data) {
-            const mappedUser: User = mapApiUserToUser(data);
-            return {
-                success: true,
-                user: mappedUser
-            };
-        }
-        return {
-            success: false,
-            error: "No user data returned"
-        };
+        return { success: true, user: mapApiUserToUser(data) };
     } catch (error) {
         console.error("Update user error:", error);
-        return {
-            success: false,
-            error: "An error occurred while updating the user"
-        };
+        return { success: false, error: String(error) };
     }
 };
 
 export const deleteUser = async (
     id: number
-): Promise<{
-    success: boolean;
-    error?: string;
-}> => {
+): Promise<{ success: boolean; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Users/${id}`,
-            {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-            });
+        const response = await fetch(`${API_URL}/${id}`, {
+            method: "DELETE",
+            headers: getAuthHeaders(),
+        });
 
         if (!response.ok) {
             const text = await response.text();
-            console.error("Delete user failed:", text);
-            return { success: false, error: `HTTP Error: ${response.status} - ${text || "Unknown error"}` };
+            const errorMessage = text || "Delete user failed";
+            console.error("Delete user error:", errorMessage);
+            return { success: false, error: errorMessage };
         }
 
         return { success: true };
     } catch (error) {
         console.error("Delete user error:", error);
-        return {
-            success: false,
-            error: "An error occurred while deleting the user"
-        };
+        return { success: false, error: String(error) };
     }
 };

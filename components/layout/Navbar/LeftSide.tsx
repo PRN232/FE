@@ -35,7 +35,13 @@ function ListItem({ title, children, href, icon: Icon, ...props }: ComponentProp
     );
 }
 
-const LeftSide = ({ user }: { user: { role: string } | null }) => {
+const LeftSide = ({
+                      user
+}: {
+    user: {
+        role: string
+    } | null
+}) => {
     const {isAuthenticated} = useAuth();
     const isParent = user?.role === "parent";
     const isMedicalStaff = user?.role === "schoolnurse";
@@ -45,7 +51,9 @@ const LeftSide = ({ user }: { user: { role: string } | null }) => {
         <div className="flex items-center">
             <div className="flex-shrink-0">
                 <Link href="/" className="flex items-center gap-2">
-                    <span className="text-3xl font-bold text-primary tracking-tight">HealthCare School</span>
+                    <span className="text-3xl font-bold text-primary tracking-tight">
+                        HealthCare School
+                    </span>
                 </Link>
             </div>
 
@@ -53,7 +61,10 @@ const LeftSide = ({ user }: { user: { role: string } | null }) => {
                 <NavigationMenu>
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                            <NavigationMenuLink
+                                asChild
+                                className={navigationMenuTriggerStyle()}
+                            >
                                 <Link href="/" className="text-xl">Trang chủ</Link>
                             </NavigationMenuLink>
                         </NavigationMenuItem>
@@ -62,7 +73,10 @@ const LeftSide = ({ user }: { user: { role: string } | null }) => {
                             <>
                                 {idAdmin && (
                                     <NavigationMenuItem>
-                                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                        <NavigationMenuLink
+                                            asChild
+                                            className={navigationMenuTriggerStyle()}
+                                        >
                                             <Link href="/dashboard" className="text-xl">Dashboard</Link>
                                         </NavigationMenuLink>
                                     </NavigationMenuItem>
@@ -70,11 +84,19 @@ const LeftSide = ({ user }: { user: { role: string } | null }) => {
 
                                 {!isMedicalStaff && (
                                     <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
-                                        <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                        <NavigationMenuTrigger className="text-lg">
+                                            Phụ huynh
+                                        </NavigationMenuTrigger>
+                                        <NavigationMenuContent
+                                            className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
                                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                                 {parentFeatures.map((feature) => (
-                                                    <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                    <ListItem
+                                                        key={feature.title}
+                                                        title={feature.title}
+                                                        href={feature.href}
+                                                        icon={feature.icon}
+                                                    >
                                                         {feature.description}
                                                     </ListItem>
                                                 ))}
@@ -85,11 +107,18 @@ const LeftSide = ({ user }: { user: { role: string } | null }) => {
 
                                 {!isParent && (
                                     <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
+                                        <NavigationMenuTrigger className="text-lg">
+                                            Nhân viên Y tế
+                                        </NavigationMenuTrigger>
                                         <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
                                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                                 {medicalFeatures.map((feature) => (
-                                                    <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                    <ListItem
+                                                        key={feature.title}
+                                                        title={feature.title}
+                                                        href={feature.href}
+                                                        icon={feature.icon}
+                                                    >
                                                         {feature.description}
                                                     </ListItem>
                                                 ))}

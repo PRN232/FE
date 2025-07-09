@@ -55,7 +55,7 @@ const Navbar = () => {
             {/* Bên trái - Logo và Điều hướng */}
             <LeftSide user={user} />
 
-            {/* Bên phải - Điều khiển Người dùng */}
+            {/* Bên phải - Điều khiển người dùng */}
             <RightSide onLogin={handleLogin} onLogout={handleLogout} />
           </div>
         </div>

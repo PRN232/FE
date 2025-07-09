@@ -1,17 +1,15 @@
-import type {
-    Student,
-    User
-} from "@/types";
+import type {  User } from "@/types";
 import type {
     ApiStudent,
     CreateStudentRequest,
-    UpdateStudentRequest
+    UpdateStudentRequest,
+    ChildDTO,
 } from "./IStudent";
-import type { ChildDTO } from "@/lib/service/parent/IParent";
+import { getAuthHeaders } from "@/lib/utils";
 
-const mapApiStudentToUser = (
-    apiStudent: ApiStudent
-): User => ({
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/Student`;
+
+const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     id: apiStudent.id.toString(),
     name: apiStudent.fullName,
     email: "",
@@ -21,269 +19,133 @@ const mapApiStudentToUser = (
     role: "student",
 });
 
-const mapApiStudentToChildDTO = (
-    apiStudent: ChildDTO
-): ChildDTO => ({
-    id: apiStudent.id,
-    studentCode: apiStudent.studentCode,
-    fullName: apiStudent.fullName,
-    dateOfBirth: new Date(apiStudent.dateOfBirth),
-    age: apiStudent.age,
-    gender: apiStudent.gender,
-    className: apiStudent.className,
-    parentId: apiStudent.parentId,
-    parentName: apiStudent.parentName,
-    parentPhone: apiStudent.parentPhone,
-    hasMedicalProfile: apiStudent.hasMedicalProfile,
+const mapApiStudentToChildDTO = (student: ChildDTO): ChildDTO => ({
+    ...student,
+    dateOfBirth: new Date(student.dateOfBirth),
 });
+
+const handleResponse = async <T, RawData = unknown>(
+    response: Response,
+    mapper?: (data: RawData) => T
+): Promise<{ success: boolean; data?: T; error?: string }> => {
+    const json = await response.json();
+    if (!response.ok || !json.success) {
+        console.error("API error:", json.message || json.error || "Unknown error");
+        return { success: false, error: json.message || "Unknown error" };
+    }
+
+    const mapped = mapper ? mapper(json.data as RawData) : (json.data as T);
+    return { success: true, data: mapped };
+};
 
 export const createStudent = async (
     studentData: CreateStudentRequest
-): Promise<{
-    success: boolean;
-    student?: User;
-    error?: string;
-}> => {
+): Promise<{ success: boolean; student?: User; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Student`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-                body: JSON.stringify(studentData),
-            });
-
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Create student failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
-            };
-        }
-
-        const data = await response.json();
-        if (data.success && data.data) {
-            const student = mapApiStudentToUser(data.data);
-            return { success: true, student };
-        }
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(studentData),
+        });
+        const result = await handleResponse(res, mapApiStudentToUser);
         return {
-            success: false,
-            error: "No student data returned"
+            success: result.success,
+            student: result.data,
+            error: result.error,
         };
-    } catch (error) {
-        console.error("Create student error:", error);
-        return {
-            success: false,
-            error: "An error occurred while creating student"
-        };
+    } catch (err) {
+        console.error("Create student error:", err);
+        return { success: false, error: "An error occurred while creating student" };
     }
 };
 
 export const updateStudent = async (
-    studentId: number,
+    id: number,
     studentData: UpdateStudentRequest
-): Promise<{
-    success: boolean;
-    student?: ChildDTO;
-    error?: string;
-}> => {
+): Promise<{ success: boolean; student?: ChildDTO; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Student?id=${studentId}`,
-            {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-                body: JSON.stringify(studentData),
-            }
-        );
+        const res = await fetch(`${API_URL}?id=${id}`, {
+            method: "PUT",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(studentData),
+        });
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Update student failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`,
-            };
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+            return { success: false, error: json.message || "Update failed" };
         }
 
-        const data = await response.json();
-        if (data.success) {
-            const updatedStudentResult = await getStudentById(studentId);
-            if (updatedStudentResult.success && updatedStudentResult.student) {
-                return { success: true, student: updatedStudentResult.student };
-            }
-            return {
-                success: true,
-                student: undefined,
-            };
-        }
-        return {
-            success: false,
-            error: "Update failed despite success flag",
-        };
-    } catch (error) {
-        console.error("Update student error:", error);
-        return {
-            success: false,
-            error: "An error occurred while updating student",
-        };
+        return await getStudentById(id);
+    } catch (err) {
+        console.error("Update student error:", err);
+        return { success: false, error: "An error occurred while updating student" };
     }
 };
 
 export const getStudentById = async (
-    studentId: number
-): Promise<{
-    success: boolean;
-    student?: ChildDTO;
-    error?: string;
-}> => {
+    id: number
+): Promise<{ success: boolean; student?: ChildDTO; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Student/${studentId}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-            });
-
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Get student by ID failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
-            };
-        }
-
-        const data = await response.json();
-        if (data.success && data.data) {
-            const student = mapApiStudentToChildDTO(data.data);
-            return {
-                success: true,
-                student
-            };
-        }
+        const res = await fetch(`${API_URL}/${id}`, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
+        const result = await handleResponse(res, mapApiStudentToChildDTO);
         return {
-            success: false,
-            error: "No student data returned"
+            success: result.success,
+            student: result.data,
+            error: result.error,
         };
-    } catch (error) {
-        console.error("Get student by ID error:", error);
-        return {
-            success: false,
-            error: "An error occurred while fetching student"
-        };
+    } catch (err) {
+        console.error("Get student error:", err);
+        return { success: false, error: "An error occurred while fetching student" };
     }
 };
 
 export const getStudentsByClass = async (
     className: string
-): Promise<{
-    success: boolean;
-    students?: User[];
-    error?: string;
-}> => {
+): Promise<{ success: boolean; students?: User[]; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Student/class/${className}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-            });
+        const res = await fetch(`${API_URL}/class/${className}`, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Get students by class failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
-            };
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+            return { success: false, error: json.message || "Fetch failed" };
         }
 
-        const data = await response.json();
-        if (data.success && data.data) {
-            const students = data.data.map((student: ApiStudent) => mapApiStudentToUser(student));
-            return { success: true, students };
-        }
         return {
-            success: false,
-            error: "No student data returned"
+            success: true,
+            students: json.data.map((s: ApiStudent) => mapApiStudentToUser(s)),
         };
-    } catch (error) {
-        console.error("Get students by class error:", error);
-        return {
-            success: false,
-            error: "An error occurred while fetching students"
-        };
+    } catch (err) {
+        console.error("Fetch by class error:", err);
+        return { success: false, error: "An error occurred while fetching students" };
     }
 };
 
 export const getStudentsByParentId = async (
     parentId: number
-): Promise<{
-    success: boolean;
-    students?: Student[];
-    error?: string;
-}> => {
+): Promise<{ success: boolean; students?: User[]; error?: string }> => {
     try {
-        const token = localStorage.getItem("token");
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Student/parent/${parentId}`,
-            {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                    ...(token && { Authorization: `Bearer ${token}` }),
-                },
-            });
+        const res = await fetch(`${API_URL}/parent/${parentId}`, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
 
-        if (!response.ok) {
-            const text = await response.text();
-            console.error("Get students by parent failed:", text);
-            return {
-                success: false,
-                error: `HTTP Error: ${response.status} - ${text || "Unknown error"}`
-            };
+        const json = await res.json();
+        if (!res.ok || !json.success) {
+            return { success: false, error: json.message || "Fetch failed" };
         }
 
-        const data = await response.json();
-        if (data.success && data.data) {
-            const students = data.data.map((student: ApiStudent) => mapApiStudentToUser(student));
-            return {
-                success: true,
-                students
-            };
-        }
         return {
-            success: false,
-            error: "No student data returned"
+            success: true,
+            students: json.data.map((s: ApiStudent) => mapApiStudentToUser(s)),
         };
-    } catch (error) {
-        console.error("Get students by parent error:", error);
-        return {
-            success: false,
-            error: "An error occurred while fetching students"
-        };
+    } catch (err) {
+        console.error("Fetch by parent error:", err);
+        return { success: false, error: "An error occurred while fetching students" };
     }
 };
