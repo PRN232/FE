@@ -2,6 +2,8 @@ import type { User } from "@/types";
 import {JwtPayload} from "./JWTPayload";
 import {jwtDecode} from "jwt-decode";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export const register = async (
     fullName: string,
     email: string,
@@ -15,7 +17,7 @@ export const register = async (
 }> => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Auth/register-parent`,
+            `${BASE_URL}/Auth/register-parent`,
             {
                 method: "POST",
                 headers: {
@@ -57,7 +59,7 @@ export const authenticate = async (
 }> => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Auth/login`,
+            `${BASE_URL}/Auth/login`,
             {
                 method: "POST",
                 headers: {
@@ -114,7 +116,7 @@ export const changePassword = async (
         }
 
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/Auth/change-password`,
+            `${BASE_URL}/Auth/change-password`,
             {
                 method: "POST",
                 headers: {

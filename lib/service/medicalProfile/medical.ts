@@ -8,12 +8,14 @@ export interface MedicalProfileResponse {
     errors?: string[];
 }
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export const getMedicalProfileByStudentId = async (
     studentId: number
 ): Promise<MedicalProfileResponse> => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/MedicalProfile/by-student/${studentId}`,
+            `${BASE_URL}/MedicalProfile/by-student/${studentId}`,
             {
                 method: "GET",
                 headers: {
@@ -33,7 +35,6 @@ export const getMedicalProfileByStudentId = async (
         }
 
         const data = await response.json();
-        console.log("Raw API response:", data);
 
         if (data.success && (data.data || data.profile)) {
             return {
