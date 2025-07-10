@@ -47,8 +47,8 @@ const Allergies = ({
                        open,
                        onOpenChange,
                        onSubmit,
-                       profileId,
-                   }: AddAllergyDialogProps) => {
+                       profileId
+}: AddAllergyDialogProps) => {
     const [formData, setFormData] = useState<AllergyFormData>({
         medicalProfileId: profileId,
         allergyName: "",
@@ -60,14 +60,19 @@ const Allergies = ({
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleInputChange = (field: keyof AllergyFormData, value: string) => {
+    const handleInputChange = (
+        field: keyof AllergyFormData,
+        value: string
+    ) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
         }));
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (
+        e: FormEvent
+    ) => {
         e.preventDefault();
         setIsLoading(true);
         setErrorMessage("");

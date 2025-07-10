@@ -3,7 +3,7 @@ import {
     CreateAllergyDto,
     UpdateAllergyDto,
     ApiResponse
-} from "@/lib/service/medical-record/IAllergies";
+} from "@/lib/service/medical-record/allergies/IAllergies";
 import { getAuthHeaders } from "@/lib/utils";
 
 const API_BASE_URL = 'https://localhost:7106/api';

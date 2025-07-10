@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import Swal from "sweetalert2";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -35,19 +36,6 @@ export const getSeverityText = (severity: string) => {
       return "Nguy cơ trung bình";
     case "low":
       return "Nguy cơ thấp";
-    default:
-      return severity;
-  }
-};
-
-export const mapSeverityToText = (severity: string): string => {
-  switch (severity) {
-    case 'MILD':
-      return 'Nhẹ';
-    case 'MODERATE':
-      return 'Trung bình';
-    case 'SEVERE':
-      return 'Nặng';
     default:
       return severity;
   }
@@ -99,3 +87,24 @@ export function calculateBMI(weightKg: number, heightCm: number): number | null 
   }
   return null;
 }
+
+export const showSuccessAlert = (message: string) => {
+  Swal.fire({
+    title: 'Thành công!',
+    text: message,
+    icon: 'success',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#4CAF50',
+    timer: 3000
+  });
+};
+
+export const showErrorAlert = (message: string) => {
+  Swal.fire({
+    title: 'Lỗi!',
+    text: message,
+    icon: 'error',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#F44336'
+  });
+};
