@@ -88,8 +88,10 @@ export function calculateBMI(weightKg: number, heightCm: number): number | null 
   return null;
 }
 
-export const showSuccessAlert = (message: string) => {
-  Swal.fire({
+export const showSuccessAlert = async (
+    message: string
+): Promise<void> => {
+  await Swal.fire({
     title: 'Thành công!',
     text: message,
     icon: 'success',
@@ -99,8 +101,10 @@ export const showSuccessAlert = (message: string) => {
   });
 };
 
-export const showErrorAlert = (message: string) => {
-  Swal.fire({
+export const showErrorAlert = async (
+    message: string
+): Promise<void> => {
+  await Swal.fire({
     title: 'Lỗi!',
     text: message,
     icon: 'error',

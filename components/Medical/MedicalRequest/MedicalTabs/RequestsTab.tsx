@@ -54,8 +54,8 @@ const RequestsTab = ({
                          filterStatus,
                          setSearchTerm,
                          setFilterStatus,
-                         medicalRequests,
-                     }: RequestsTabProps) => {
+                         medicalRequests
+}: RequestsTabProps) => {
     const filteredRequests = medicalRequests.filter((request) => {
         const matchesSearch =
             request.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -121,7 +121,7 @@ const RequestsTab = ({
                                             {request.studentName}
                                         </CardTitle>
                                         <CardDescription className="text-red-600">
-                                            {request.class} • Request ID: {request.id}
+                                            {request.class} • ID Yêu cầu: {request.id}
                                         </CardDescription>
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@ const RequestsTab = ({
                                         <Pill className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
                                             <p className="font-semibold text-gray-800">
-                                                Medicine Details
+                                                Chi tiết thuốc
                                             </p>
                                             <p className="text-gray-600">
                                                 {request.medicine}
@@ -161,7 +161,7 @@ const RequestsTab = ({
                                         <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
                                             <p className="font-semibold text-gray-800">
-                                                Reason
+                                                Lý do
                                             </p>
                                             <p className="text-gray-600">
                                                 {request.reason}
@@ -174,7 +174,7 @@ const RequestsTab = ({
                                         <User className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
                                             <p className="font-semibold text-gray-800">
-                                                Parent Contact
+                                                Phụ huynh liên lạc
                                             </p>
                                             <p className="text-gray-600">
                                                 {request.parentName}
@@ -185,7 +185,7 @@ const RequestsTab = ({
                                         <CalendarIcon className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
                                             <p className="font-semibold text-gray-800">
-                                                Request Date
+                                                Ngày yêu cầu
                                             </p>
                                             <p className="text-gray-600">
                                                 {request.requestDate}
@@ -193,32 +193,6 @@ const RequestsTab = ({
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex justify-end space-x-2 mt-6 pt-4 border-t border-red-100">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-red-200 text-red-700 hover:bg-red-50"
-                                >
-                                    <Eye className="w-4 h-4 mr-2" />
-                                    View Details
-                                </Button>
-                                {request.status === "pending" && (
-                                    <>
-                                        <Button
-                                            size="sm"
-                                            className="bg-green-600 hover:bg-green-700">
-                                            Approve
-                                        </Button>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="border-red-500 text-red-600 hover:bg-red-50"
-                                        >
-                                            Reject
-                                        </Button>
-                                    </>
-                                )}
                             </div>
                         </CardContent>
                     </Card>

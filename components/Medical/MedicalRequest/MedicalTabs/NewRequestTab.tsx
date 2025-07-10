@@ -42,8 +42,8 @@ const NewRequestTab = ({
                            date,
                            selectedStudent,
                            setDate,
-                           setSelectedStudent,
-                       }: NewRequestTabProps) => {
+                           setSelectedStudent
+}: NewRequestTabProps) => {
     return (
         <Card className="shadow-lg border-0 bg-white/90 backdrop-blur">
             <CardHeader className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-t-lg">
