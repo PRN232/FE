@@ -40,6 +40,19 @@ export const getSeverityText = (severity: string) => {
   }
 };
 
+export const mapSeverityToText = (severity: string): string => {
+  switch (severity) {
+    case 'MILD':
+      return 'Nhẹ';
+    case 'MODERATE':
+      return 'Trung bình';
+    case 'SEVERE':
+      return 'Nặng';
+    default:
+      return severity;
+  }
+};
+
 export const getStatusColor = (status: string) => {
   switch (status) {
     case "completed":

@@ -1,73 +1,123 @@
 "use client";
 
 import { useState } from "react";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AlertTriangle, Plus, Edit, Trash2, Check, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import {
-    AlertTriangle,
-    Plus,
-    Edit,
-} from "lucide-react";
+    createAllergy,
+    updateAllergy,
+    deleteAllergy
+} from "@/lib/service/medical-record/allergies";
+import type { Allergy } from "@/lib/service/medical-record/IAllergies";
+import type { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
+import Allergies from "@/components/Medical/HealthCheckUpForm/Allergies";
+import type { AllergyFormData } from "@/components/Medical/HealthCheckUpForm/Allergies";
 import {
     getSeverityColor,
-    getSeverityText,
+    getSeverityText
 } from "@/lib/utils";
-import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
-import { AllergyFormData } from "@/components/Medical/HealthCheckUpForm/Allergies";
-import Allergies from "@/components/Medical/HealthCheckUpForm/Allergies";
 
 interface AllergiesTabProps {
     profile?: ApiMedicalProfile;
     onUpdate?: () => void;
 }
 
-interface Allergy {
-    id: number;
-    medicalProfileId: number;
-    allergyName: string;
-    severity: string;
-    symptoms: string;
-    treatment: string;
-}
+type SeverityLevel = "Nhẹ" | "Trung bình" | "Nặng";
 
 const AllergiesTab = ({ profile, onUpdate }: AllergiesTabProps) => {
-    const [allergies, setAllergies] = useState<Allergy[]>(
-        profile?.allergies || []
-    ); // Initialize with profile allergies
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [allergies, setAllergies] = useState<Allergy[]>(profile?.allergies || []);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+    const [editingAllergy, setEditingAllergy] = useState<Allergy | null>(null);
+    const [tempAllergy, setTempAllergy] = useState<Partial<Allergy> | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
     const hasAllergies = allergies.length > 0;
 
-    const handleAddAllergy = async (formData: AllergyFormData) => {
-    if (!profile?.id) {
-        throw new Error("Không tìm thấy thông tin hồ sơ y tế.");
-    }
-        const response = await fetch(
-            `https://localhost:7106/api/medicalprofiles/${profile.id}/allergies`,
-            {
-                method: "POST",
-                headers: {
-                    accept: "*/*",
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.message || "Có lỗi xảy ra khi thêm dị ứng.");
+    const handleAddAllergy = async (
+        formData: AllergyFormData
+    ): Promise<void> => {
+        if (!profile?.id) {
+            setError("Không tìm thấy thông tin hồ sơ y tế.");
+            return;
         }
 
-        // Update local state with new allergy
-        setAllergies([...allergies, result.data]);
-        onUpdate?.();
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const newAllergy = await createAllergy(
+                profile.id,
+                formData
+            );
+            setAllergies([...allergies, newAllergy]);
+            onUpdate?.();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi thêm dị ứng");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleEditAllergy = (
+        allergy: Allergy
+    ): void => {
+        setEditingAllergy(allergy);
+        setTempAllergy({ ...allergy });
+    };
+
+    const handleCancelEdit = (): void => {
+        setEditingAllergy(null);
+        setTempAllergy(null);
+    };
+
+    const handleUpdateAllergy = async (): Promise<void> => {
+        if (!tempAllergy || !profile?.id || !editingAllergy) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const updatedAllergy = await updateAllergy(profile.id,
+                {
+                    ...tempAllergy,
+                    id: editingAllergy.id,
+                    medicalProfileId: profile.id
+                } as Allergy);
+
+            setAllergies(allergies.map(a =>
+                a.id === editingAllergy.id ? updatedAllergy : a
+            ));
+            setEditingAllergy(null);
+            setTempAllergy(null);
+            onUpdate?.();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi cập nhật dị ứng");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteAllergy = async (allergyId: number): Promise<void> => {
+        if (!profile?.id) return;
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            await deleteAllergy(profile.id, allergyId);
+            setAllergies(allergies.filter(a => a.id !== allergyId));
+            onUpdate?.();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Có lỗi xảy ra khi xóa dị ứng");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -85,6 +135,7 @@ const AllergiesTab = ({ profile, onUpdate }: AllergiesTabProps) => {
                             onClick={() => setIsDialogOpen(true)}
                             className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hover:shadow-md transition-all duration-300"
                             size="sm"
+                            disabled={isLoading}
                         >
                             <Plus className="w-4 h-4 mr-2" />
                             Thêm dị ứng
@@ -92,6 +143,12 @@ const AllergiesTab = ({ profile, onUpdate }: AllergiesTabProps) => {
                     </div>
                 </CardHeader>
                 <CardContent className="p-6">
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+                            {error}
+                        </div>
+                    )}
+
                     {hasAllergies ? (
                         <div className="space-y-4">
                             {allergies.map((allergy) => (
@@ -101,45 +158,143 @@ const AllergiesTab = ({ profile, onUpdate }: AllergiesTabProps) => {
                                 >
                                     <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-red-500 to-red-600 rounded-l-lg" />
                                     <div className="pl-4">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <h3 className="font-semibold text-gray-900">{allergy.allergyName}</h3>
-                                                <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-3">
+                                        {editingAllergy?.id === allergy.id ? (
+                                            <div className="space-y-4">
+                                                <Input
+                                                    value={tempAllergy?.allergyName || ""}
+                                                    onChange={(e) => setTempAllergy({
+                                                        ...tempAllergy!,
+                                                        allergyName: e.target.value
+                                                    })}
+                                                    className="font-semibold text-gray-900"
+                                                />
+
+                                                <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
                                                     <div>
                                                         <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Mức độ</p>
-                                                        <p className="text-sm font-semibold text-gray-900">
+                                                        <Select
+                                                            value={tempAllergy?.severity || ""}
+                                                            onValueChange={(value: SeverityLevel) => setTempAllergy({
+                                                                ...tempAllergy!,
+                                                                severity: value
+                                                            })}
+                                                        >
+                                                            <SelectTrigger className="w-full">
+                                                                <SelectValue placeholder="Chọn mức độ" />
+                                                            </SelectTrigger>
+                                                            <SelectContent className="bg-white">
+                                                                <SelectItem value="Nhẹ">Nhẹ</SelectItem>
+                                                                <SelectItem value="Trung bình">Trung bình</SelectItem>
+                                                                <SelectItem value="Nặng">Nặng</SelectItem>
+                                                            </SelectContent>
+                                                        </Select>
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Triệu chứng</p>
+                                                        <Textarea
+                                                            value={tempAllergy?.symptoms || ""}
+                                                            onChange={(e) => setTempAllergy({
+                                                                ...tempAllergy!,
+                                                                symptoms: e.target.value
+                                                            })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Điều trị</p>
+                                                        <Textarea
+                                                            value={tempAllergy?.treatment || ""}
+                                                            onChange={(e) => setTempAllergy({
+                                                                ...tempAllergy!,
+                                                                treatment: e.target.value
+                                                            })}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex justify-end space-x-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={handleCancelEdit}
+                                                        disabled={isLoading}
+                                                    >
+                                                        <X className="w-4 h-4 mr-2" />
+                                                        Hủy
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        className="bg-red-600 hover:bg-red-700"
+                                                        onClick={handleUpdateAllergy}
+                                                        disabled={isLoading}
+                                                    >
+                                                        {isLoading ? (
+                                                            <span className="animate-spin">↻</span>
+                                                        ) : (
+                                                            <Check className="w-4 h-4 mr-2" />
+                                                        )}
+                                                        Lưu
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex-1">
+                                                        <h3 className="font-semibold text-gray-900">{allergy.allergyName}</h3>
+                                                        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-3">
+                                                            <div>
+                                                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Mức độ</p>
+                                                                <p className="text-sm font-semibold text-gray-900">
+                                                                    {getSeverityText(allergy.severity)}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-col items-end space-y-2">
+                                                        <Badge className={getSeverityColor(allergy.severity)} variant="outline">
                                                             {getSeverityText(allergy.severity)}
+                                                        </Badge>
+                                                        <div className="flex space-x-2">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 bg-transparent"
+                                                                onClick={() => handleEditAllergy(allergy)}
+                                                                disabled={isLoading}
+                                                            >
+                                                                <Edit className="w-4 h-4" />
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                className="border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 bg-transparent"
+                                                                onClick={() => handleDeleteAllergy(allergy.id)}
+                                                                disabled={isLoading}
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="grid md:grid-cols-2 gap-4 mt-3">
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Triệu chứng</p>
+                                                        <p className="text-sm text-gray-600 bg-white/80 p-2 rounded">
+                                                            {allergy.symptoms || "Không có thông tin"}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Điều trị</p>
+                                                        <p className="text-sm text-gray-600 bg-white/80 p-2 rounded">
+                                                            {allergy.treatment || "Không có thông tin"}
                                                         </p>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className="flex flex-col items-end space-y-2">
-                                                <Badge className={getSeverityColor(allergy.severity)} variant="outline">
-                                                    {getSeverityText(allergy.severity)}
-                                                </Badge>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 bg-transparent"
-                                                >
-                                                    <Edit className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                        <div className="grid md:grid-cols-2 gap-4 mt-3">
-                                            <div>
-                                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Triệu chứng</p>
-                                                <p className="text-sm text-gray-600 bg-white/80 p-2 rounded">
-                                                    {allergy.symptoms || "Không có thông tin"}
-                                                </p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Điều trị</p>
-                                                <p className="text-sm text-gray-600 bg-white/80 p-2 rounded">
-                                                    {allergy.treatment || "Không có thông tin"}
-                                                </p>
-                                            </div>
-                                        </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             ))}
@@ -155,6 +310,7 @@ const AllergiesTab = ({ profile, onUpdate }: AllergiesTabProps) => {
                                 onClick={() => setIsDialogOpen(true)}
                                 className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700"
                                 size="sm"
+                                disabled={isLoading}
                             >
                                 <Plus className="w-4 h-4 mr-2" />
                                 Thêm dị ứng
