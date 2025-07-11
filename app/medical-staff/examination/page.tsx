@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { mockMedicalExaminations } from "@/lib/data/mock-data";
 import type { MedicalExamination } from "@/types";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils"; // If you have a classnames util
 
 const statusTranslations: { [key: string]: string } = {
   scheduled: "Đã lên lịch",
@@ -18,6 +19,12 @@ const typeTranslations: { [key: string]: string } = {
   hearing: "Thính lực",
   dental: "Nha khoa",
   general: "Tổng quát",
+};
+
+const statusColors: { [key: string]: string } = {
+  scheduled: "bg-blue-100 text-blue-700",
+  in_progress: "bg-yellow-100 text-yellow-700",
+  completed: "bg-green-100 text-green-700",
 };
 
 export default function ExaminationPage() {
@@ -76,126 +83,201 @@ export default function ExaminationPage() {
     newStatus: MedicalExamination["status"]
   ) => {
     setExaminations(
-      examinations.map((e) => (e.id === id ? { ...e, status: newStatus, notificationSent: newStatus !== 'scheduled' ? true : e.notificationSent } : e))
+      examinations.map((e) =>
+        e.id === id
+          ? {
+              ...e,
+              status: newStatus,
+              notificationSent:
+                newStatus !== "scheduled" ? true : e.notificationSent,
+            }
+          : e
+      )
     );
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Quản lý khám sức khỏe</h1>
-      <Button onClick={() => setShowForm(!showForm)} className="mb-4">
-        {showForm ? "Đóng" : "Tạo đợt khám mới"}
-      </Button>
-      {showForm && (
-        <form
-          onSubmit={handleSubmit}
-          className="mb-6 space-y-2 border p-4 rounded-lg"
-        >
-          <h3 className="text-lg font-semibold">Tạo đợt khám mới</h3>
-          <Input
-            name="name"
-            placeholder="Tên đợt khám"
-            value={form.name}
-            onChange={handleChange}
-            required
-          />
-          <select
-            name="type"
-            value={form.type}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2 bg-white"
+    <div className="p-0 md:p-8 bg-gradient-to-tr from-blue-50 to-white min-h-screen">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-gray-800 tracking-tight">
+          Quản lý khám sức khỏe
+        </h1>
+        <div className="flex justify-end mb-6">
+          <Button
+            onClick={() => setShowForm(!showForm)}
+            className={cn(
+              "transition-all shadow-none rounded-full px-6 py-2 font-semibold",
+              showForm
+                ? "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                : "bg-blue-600 text-white hover:bg-blue-700"
+            )}
           >
-            <option value="">Loại hình khám</option>
-            {Object.entries(typeTranslations).map(([key, value]) => (
-              <option key={key} value={key}>{value}</option>
-            ))}
-          </select>
-          <Input
-            name="targetGrades"
-            placeholder="Khối lớp (cách nhau dấu phẩy)"
-            value={form.targetGrades}
-            onChange={handleChange}
-            required
-          />
-           <Input
-            name="studentsScheduled"
-            type="number"
-            placeholder="Số học sinh dự kiến"
-            value={form.studentsScheduled}
-            onChange={handleChange}
-            required
-          />
-          <div>
-            <label className="text-sm font-medium">Ngày khám dự kiến:</label>
+            {showForm ? "Đóng" : "Tạo đợt khám mới"}
+          </Button>
+        </div>
+        {showForm && (
+          <form
+            onSubmit={handleSubmit}
+            className="mb-8 bg-white/80 backdrop-blur border border-gray-100 rounded-2xl shadow-lg p-6 space-y-4"
+          >
+            <h3 className="text-lg font-semibold text-blue-700 mb-2">
+              Tạo đợt khám mới
+            </h3>
             <Input
-              name="scheduledDate"
-              type="date"
-              value={form.scheduledDate}
+              name="name"
+              placeholder="Tên đợt khám"
+              value={form.name}
               onChange={handleChange}
               required
+              className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-200"
             />
-          </div>
-          <Button type="submit">Lưu đợt khám</Button>
-        </form>
-      )}
-      <div className="space-y-4">
-        {examinations.map((e) => (
-          <div key={e.id} className="border rounded-lg p-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-xl font-semibold">{e.name}</h2>
-                <p className="text-sm text-gray-600">
-                  Loại hình: {typeTranslations[e.type]} | Đối tượng:{" "}
-                  {e.targetGrades.join(", ")}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Ngày khám: {new Date(e.scheduledDate).toLocaleDateString()}
-                </p>
-                <div className="mt-2 text-sm">
-                  <span>
-                    Dự kiến: <b>{e.studentsScheduled}</b> hs
-                  </span>{" "}
-                  |{" "}
-                  <span>
-                    Đã khám: <b>{e.studentsExamined}</b> hs
-                  </span> |
-                   <span>
-                    Thông báo PH: <Badge variant={e.notificationSent ? 'default' : 'secondary'}>{e.notificationSent ? "Đã gửi" : "Chưa gửi"}</Badge>
-                  </span>
-                </div>
-              </div>
-              <Badge>{statusTranslations[e.status]}</Badge>
+            <select
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              required
+              className="w-full border-gray-200 rounded-xl px-3 py-2 bg-white focus:ring-2 focus:ring-blue-200"
+            >
+              <option value="">Loại hình khám</option>
+              {Object.entries(typeTranslations).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <Input
+              name="targetGrades"
+              placeholder="Khối lớp (cách nhau dấu phẩy)"
+              value={form.targetGrades}
+              onChange={handleChange}
+              required
+              className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-200"
+            />
+            <Input
+              name="studentsScheduled"
+              type="number"
+              placeholder="Số học sinh dự kiến"
+              value={form.studentsScheduled}
+              onChange={handleChange}
+              required
+              className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-200"
+            />
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">
+                Ngày khám dự kiến:
+              </label>
+              <Input
+                name="scheduledDate"
+                type="date"
+                value={form.scheduledDate}
+                onChange={handleChange}
+                required
+                className="rounded-xl border-gray-200 focus:ring-2 focus:ring-blue-200"
+              />
             </div>
-            <div className="mt-4 pt-4 border-t flex justify-end space-x-2">
-              {e.status === "scheduled" && (
-                <Button
-                  onClick={() => updateStatus(e.id, "in_progress")}
-                  size="sm"
-                  variant="outline"
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                className="bg-blue-600 text-white rounded-full px-6 py-2 font-semibold hover:bg-blue-700 transition-all"
+              >
+                Lưu đợt khám
+              </Button>
+            </div>
+          </form>
+        )}
+        <div className="space-y-6">
+          {examinations.map((e) => (
+            <div
+              key={e.id}
+              className="bg-white/90 border border-gray-100 rounded-2xl shadow-md p-6 hover:shadow-lg transition-all"
+            >
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    {e.name}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="inline-block mr-2">
+                      <span className="font-medium text-gray-700">
+                        Loại hình:
+                      </span>{" "}
+                      {typeTranslations[e.type]}
+                    </span>
+                    <span className="inline-block mr-2">
+                      <span className="font-medium text-gray-700">
+                        Đối tượng:
+                      </span>{" "}
+                      {e.targetGrades.join(", ")}
+                    </span>
+                  </p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    <span className="font-medium text-gray-700">
+                      Ngày khám:
+                    </span>{" "}
+                    {new Date(e.scheduledDate).toLocaleDateString()}
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                    <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium">
+                      Dự kiến: {e.studentsScheduled} hs
+                    </span>
+                    <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">
+                      Đã khám: {e.studentsExamined} hs
+                    </span>
+                    <span
+                      className={cn(
+                        "px-3 py-1 rounded-full font-medium",
+                        e.notificationSent
+                          ? "bg-green-100 text-green-700"
+                          : "bg-gray-100 text-gray-500"
+                      )}
+                    >
+                      Thông báo PH:{" "}
+                      {e.notificationSent ? "Đã gửi" : "Chưa gửi"}
+                    </span>
+                  </div>
+                </div>
+                <span
+                  className={cn(
+                    "px-4 py-1 rounded-full font-semibold text-sm shadow-sm",
+                    statusColors[e.status]
+                  )}
                 >
-                  Bắt đầu khám & Gửi TB
-                </Button>
-              )}
-              {e.status === "in_progress" && (
+                  {statusTranslations[e.status]}
+                </span>
+              </div>
+              <div className="mt-6 pt-4 border-t border-gray-100 flex flex-wrap gap-2 justify-end">
+                {e.status === "scheduled" && (
+                  <Button
+                    onClick={() => updateStatus(e.id, "in_progress")}
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full border-blue-200 text-blue-700 hover:bg-blue-50 transition-all"
+                  >
+                    Bắt đầu khám & Gửi TB
+                  </Button>
+                )}
+                {e.status === "in_progress" && (
+                  <Button
+                    onClick={() => updateStatus(e.id, "completed")}
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full border-green-200 text-green-700 hover:bg-green-50 transition-all"
+                  >
+                    Hoàn thành
+                  </Button>
+                )}
                 <Button
-                  onClick={() => updateStatus(e.id, "completed")}
-                  size="sm"
-                  variant="outline"
-                >
-                  Hoàn thành
-                </Button>
-              )}
-               <Button
                   onClick={() => alert("Chức năng đang phát triển")}
                   size="sm"
                   variant="outline"
+                  className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 transition-all"
                 >
                   Xem chi tiết
                 </Button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
