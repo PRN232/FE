@@ -32,6 +32,22 @@ export interface HealthRecord {
     lastUpdated: Date
 }
 
+export interface Incident {
+    id: string
+    studentName: string
+    studentClass: string
+    incidentType: string
+    severity: string
+    status: string
+    dateTime: string
+    description: string
+    symptoms: string
+    treatment: string
+    nurseNotes: string
+    parentNotified: boolean
+    followUpRequired: boolean
+}
+
 export interface TreatmentHistory {
     id: string
     date: Date

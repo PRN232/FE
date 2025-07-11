@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+    useState,
+    useEffect,
+    useCallback
+} from "react";
+
+import {Button} from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Card,
     CardContent,
@@ -14,18 +21,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import {
-    Tabs,
-    TabsList,
-    TabsTrigger
-} from "@/components/ui/tabs";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
     Search,
     User,
     AlertTriangle,
     HeartPulse,
     Syringe,
+    Plus
 } from "lucide-react";
 
 import StudentInfoCard from "@/components/Medical/MedicalRecord/StudentInfoCard";
@@ -40,8 +43,10 @@ import {
     getMedicalProfileByStudentId,
     MedicalProfileResponse
 } from "@/lib/service/medical-profile/medical";
+import NewRequest from "@/components/Medical/HealthCheckUpForm/NewRequest";
 
 const HealthRecord = () => {
+    const [isNewRequestModalOpen, setIsRequestModalOpen] = useState(false)
     const [selectedStudent, setSelectedStudent] = useState("");
     const [activeTab, setActiveTab] = useState("overview");
     const [children, setChildren] = useState<ChildDTO[]>([]);
@@ -51,6 +56,33 @@ const HealthRecord = () => {
     const [medicalProfile, setMedicalProfile] = useState<MedicalProfileResponse | null>(null);
     const [medicalLoading, setMedicalLoading] = useState(false);
     const [medicalError, setMedicalError] = useState<string | null>(null);
+
+    const fetchMedicalProfile = useCallback(async () => {
+        if (!selectedStudent) {
+            setMedicalProfile(null);
+            setMedicalError(null);
+            return;
+        }
+
+        setMedicalLoading(true);
+        setMedicalError(null);
+        try {
+            const response = await getMedicalProfileByStudentId(parseInt(selectedStudent, 10));
+
+            if (response.success && response.profile) {
+                setMedicalProfile(response);
+            } else {
+                setMedicalError(response.error || "Failed to fetch medical profile");
+                setMedicalProfile(null);
+            }
+        } catch (error) {
+            setMedicalError("An unexpected error occurred while fetching medical profile");
+            setMedicalProfile(null);
+            console.error("Fetch error:", error);
+        } finally {
+            setMedicalLoading(false);
+        }
+    }, [selectedStudent, setMedicalProfile, setMedicalLoading, setMedicalError]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -90,35 +122,8 @@ const HealthRecord = () => {
     }, [user]);
 
     useEffect(() => {
-        const fetchMedicalProfile = async () => {
-            if (!selectedStudent) {
-                setMedicalProfile(null);
-                setMedicalError(null);
-                return;
-            }
-
-            setMedicalLoading(true);
-            setMedicalError(null);
-            try {
-                const response = await getMedicalProfileByStudentId(parseInt(selectedStudent, 10));
-
-                if (response.success && response.profile) {
-                    setMedicalProfile(response);
-                } else {
-                    setMedicalError(response.error || "Failed to fetch medical profile");
-                    setMedicalProfile(null);
-                }
-            } catch (error) {
-                setMedicalError("An unexpected error occurred while fetching medical profile");
-                setMedicalProfile(null);
-                console.error("Fetch error:", error);
-            } finally {
-                setMedicalLoading(false);
-            }
-        };
-
         void fetchMedicalProfile();
-    }, [selectedStudent]);
+    }, [fetchMedicalProfile, selectedStudent]);
 
     const renderTabContent = () => {
         if (!selectedStudent || medicalLoading) return null;
@@ -140,6 +145,13 @@ const HealthRecord = () => {
     };
 
     const selectedChild = children.find((child) => child.id.toString() === selectedStudent);
+    const handleNewIncidentSuccess = async () => {
+        if (selectedStudent) {
+            await fetchMedicalProfile();
+        }
+    }
+
+    console.log(selectedChild)
 
     if (!user && error) {
         return (
@@ -163,19 +175,30 @@ const HealthRecord = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-red-50/20 pointer-events-none" />
 
             {/* Header with improved gradient and shadow */}
-            <div className="bg-gradient-to-r from-red-600 to-red-800 text-white p-6 shadow-lg relative overflow-hidden">
+            <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 shadow-lg relative overflow-hidden">
                 {/* Animated header elements */}
                 <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-[0.03]" />
-                <div className="absolute inset-0 bg-gradient-to-r from-red-700/30 to-red-900/30 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 to-red-700/30 pointer-events-none" />
 
                 <div className="max-w-7xl mx-auto relative z-10">
-                    <div className="space-y-2">
-                        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-red-100 bg-clip-text text-transparent">
-                            Hồ sơ sức khỏe học sinh
-                        </h1>
-                        <p className="text-red-100/90 max-w-lg">
-                            Hồ sơ sức khỏe và theo dõi y tế học sinh
-                        </p>
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="space-y-2">
+                            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-red-100 bg-clip-text text-transparent">
+                                Hồ sơ sức khỏe học sinh
+                            </h1>
+                            <p className="text-red-100/90 max-w-lg">
+                                Hồ sơ sức khỏe và theo dõi y tế học sinh
+                            </p>
+                        </div>
+                        <div className="flex items-center space-x-4">
+                            <Button
+                                onClick={() => setIsRequestModalOpen(true)}
+                                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                            >
+                                <Plus className="w-4 h-4 mr-2" />
+                                Khai báo
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -313,6 +336,20 @@ const HealthRecord = () => {
                     </Card>
                 )}
             </div>
+
+            {/* Modals */}
+            {selectedChild ? (
+                <NewRequest
+                    isOpen={isNewRequestModalOpen}
+                    onClose={() => setIsRequestModalOpen(false)}
+                    onSuccess={handleNewIncidentSuccess}
+                    selectedChild={selectedChild}
+                />
+            ) : (
+                <p className="text-white text-center mt-4 p-3 bg-red-500 rounded-lg shadow-md">
+                    Nhà trường chưa tạo tài khoản cho con bạn. Xin hãy liên lạc với nhà trường.
+                </p>
+            )}
         </div>
     );
 };

@@ -6,13 +6,13 @@ import {
 } from "@/lib/service/medical-record/allergies/IAllergies";
 import { getAuthHeaders } from "@/lib/utils";
 
-const API_BASE_URL = 'https://localhost:7106/api';
+const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medicalprofiles`;
 
 export const getAllergies = async (
     medicalProfileId: number
 ): Promise<ApiResponse<Allergy[]>> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/allergies`,
+        `${API_BASE_URL}/${medicalProfileId}/allergies`,
         {
             method: 'GET',
             headers: getAuthHeaders(),
@@ -31,7 +31,7 @@ export const getAllergyById = async (
     allergyId: number
 ): Promise<ApiResponse<Allergy>> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/allergies/${allergyId}`,
+        `${API_BASE_URL}/${medicalProfileId}/allergies/${allergyId}`,
         {
             method: 'GET',
             headers: getAuthHeaders(),
@@ -50,7 +50,7 @@ export const createAllergy = async (
     allergyData: CreateAllergyDto
 ): Promise<Allergy> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/allergies`,
+        `${API_BASE_URL}/${medicalProfileId}/allergies`,
         {
             method: "POST",
             headers: getAuthHeaders(),
@@ -72,7 +72,7 @@ export const updateAllergy = async (
     allergyData: UpdateAllergyDto
 ): Promise<Allergy> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/allergies/${allergyData.id}`,
+        `${API_BASE_URL}/${medicalProfileId}/allergies/${allergyData.id}`,
         {
             method: "PUT",
             headers: getAuthHeaders(),
@@ -94,7 +94,7 @@ export const deleteAllergy = async (
     allergyId: number
 ): Promise<ApiResponse<boolean>> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/allergies/${allergyId}`,
+        `${API_BASE_URL}/${medicalProfileId}/allergies/${allergyId}`,
         {
             method: 'DELETE',
             headers: getAuthHeaders(),

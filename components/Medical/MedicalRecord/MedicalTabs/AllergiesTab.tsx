@@ -56,6 +56,8 @@ const AllergiesTab = ({
                           profile,
                           onUpdate
 }: AllergiesTabProps) => {
+    console.log(profile)
+
     const [allergies, setAllergies] = useState<Allergy[]>(profile?.allergies || []);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [editingAllergy, setEditingAllergy] = useState<Allergy | null>(null);

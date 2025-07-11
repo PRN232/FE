@@ -8,14 +8,13 @@ export interface MedicalProfileResponse {
     errors?: string[];
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/MedicalProfile/by-student`;
 
 export const getMedicalProfileByStudentId = async (
     studentId: number
 ): Promise<MedicalProfileResponse> => {
     try {
-        const response = await fetch(
-            `${BASE_URL}/MedicalProfile/by-student/${studentId}`,
+        const response = await fetch(`${BASE_URL}/${studentId}`,
             {
                 method: "GET",
                 headers: {

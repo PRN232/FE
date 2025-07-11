@@ -1,16 +1,8 @@
 import type { User } from "@/types";
 import type { ApiUser } from "./IUser";
+import { getAuthHeaders } from "@/lib/utils";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/Users`;
-
-const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
-    return {
-        "Content-Type": "application/json",
-        accept: "*/*",
-        ...(token && { Authorization: `Bearer ${token}` }),
-    };
-};
 
 const mapApiUserToUser = (apiUser: ApiUser): User => ({
     id: apiUser.id?.toString() || "",

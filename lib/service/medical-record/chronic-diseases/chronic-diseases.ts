@@ -6,13 +6,13 @@ import {
     UpdateChronicDiseaseDto
 } from "@/lib/service/medical-record/chronic-diseases/IChronic-diseases";
 
-const API_BASE_URL = 'https://localhost:7106/api';
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medicalprofiles`;
 
 export const getAllChronicDiseases = async (
     medicalProfileId: number
 ): Promise<ChronicDisease[]> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/chronic-diseases`,
+        `${BASE_URL}/${medicalProfileId}/chronic-diseases`,
         {
             method: 'GET',
             headers: getAuthHeaders(),
@@ -32,7 +32,7 @@ export const getChronicDiseaseById = async (
     diseaseId: number
 ): Promise<ChronicDisease> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/chronic-diseases/${diseaseId}`,
+        `${BASE_URL}/${medicalProfileId}/chronic-diseases/${diseaseId}`,
         {
             method: 'GET',
             headers: getAuthHeaders(),
@@ -52,7 +52,7 @@ export const createChronicDisease = async (
     diseaseData: CreateChronicDiseaseDto
 ): Promise<ChronicDisease> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/chronic-diseases`,
+        `${BASE_URL}/${medicalProfileId}/chronic-diseases`,
         {
             method: 'POST',
             headers: getAuthHeaders(),
@@ -73,7 +73,7 @@ export const updateChronicDisease = async (
     diseaseData: UpdateChronicDiseaseDto
 ): Promise<ChronicDisease> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/chronic-diseases/${diseaseData.id}`,
+        `${BASE_URL}/${medicalProfileId}/chronic-diseases/${diseaseData.id}`,
         {
             method: 'PUT',
             headers: getAuthHeaders(),
@@ -94,7 +94,7 @@ export const deleteChronicDisease = async (
     diseaseId: number
 ): Promise<boolean> => {
     const response = await fetch(
-        `${API_BASE_URL}/medicalprofiles/${medicalProfileId}/chronic-diseases/${diseaseId}`,
+        `${BASE_URL}/${medicalProfileId}/chronic-diseases/${diseaseId}`,
         {
             method: 'DELETE',
             headers: getAuthHeaders(),

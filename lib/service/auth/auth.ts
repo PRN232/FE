@@ -2,7 +2,7 @@ import type { User } from "@/types";
 import {JwtPayload} from "./JWTPayload";
 import {jwtDecode} from "jwt-decode";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/Auth`;
 
 export const register = async (
     fullName: string,
@@ -16,8 +16,7 @@ export const register = async (
     error?: string;
 }> => {
     try {
-        const response = await fetch(
-            `${BASE_URL}/Auth/register-parent`,
+        const response = await fetch(`${BASE_URL}/register-parent`,
             {
                 method: "POST",
                 headers: {
@@ -58,8 +57,7 @@ export const authenticate = async (
     error?: string;
 }> => {
     try {
-        const response = await fetch(
-            `${BASE_URL}/Auth/login`,
+        const response = await fetch(`${BASE_URL}/login`,
             {
                 method: "POST",
                 headers: {
@@ -115,8 +113,7 @@ export const changePassword = async (
             return { success: false, error: "No authentication token found" };
         }
 
-        const response = await fetch(
-            `${BASE_URL}/Auth/change-password`,
+        const response = await fetch(`${BASE_URL}/change-password`,
             {
                 method: "POST",
                 headers: {

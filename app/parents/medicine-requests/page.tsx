@@ -3,11 +3,11 @@
 import { useState } from "react";
 
 import { medicalRequests } from "@/lib/data/mock-data";
-import RequestsTab from "@/components/Medical/MedicalRequest/MedicalTabs/RequestsTab";
+import RequestsTab from "@/components/Medical/MedicalRequest/RequestsTab";
 
 const MedicalRequest = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState("all");
 
   return (
       <div
@@ -36,11 +36,14 @@ const MedicalRequest = () => {
           <div className="max-w-7xl mx-auto relative z-10">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="space-y-2">
-                <h1
+                  <h1
                     className="text-3xl font-bold tracking-tight bg-gradient-to-r
                     from-white to-red-100 bg-clip-text text-transparent">
-                  Quản lý yêu cầu y tế và thuốc men cho học sinh
-                </h1>
+                    Quản lý yêu cầu y tế
+                  </h1>
+                  <p>
+                      Xem, quản lý và theo dõi các yêu cầu y tế của con em.
+                  </p>
               </div>
             </div>
           </div>

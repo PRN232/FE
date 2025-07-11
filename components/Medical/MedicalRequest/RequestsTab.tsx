@@ -19,10 +19,8 @@ import {
     AlertTriangle,
     User,
     CalendarIcon,
-    Eye,
     Search,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
     getStatusColor,
     getUrgencyColor

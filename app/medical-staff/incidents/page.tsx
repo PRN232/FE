@@ -1,224 +1,233 @@
-"use client";
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { mockMedicalIncidents, mockStudents } from "@/lib/data/mock-data";
-import type { MedicalIncident } from "@/types";
+"use client"
 
-const incidentTypeTranslations: { [key: string]: string } = {
-  accident: "Tai nạn",
-  fever: "Sốt",
-  fall: "Té ngã",
-  epidemic: "Dịch bệnh",
-  other: "Khác",
-};
+import { useState, useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Search, Plus } from "lucide-react"
+import IncidentModal from "@/components/Medical/HealthCheckUpForm/Incident";
+import ViewIncident from "@/components/Medical/HealthCheckUpForm/VIewIncident";
 
-const severityTranslations: { [key: string]: string } = {
-  low: "Nhẹ",
-  medium: "Trung bình",
-  high: "Nặng",
-  critical: "Nguy kịch",
-};
+import { Incident } from "@/types";
+import { getAllMedicalIncidents } from "@/lib/service/medical-record/incident/incident";
+import IncidentCard from "@/components/Medical/HealthCheckUpForm/IncidentCard";
 
-export default function IncidentsPage() {
-  const [incidents, setIncidents] = useState<MedicalIncident[]>(mockMedicalIncidents || []);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<{
-    studentId: string;
-    type: MedicalIncident["type"] | "";
-    description: string;
-    severity: MedicalIncident["severity"] | "";
-    treatmentGiven: string;
-    medicineUsed: string;
-    handledBy: string;
-    parentNotified: boolean;
-    followUpRequired: boolean;
-    status: MedicalIncident["status"];
-  }>({
-    studentId: "",
-    type: "",
-    description: "",
-    severity: "",
-    treatmentGiven: "",
-    medicineUsed: "",
-    handledBy: "",
-    parentNotified: false,
-    followUpRequired: false,
-    status: "open",
+const IncidentsPage = () => {
+  const [isNewIncidentModalOpen, setIsNewIncidentModalOpen] = useState(false)
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false)
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [filterStatus, setFilterStatus] = useState("all")
+  const [filterSeverity, setFilterSeverity] = useState("all")
+  const [incidents, setIncidents] = useState<Incident[]>([])
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const fetchIncidents = async () => {
+      try {
+        const response = await getAllMedicalIncidents()
+        if (response.success) {
+          const mappedIncidents: Incident[] = response.data.map((item) => ({
+            id: item.id.toString(),
+            studentName: item.studentName,
+            studentClass: item.studentCode,
+            incidentType: item.type,
+            severity: item.severity,
+            status: item.severity,
+            dateTime: item.incidentDate,
+            description: item.description,
+            symptoms: item.symptoms,
+            treatment: item.treatment,
+            nurseNotes: item.symptoms,
+            parentNotified: item.parentNotified,
+            followUpRequired: false,
+          }))
+          setIncidents(mappedIncidents)
+        } else {
+          setError(response.message || "Failed to fetch incidents")
+        }
+      } catch (err) {
+        setError("An error occurred while fetching incidents")
+        console.error(err)
+      }
+    }
+
+    void fetchIncidents()
+  }, [])
+
+  const handleViewIncident = (incident: Incident) => {
+    setSelectedIncident(incident)
+    setIsViewModalOpen(true)
+  }
+
+  const handleEditIncident = (incident: Incident) => {
+    // Implement edit functionality
+    console.log("Edit incident:", incident.id)
+  }
+
+  const handleNewIncidentSuccess = async () => {
+    try {
+      await fetchIncidents();
+    } catch (error) {
+      console.error("Failed to refresh incidents:", error);
+      setError("Failed to refresh incidents. Please try again.");
+    }
+  }
+
+  const filteredIncidents = incidents.filter((incident) => {
+    const matchesSearch =
+        incident.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        incident.incidentType.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesStatus = filterStatus === "all" || incident.status === filterStatus
+    const matchesSeverity = filterSeverity === "all" || incident.severity === filterSeverity
+    return matchesSearch && matchesStatus && matchesSeverity
   });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target;
-    if (type === "checkbox") {
-      setForm((prev) => ({
-        ...prev,
-        [name]: (e.target as HTMLInputElement).checked,
-      }));
-    } else {
-      setForm((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+  const fetchIncidents = async () => {
+    try {
+      const response = await getAllMedicalIncidents()
+      if (response.success) {
+        const mappedIncidents: Incident[] = response.data.map((item) => ({
+          id: item.id.toString(),
+          studentName: item.studentName,
+          studentClass: item.studentCode,
+          incidentType: item.type,
+          severity: item.severity,
+          status: item.severity,
+          dateTime: item.incidentDate,
+          description: item.description,
+          symptoms: item.symptoms,
+          treatment: item.treatment,
+          nurseNotes: item.symptoms,
+          parentNotified: item.parentNotified,
+          followUpRequired: false,
+        }))
+        setIncidents(mappedIncidents)
+        setError(null)
+      } else {
+        setError(response.message || "Failed to fetch incidents")
+      }
+    } catch (err) {
+      setError("An error occurred while fetching incidents")
+      console.error(err)
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIncidents([
-      ...incidents,
-      {
-        id: Date.now().toString(),
-        studentId: form.studentId,
-        type: form.type as MedicalIncident["type"],
-        description: form.description,
-        severity: form.severity as MedicalIncident["severity"],
-        treatmentGiven: form.treatmentGiven,
-        medicineUsed: form.medicineUsed ? form.medicineUsed.split(",").map((m) => m.trim()) : [],
-        handledBy: form.handledBy,
-        parentNotified: form.parentNotified,
-        date: new Date(),
-        followUpRequired: form.followUpRequired,
-        status: form.status,
-      },
-    ]);
-    setForm({
-      studentId: "",
-      type: "",
-      description: "",
-      severity: "",
-      treatmentGiven: "",
-      medicineUsed: "",
-      handledBy: "",
-      parentNotified: false,
-      followUpRequired: false,
-      status: "open",
-    });
-    setShowForm(false);
-  };
-
-  const getStudentName = (id: string) => {
-    const student = mockStudents.find((s) => s.id === id);
-    return student ? student.name : "";
-  };
+  console.log(filteredIncidents)
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Quản lý sự kiện y tế</h1>
-      <Button onClick={() => setShowForm(!showForm)} className="mb-4">
-        {showForm ? "Đóng" : "Ghi nhận sự kiện mới"}
-      </Button>
-      {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 space-y-2">
-          <select
-            name="studentId"
-            value={form.studentId}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Chọn học sinh</option>
-            {mockStudents.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-          <select
-            name="type"
-            value={form.type}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Loại sự kiện</option>
-            {Object.entries(incidentTypeTranslations).map(([key, value]) => (
-              <option key={key} value={key}>{value}</option>
-            ))}
-          </select>
-          <Textarea
-            name="description"
-            placeholder="Mô tả sự kiện"
-            value={form.description}
-            onChange={handleChange}
-            required
-          />
-          <select
-            name="severity"
-            value={form.severity}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="">Mức độ nghiêm trọng</option>
-            {Object.entries(severityTranslations).map(([key, value]) => (
-              <option key={key} value={key}>{value}</option>
-            ))}
-          </select>
-          <Input
-            name="treatmentGiven"
-            placeholder="Xử lý đã thực hiện"
-            value={form.treatmentGiven}
-            onChange={handleChange}
-            required
-          />
-          <Input
-            name="medicineUsed"
-            placeholder="Thuốc/vật tư sử dụng (cách nhau dấu phẩy)"
-            value={form.medicineUsed}
-            onChange={handleChange}
-          />
-          <Input
-            name="handledBy"
-            placeholder="Người xử lý"
-            value={form.handledBy}
-            onChange={handleChange}
-            required
-          />
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="parentNotified"
-              checked={form.parentNotified}
-              onChange={handleChange}
-            />
-            <span>Đã thông báo phụ huynh</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="followUpRequired"
-              checked={form.followUpRequired}
-              onChange={handleChange}
-            />
-            <span>Cần theo dõi tiếp</span>
-          </label>
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            required
-            className="w-full border rounded px-3 py-2"
-          >
-            <option value="open">Chưa xử lý xong</option>
-            <option value="resolved">Đã xử lý xong</option>
-          </select>
-          <Button type="submit">Lưu sự kiện</Button>
-        </form>
-      )}
-      <div className="space-y-3">
-        {incidents.map((i) => (
-          <div key={i.id} className="border rounded p-3">
-            <div><b>Học sinh: {getStudentName(i.studentId)}</b> - {incidentTypeTranslations[i.type]} ({severityTranslations[i.severity]})</div>
-            <div><b>Mô tả:</b> {i.description}</div>
-            <div><b>Xử lý:</b> {i.treatmentGiven}</div>
-            <div><b>Thuốc/vật tư sử dụng:</b> {i.medicineUsed.join(", ")}</div>
-            <div><b>Người xử lý:</b> {i.handledBy}</div>
-            <div>Ngày: {new Date(i.date).toLocaleString()} | Trạng thái: {i.status}</div>
-            <div className="text-sm">Thông báo PH: {i.parentNotified ? "Đã" : "Chưa"} | Cần theo dõi: {i.followUpRequired ? "Có" : "Không"}</div>
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 shadow-lg">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Quản lý sự cố</h1>
+                <p className="text-red-100">Quản lý và ghi nhận các sự cố y tế của học sinh</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Button
+                    onClick={() => setIsNewIncidentModalOpen(true)}
+                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Ghi nhận sự cố
+                </Button>
+              </div>
+            </div>
           </div>
-        ))}
+        </div>
+
+        <div className="max-w-7xl mx-auto p-6">
+          {/* Error Message */}
+          {error && (
+              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                {error}
+              </div>
+          )}
+
+          {/* Search and Filter */}
+          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur">
+            <CardHeader className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-t-lg">
+              <CardTitle className="flex items-center">
+                <Search className="w-5 h-5 mr-2" />
+                Tìm kiếm sự cố
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="md:col-span-2">
+                  <Input
+                      placeholder="Tìm kiếm theo tên học sinh, loại sự cố, địa điểm..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="border-red-200 focus:border-red-500"
+                  />
+                </div>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="border-red-200 focus:border-red-500">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                    <SelectItem value="High">Nguy cơ cao</SelectItem>
+                    <SelectItem value="Medium">Nguy cơ trung bình</SelectItem>
+                    <SelectItem value="Low">Nguy cơ thấp</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterSeverity} onValueChange={setFilterSeverity}>
+                  <SelectTrigger className="border-red-200 focus:border-red-500">
+                    <SelectValue placeholder="Filter by severity" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="all">Tất cả mức độ</SelectItem>
+                    <SelectItem value="High">Nghiêm trọng</SelectItem>
+                    <SelectItem value="Medium">Trung bình</SelectItem>
+                    <SelectItem value="Low">Nhẹ</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Incidents List */}
+          <div className="grid py-5 gap-6">
+            {filteredIncidents.map((incident) => (
+                <IncidentCard
+                    key={incident.id}
+                    incident={incident}
+                    onView={handleViewIncident}
+                />
+            ))}
+          </div>
+        </div>
+
+        {/* Modals */}
+        <IncidentModal
+            isOpen={isNewIncidentModalOpen}
+            onClose={() => setIsNewIncidentModalOpen(false)}
+            onSuccess={handleNewIncidentSuccess}
+        />
+        <ViewIncident
+            isOpen={isViewModalOpen}
+            onClose={() => setIsViewModalOpen(false)}
+            incident={selectedIncident}
+            onEdit={handleEditIncident}
+        />
       </div>
-    </div>
-  );
+  )
 }
+
+export default IncidentsPage

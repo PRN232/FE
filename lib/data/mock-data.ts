@@ -19,6 +19,9 @@ import {
     Stethoscope,
     AlertTriangle,
     BookOpen,
+    Bell,
+    Phone,
+    Clock,
 } from "lucide-react";
 
 export const mockStudents: Student[] = [
@@ -347,6 +350,7 @@ export const teamMembers = [
         description: "Quản lý các chương trình tiêm chủng và sáng kiến kiểm tra sức khỏe.",
     },
 ];
+
 export const services = [
     {
         icon: Stethoscope,
@@ -527,3 +531,78 @@ export const medicalRequests = [
         urgency: "low",
     },
 ];
+
+export const features = [
+    {
+        icon: Heart,
+        title: "Hồ sơ sức khỏe điện tử",
+        description: "Lưu trữ và quản lý thông tin sức khỏe của con em một cách an toàn và tiện lợi",
+        color: "bg-red-100 text-red-600",
+    },
+    {
+        icon: AlertTriangle,
+        title: "Quản lý dị ứng & bệnh lý",
+        description: "Theo dõi chi tiết các dị ứng, bệnh lý mãn tính và hướng dẫn xử lý khẩn cấp",
+        color: "bg-orange-100 text-orange-600",
+    },
+    {
+        icon: Activity,
+        title: "Theo dõi tiêm chủng",
+        description: "Lịch sử tiêm chủng đầy đủ và nhắc nhở lịch tiêm sắp tới",
+        color: "bg-green-100 text-green-600",
+    },
+    {
+        icon: Stethoscope,
+        title: "Khám sức khỏe định kỳ",
+        description: "Quản lý lịch khám và kết quả khám sức khỏe định kỳ tại trường",
+        color: "bg-blue-100 text-blue-600",
+    },
+    {
+        icon: Bell,
+        title: "Thông báo y tế",
+        description: "Nhận thông báo kịp thời về tình trạng sức khỏe và các sự kiện y tế",
+        color: "bg-purple-100 text-purple-600",
+    },
+    {
+        icon: Phone,
+        title: "Liên hệ khẩn cấp",
+        description: "Hệ thống liên lạc nhanh chóng với y tá trường và phụ huynh khi cần thiết",
+        color: "bg-pink-100 text-pink-600",
+    },
+]
+
+export const benefits = [
+    {
+        title: "An toàn tuyệt đối",
+        description: "Thông tin được mã hóa và bảo mật theo tiêu chuẩn quốc tế",
+        icon: Shield,
+    },
+    {
+        title: "Tiện lợi 24/7",
+        description: "Truy cập thông tin mọi lúc, mọi nơi qua điện thoại hoặc máy tính",
+        icon: Clock,
+    },
+    {
+        title: "Chính xác & Đầy đủ",
+        description: "Thông tin được cập nhật liên tục bởi đội ngũ y tế chuyên nghiệp",
+        icon: CheckCircle,
+    },
+]
+
+export const steps = [
+    {
+        step: "01",
+        title: "Đăng ký tài khoản",
+        description: "Tạo tài khoản với thông tin phụ huynh và liên kết với con em",
+    },
+    {
+        step: "02",
+        title: "Khai báo thông tin",
+        description: "Điền đầy đủ thông tin sức khỏe, dị ứng và tiền sử bệnh của con",
+    },
+    {
+        step: "03",
+        title: "Theo dõi & Cập nhật",
+        description: "Nhận thông báo và cập nhật thông tin sức khỏe thường xuyên",
+    },
+]

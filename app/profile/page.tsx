@@ -21,9 +21,6 @@ const Profile = () => {
                             className="text-4xl font-bold tracking-tight text-gray-900 pl-6">
                             Cài đặt tài khoản
                         </h1>
-                        <p className="text-gray-500 pl-6 mt-2">
-                            Quản lý hồ sơ sức khỏe học sinh
-                        </p>
                     </div>
 
                     {/* Enhanced Tabs */}

@@ -8,7 +8,9 @@ import { getAuthHeaders } from "@/lib/utils";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/vaccination-campaigns`;
 
-export const getVaccinationCampaigns = async (): Promise<ApiListResponse<VaccinationCampaign>> => {
+export const getVaccinationCampaigns = async ():
+    Promise<ApiListResponse<VaccinationCampaign>> =>
+{
     const response = await fetch(`${BASE_URL}`, {
         method: "GET",
         headers: getAuthHeaders(),
