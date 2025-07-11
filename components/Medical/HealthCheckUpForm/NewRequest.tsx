@@ -17,7 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Save, Plus, CheckCircle, AlertTriangle } from "lucide-react";
 import { getAuthHeaders } from "@/lib/utils";
-import { ChildDTO } from "@/lib/service/student/IStudent";
+import { ChildDTO } from "@/types";
 
 interface NewHealthRecordModalProps {
     isOpen: boolean;

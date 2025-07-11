@@ -1,9 +1,8 @@
-import type {  User } from "@/types";
+import type {  User, ChildDTO } from "@/types";
 import type {
     ApiStudent,
     CreateStudentRequest,
-    UpdateStudentRequest,
-    ChildDTO,
+    UpdateStudentRequest
 } from "./IStudent";
 import { getAuthHeaders } from "@/lib/utils";
 
@@ -84,7 +83,11 @@ export const updateStudent = async (
 
 export const getStudentById = async (
     id: number
-): Promise<{ success: boolean; student?: ChildDTO; error?: string }> => {
+): Promise<{
+    success: boolean;
+    student?: ChildDTO;
+    error?: string
+}> => {
     try {
         const res = await fetch(`${API_URL}/${id}`, {
             method: "GET",

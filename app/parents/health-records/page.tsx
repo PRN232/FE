@@ -36,8 +36,7 @@ import OverviewTab from "@/components/Medical/MedicalRecord/MedicalTabs/Overview
 import AllergiesTab from "@/components/Medical/MedicalRecord/MedicalTabs/AllergiesTab";
 import ConditionsTab from "@/components/Medical/MedicalRecord/MedicalTabs/ConditionsTab";
 import VaccinationsTab from "@/components/Medical/MedicalRecord/MedicalTabs/VaccinationsTab";
-import { User as UserType } from "@/types";
-import { ChildDTO } from "@/lib/service/parent/IParent";
+import { User as UserType, ChildDTO } from "@/types";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
 import {
     getMedicalProfileByStudentId,

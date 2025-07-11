@@ -20,6 +20,20 @@ export interface Student {
     healthRecord: HealthRecord | null
 }
 
+export interface ChildDTO {
+    id: number;
+    studentCode: string;
+    fullName: string;
+    dateOfBirth: Date;
+    age: number;
+    gender: string;
+    className: string;
+    parentId: number;
+    parentName: string | null;
+    parentPhone: string | null;
+    hasMedicalProfile: boolean;
+}
+
 export interface HealthRecord {
     id: string
     studentId: string
@@ -33,19 +47,28 @@ export interface HealthRecord {
 }
 
 export interface Incident {
-    id: string
-    studentName: string
-    studentClass: string
-    incidentType: string
-    severity: string
-    status: string
-    dateTime: string
-    description: string
-    symptoms: string
-    treatment: string
-    nurseNotes: string
-    parentNotified: boolean
-    followUpRequired: boolean
+    id: number;
+    studentId: number;
+    studentName: string;
+    studentCode: string;
+    nurseId: number;
+    nurseName: string | null;
+    type: string;
+    description: string;
+    symptoms: string;
+    treatment: string;
+    severity: 'Low' | 'Medium' | 'High';
+    parentNotified: boolean;
+    incidentDate: string;
+    medicationsGiven?: MedicationGiven[];
+}
+
+export interface MedicationGiven {
+    id: number;
+    incidentId: number;
+    medicationId: number;
+    giveAt: string;
+    dosage: string;
 }
 
 export interface TreatmentHistory {

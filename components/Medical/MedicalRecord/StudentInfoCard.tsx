@@ -13,8 +13,8 @@ import {
     Droplet
 } from "lucide-react";
 import { calculateBMI, getBMICategory } from "@/lib/utils";
-import { ChildDTO } from "@/lib/service/parent/IParent";
 import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
+import { ChildDTO } from "@/types";
 
 const StudentInfoCard = ({
                              child,

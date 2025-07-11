@@ -12,11 +12,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, AlertTriangle } from "lucide-react"
-import type { ChildDTO } from "@/lib/service/parent/IParent"
 import { getStudentById } from "@/lib/service/student/student"
 import BasicInfo from "@/components/Tab/BasicInfo"
 import MedicalInfo from "@/components/Tab/MedicalInfo"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
+import { ChildDTO } from "@/types";
 
 interface ViewChildProfileProps {
     isOpen: boolean

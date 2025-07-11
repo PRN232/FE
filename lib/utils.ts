@@ -17,11 +17,11 @@ export const getAuthHeaders = (): HeadersInit => {
 
 export const getSeverityColor = (severity: string) => {
   switch (severity) {
-    case "high":
+    case "High":
       return "bg-red-100 text-red-800 border-red-200";
-    case "medium":
+    case "Medium":
       return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "low":
+    case "Low":
       return "bg-green-100 text-green-800 border-green-200";
     default:
       return "bg-gray-100 text-gray-800 border-gray-200";
@@ -30,11 +30,11 @@ export const getSeverityColor = (severity: string) => {
 
 export const getSeverityText = (severity: string) => {
   switch (severity.toLowerCase()) {
-    case "high":
+    case "High":
       return "Nguy cơ cao";
-    case "medium":
+    case "Medium":
       return "Nguy cơ trung bình";
-    case "low":
+    case "Low":
       return "Nguy cơ thấp";
     default:
       return severity;
@@ -60,11 +60,11 @@ export const getStatusColor = (status: string) => {
 
 export const getUrgencyColor = (urgency: string) => {
   switch (urgency) {
-    case "high":
+    case "High":
       return "bg-red-500";
-    case "medium":
+    case "Medium":
       return "bg-yellow-500";
-    case "low":
+    case "Low":
       return "bg-green-500";
     default:
       return "bg-gray-500";

@@ -1,3 +1,5 @@
+import {ChildDTO} from "@/types";
+
 export interface ApiParent {
     id: number;
     userId: number;
@@ -6,18 +8,4 @@ export interface ApiParent {
     address: string | null;
     email: string | null;
     children?: ChildDTO[];
-}
-
-export interface ChildDTO {
-    id: number;
-    studentCode: string;
-    fullName: string;
-    dateOfBirth: Date;
-    age: number;
-    gender: string;
-    className: string;
-    parentId: number;
-    parentName: string | null;
-    parentPhone: string | null;
-    hasMedicalProfile: boolean;
 }

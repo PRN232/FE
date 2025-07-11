@@ -1,5 +1,5 @@
-import type { User } from "@/types";
-import type { ApiParent, ChildDTO } from "./IParent";
+import type { User, ChildDTO } from "@/types";
+import type { ApiParent } from "./IParent";
 import { getAuthHeaders } from "@/lib/utils";
 
 const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/Parent`;

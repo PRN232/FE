@@ -9,9 +9,9 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ChildDTO } from "@/lib/service/parent/IParent";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
 import ViewChildProfile from "@/components/Tab/ViewChildProfile";
+import { ChildDTO } from "@/types";
 
 interface ChildrenSectionProps {
     user: { id: string | number } | null | undefined;

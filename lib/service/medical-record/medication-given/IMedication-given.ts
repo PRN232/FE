@@ -1,11 +1,3 @@
-export interface MedicationGiven {
-    id: number;
-    incidentId: number;
-    medicationId: number;
-    giveAt: string;
-    dosage: string;
-}
-
 export interface CreateMedicationGivenDto {
     incidentId: number;
     medicationId: number;

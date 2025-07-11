@@ -21,7 +21,7 @@ import {
     Activity
 } from "lucide-react"
 import { Incident } from "@/types"
-import { getUrgencyColor, getSeverityColor } from "@/lib/utils"
+import { getSeverityColor } from "@/lib/utils"
 
 interface IncidentCardProps {
     incident: Incident
@@ -53,23 +53,20 @@ const IncidentCard = ({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600">
-                            {getIncidentTypeIcon(incident.incidentType)}
+                            {getIncidentTypeIcon(incident.type)}
                         </div>
                         <div>
                             <CardTitle className="text-red-800">
                                 {incident.studentName}
                             </CardTitle>
                             <CardDescription className="text-red-600">
-                                {incident.studentClass} • ID sự cố: {incident.id}
+                                {incident.studentCode} • ID sự cố: {incident.id}
                             </CardDescription>
                         </div>
                     </div>
                     <div className="flex items-center space-x-2">
                         <Badge className={getSeverityColor(incident.severity)}>
                             {incident.severity}
-                        </Badge>
-                        <Badge className={getUrgencyColor(incident.status)}>
-                            {incident.status}
                         </Badge>
                     </div>
                 </div>
@@ -84,7 +81,7 @@ const IncidentCard = ({
                                     Thời gian
                                 </p>
                                 <p className="text-gray-600">
-                                    {incident.dateTime}
+                                    {incident.incidentDate}
                                 </p>
                             </div>
                         </div>
@@ -99,30 +96,28 @@ const IncidentCard = ({
                                 </p>
                             </div>
                         </div>
+                    </div>
+                    <div className="space-y-4">
                         <div className="flex items-start space-x-3">
                             <FileText className="w-5 h-5 text-red-500 mt-0.5" />
                             <div>
                                 <p className="font-semibold text-gray-800">
-                                    Loại sự cố</p>
+                                    Loại sự cố
+                                </p>
                                 <p className="text-gray-600">
-                                    {incident.incidentType}
+                                    {incident.type}
                                 </p>
                             </div>
                         </div>
-                    </div>
-                    <div className="space-y-4">
                         <div className="flex items-start space-x-3">
                             <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
                             <div>
-                                <p className="font-semibold text-gray-800">Số điện thoại</p>
-                                <p className="text-gray-600">1234567890</p>
-                            </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                            <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
-                            <div>
-                                <p className="font-semibold text-gray-800">Triệu chứng</p>
-                                <p className="text-gray-600">{incident.symptoms}</p>
+                                <p className="font-semibold text-gray-800">
+                                    Triệu chứng
+                                </p>
+                                <p className="text-gray-600">
+                                    {incident.symptoms}
+                                </p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
@@ -132,15 +127,9 @@ const IncidentCard = ({
                                 ) : (
                                     <XCircle className="w-4 h-4 text-red-500" />
                                 )}
-                                <span className="text-sm text-gray-600">Phụ huynh đã được thông báo</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                {incident.followUpRequired ? (
-                                    <CheckCircle className="w-4 h-4 text-yellow-500" />
-                                ) : (
-                                    <XCircle className="w-4 h-4 text-gray-400" />
-                                )}
-                                <span className="text-sm text-gray-600">Yêu cầu theo dõi</span>
+                                <span className="text-sm text-gray-600">
+                                    Phụ huynh đã được thông báo
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -29,7 +29,6 @@ const IncidentsPage = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false)
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all")
   const [filterSeverity, setFilterSeverity] = useState("all")
   const [incidents, setIncidents] = useState<Incident[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -39,22 +38,7 @@ const IncidentsPage = () => {
       try {
         const response = await getAllMedicalIncidents()
         if (response.success) {
-          const mappedIncidents: Incident[] = response.data.map((item) => ({
-            id: item.id.toString(),
-            studentName: item.studentName,
-            studentClass: item.studentCode,
-            incidentType: item.type,
-            severity: item.severity,
-            status: item.severity,
-            dateTime: item.incidentDate,
-            description: item.description,
-            symptoms: item.symptoms,
-            treatment: item.treatment,
-            nurseNotes: item.symptoms,
-            parentNotified: item.parentNotified,
-            followUpRequired: false,
-          }))
-          setIncidents(mappedIncidents)
+          setIncidents(response.data)
         } else {
           setError(response.message || "Failed to fetch incidents")
         }
@@ -89,32 +73,16 @@ const IncidentsPage = () => {
   const filteredIncidents = incidents.filter((incident) => {
     const matchesSearch =
         incident.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        incident.incidentType.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filterStatus === "all" || incident.status === filterStatus
+        incident.type.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesSeverity = filterSeverity === "all" || incident.severity === filterSeverity
-    return matchesSearch && matchesStatus && matchesSeverity
+    return matchesSearch && matchesSeverity
   });
 
   const fetchIncidents = async () => {
     try {
       const response = await getAllMedicalIncidents()
       if (response.success) {
-        const mappedIncidents: Incident[] = response.data.map((item) => ({
-          id: item.id.toString(),
-          studentName: item.studentName,
-          studentClass: item.studentCode,
-          incidentType: item.type,
-          severity: item.severity,
-          status: item.severity,
-          dateTime: item.incidentDate,
-          description: item.description,
-          symptoms: item.symptoms,
-          treatment: item.treatment,
-          nurseNotes: item.symptoms,
-          parentNotified: item.parentNotified,
-          followUpRequired: false,
-        }))
-        setIncidents(mappedIncidents)
+        setIncidents(response.data)
         setError(null)
       } else {
         setError(response.message || "Failed to fetch incidents")
@@ -124,8 +92,6 @@ const IncidentsPage = () => {
       console.error(err)
     }
   };
-
-  console.log(filteredIncidents)
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100">
@@ -176,17 +142,6 @@ const IncidentsPage = () => {
                       className="border-red-200 focus:border-red-500"
                   />
                 </div>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="border-red-200 focus:border-red-500">
-                    <SelectValue placeholder="Filter by status" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                    <SelectItem value="High">Nguy cơ cao</SelectItem>
-                    <SelectItem value="Medium">Nguy cơ trung bình</SelectItem>
-                    <SelectItem value="Low">Nguy cơ thấp</SelectItem>
-                  </SelectContent>
-                </Select>
                 <Select value={filterSeverity} onValueChange={setFilterSeverity}>
                   <SelectTrigger className="border-red-200 focus:border-red-500">
                     <SelectValue placeholder="Filter by severity" />

@@ -1,5 +1,5 @@
+import { Incident } from "@/types";
 import {
-    MedicalIncident,
     CreateMedicalIncidentDto,
     UpdateMedicalIncidentDto,
     ApiResponse
@@ -8,95 +8,109 @@ import { getAuthHeaders } from "@/lib/utils";
 
 const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medical-incidents`;
 
-export const getAllMedicalIncidents = async ():
-    Promise<ApiResponse<MedicalIncident[]>> =>
-{
-    const response = await fetch(`${BASE_URL}`,
-        {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        }
-    );
+const mapApiIncidentToIncident = (
+    apiIncident: Incident
+): Incident => ({
+    ...apiIncident,
+    nurseName: apiIncident.nurseName || ""
+});
 
+// Helper function to handle API responses
+const handleApiResponse = async <T>(
+    response: Response
+): Promise<ApiResponse<T>> => {
     if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
-
     return await response.json();
+};
+
+export const getAllMedicalIncidents = async ():
+    Promise<ApiResponse<Incident[]>> =>
+{
+    const response = await fetch(`${BASE_URL}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    const result = await handleApiResponse<Incident[]>(response);
+
+    if (result.success) {
+        result.data = result.data.map(mapApiIncidentToIncident);
+    }
+
+    return result;
 };
 
 export const getMedicalIncidentById = async (
     incidentId: number
-): Promise<ApiResponse<MedicalIncident>> => {
-    const response = await fetch(
-        `${BASE_URL}/${incidentId}`,
-        {
-            method: 'GET',
-            headers: getAuthHeaders(),
-        }
-    );
+): Promise<ApiResponse<Incident>> => {
+    const response = await fetch(`${BASE_URL}/${incidentId}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    const result = await handleApiResponse<Incident>(response);
+
+    if (result.success) {
+        result.data = mapApiIncidentToIncident(result.data);
     }
 
-    return await response.json();
+    return result;
 };
 
 export const createMedicalIncident = async (
     incidentData: CreateMedicalIncidentDto
-): Promise<MedicalIncident> => {
-    const response = await fetch(`${BASE_URL}`,
-        {
-            method: "POST",
-            headers: getAuthHeaders(),
-            body: JSON.stringify(incidentData),
-        }
-    );
+): Promise<ApiResponse<Incident>> => {
+    const response = await fetch(`${BASE_URL}`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(incidentData),
+    });
 
-    const result: ApiResponse<MedicalIncident> = await response.json();
+    const result = await handleApiResponse<Incident>(response);
+
+    if (result.success) {
+        result.data = mapApiIncidentToIncident(result.data);
+    }
 
     if (!response.ok) {
         throw new Error(result.message || "Failed to create medical incident");
     }
 
-    return result.data;
+    return result;
 };
 
 export const updateMedicalIncident = async (
     incidentId: number,
     incidentData: UpdateMedicalIncidentDto
-): Promise<MedicalIncident> => {
-    const response = await fetch(`${BASE_URL}/${incidentId}`,
-        {
-            method: "PUT",
-            headers: getAuthHeaders(),
-            body: JSON.stringify(incidentData),
-        }
-    );
+): Promise<ApiResponse<Incident>> => {
+    const response = await fetch(`${BASE_URL}/${incidentId}`, {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(incidentData),
+    });
 
-    const result: ApiResponse<MedicalIncident> = await response.json();
+    const result = await handleApiResponse<Incident>(response);
+
+    if (result.success) {
+        result.data = mapApiIncidentToIncident(result.data);
+    }
 
     if (!response.ok) {
         throw new Error(result.message || "Failed to update medical incident");
     }
 
-    return result.data;
+    return result;
 };
 
 export const deleteMedicalIncident = async (
     incidentId: number
 ): Promise<ApiResponse<boolean>> => {
-    const response = await fetch(`${BASE_URL}/${incidentId}`,
-        {
-            method: 'DELETE',
-            headers: getAuthHeaders(),
-        }
-    );
+    const response = await fetch(`${BASE_URL}/${incidentId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+    });
 
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return await response.json();
+    return await handleApiResponse<boolean>(response);
 };

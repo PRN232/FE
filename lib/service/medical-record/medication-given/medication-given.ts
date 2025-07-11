@@ -1,5 +1,5 @@
+import { MedicationGiven } from "@/types";
 import {
-    MedicationGiven,
     CreateMedicationGivenDto,
     UpdateMedicationGivenDto,
     ApiResponse
