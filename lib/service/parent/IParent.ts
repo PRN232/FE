@@ -1,4 +1,4 @@
-import {ChildDTO} from "@/types";
+import { ChildDTO } from "@/types";
 
 export interface ApiParent {
     id: number;

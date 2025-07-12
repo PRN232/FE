@@ -11,8 +11,7 @@ const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medications-given`;
 export const getAllMedicationsGiven = async ():
     Promise<ApiResponse<MedicationGiven[]>> =>
 {
-    const response = await fetch(`${BASE_URL}`,
-        {
+    const response = await fetch(`${BASE_URL}`, {
             method: 'GET',
             headers: getAuthHeaders(),
         }
@@ -28,8 +27,7 @@ export const getAllMedicationsGiven = async ():
 export const getMedicationGivenById = async (
     id: number
 ): Promise<ApiResponse<MedicationGiven>> => {
-    const response = await fetch(`${BASE_URL}/${id}`,
-        {
+    const response = await fetch(`${BASE_URL}/${id}`, {
             method: 'GET',
             headers: getAuthHeaders(),
         }
@@ -45,8 +43,7 @@ export const getMedicationGivenById = async (
 export const createMedicationGiven = async (
     medicationData: CreateMedicationGivenDto
 ): Promise<MedicationGiven> => {
-    const response = await fetch(`${BASE_URL}`,
-        {
+    const response = await fetch(`${BASE_URL}`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify(medicationData),
@@ -66,8 +63,7 @@ export const updateMedicationGiven = async (
     id: number,
     medicationData: UpdateMedicationGivenDto
 ): Promise<MedicationGiven> => {
-    const response = await fetch(`${BASE_URL}/${id}`,
-        {
+    const response = await fetch(`${BASE_URL}/${id}`, {
             method: "PUT",
             headers: getAuthHeaders(),
             body: JSON.stringify(medicationData),
@@ -86,8 +82,7 @@ export const updateMedicationGiven = async (
 export const deleteMedicationGiven = async (
     id: number
 ): Promise<ApiResponse<boolean>> => {
-    const response = await fetch(`${BASE_URL}/${id}`,
-        {
+    const response = await fetch(`${BASE_URL}/${id}`, {
             method: 'DELETE',
             headers: getAuthHeaders(),
         }

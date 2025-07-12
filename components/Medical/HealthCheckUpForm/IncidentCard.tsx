@@ -60,7 +60,7 @@ const IncidentCard = ({
                                 {incident.studentName}
                             </CardTitle>
                             <CardDescription className="text-red-600">
-                                {incident.studentCode} • ID sự cố: {incident.id}
+                                Mã học sinh: {incident.studentCode} • ID sự cố: {incident.id}
                             </CardDescription>
                         </div>
                     </div>

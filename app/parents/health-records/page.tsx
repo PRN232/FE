@@ -150,8 +150,6 @@ const HealthRecord = () => {
         }
     }
 
-    console.log(selectedChild)
-
     if (!user && error) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 p-6">

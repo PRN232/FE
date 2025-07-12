@@ -15,7 +15,6 @@ const mapApiIncidentToIncident = (
     nurseName: apiIncident.nurseName || ""
 });
 
-// Helper function to handle API responses
 const handleApiResponse = async <T>(
     response: Response
 ): Promise<ApiResponse<T>> => {
