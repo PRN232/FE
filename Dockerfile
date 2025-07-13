@@ -1,42 +1,44 @@
-# syntax=docker/dockerfile:1
-
+# 1. Base image với Node.js
 ARG NODE_VERSION=20.17.0
 FROM node:${NODE_VERSION}-alpine AS base
 
-# Dùng đúng thư mục chứa mã nguồn thực tế
+# Tạo thư mục app
 WORKDIR /app
 
-# Tùy chọn: cài thêm tiện ích nếu cần build native packages
+# Cài thêm các dependency hệ thống cần thiết
 RUN apk add --no-cache libc6-compat
 
-################################################################################
-FROM base AS deps
+# Copy file cấu hình trước để tận dụng cache
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
 
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+# Cài đặt các dependency (dùng npm ở đây, có thể thay bằng yarn hoặc pnpm tùy project)
+RUN npm install
 
-################################################################################
-FROM base AS build
-
-# Copy toàn bộ mã nguồn và file cấu hình
+# Copy toàn bộ mã nguồn
 COPY . .
-COPY next.config.ts ./
-COPY tsconfig.json ./
 
-RUN npm ci
+# Build Next.js project (production)
 RUN npm run build
 
-################################################################################
-FROM node:${NODE_VERSION}-alpine AS final
+# === Final Image: chỉ chứa mã đã build ===
+FROM node:${NODE_VERSION}-alpine AS runner
 
 WORKDIR /app
-ENV NODE_ENV=production
-USER node
 
-COPY --chown=node:node package.json ./
-COPY --chown=node:node --from=deps /app/node_modules ./node_modules
-COPY --chown=node:node --from=build /app/public ./public
-COPY --chown=node:node --from=build /app/.next ./.next
+RUN apk add --no-cache libc6-compat
+
+# Copy runtime files từ stage base
+COPY --from=base /app/.next .next
+COPY --from=base /app/public ./public
+COPY --from=base /app/app ./app
+COPY --from=base /app/components ./components
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/tsconfig.json ./tsconfig.json
+COPY --from=base /app/next.config.ts ./next.config.ts
+COPY --from=base /app/next-env.d.ts ./next-env.d.ts
+
+ENV NODE_ENV=production
 
 EXPOSE 2006
+
 CMD ["npm", "start"]
