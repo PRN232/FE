@@ -31,7 +31,7 @@ const MedicalInfo = ({
                          hasMedicalProfile
 }: MedicalInfoProps) => {
     const [activeTab, setActiveTab] = useState("overview")
-    const [medicalData, setMedicalData] = useState({
+    const [medicalData] = useState({
         allergies: [
             { id: 1, allergen: "Penicillin", severity: "high", symptoms: "Phát ban, khó thở" },
             { id: 2, allergen: "Peanuts", severity: "medium", symptoms: "Ngứa, sưng môi" },

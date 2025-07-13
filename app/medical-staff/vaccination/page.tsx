@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { mockVaccinationCampaigns } from "@/lib/data/mock-data";
 import type { VaccinationCampaign } from "@/types";
-import { Badge } from "@/components/ui/badge";
 import { Plus, X, ChevronRight } from "lucide-react";
 
 const statusTranslations: { [key: string]: string } = {

@@ -43,21 +43,20 @@ export const getMedicationGivenById = async (
 
 export const createMedicationGiven = async (
     medicationData: CreateMedicationGivenDto
-): Promise<MedicationGiven> => {
+): Promise<ApiResponse<MedicationGiven>> => {
     const response = await fetch(`${BASE_URL}`, {
-            method: "POST",
-            headers: getAuthHeaders(),
-            body: JSON.stringify(medicationData),
-        }
-    );
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(medicationData),
+    });
 
-    const result: ApiResponse<MedicationGiven> = await response.json();
+    const result = await response.json();
 
     if (!response.ok) {
         throw new Error(result.message || "Failed to create medication given");
     }
 
-    return result.data;
+    return result;
 };
 
 export const updateMedicationGiven = async (

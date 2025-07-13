@@ -4,8 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { mockMedicalExaminations } from "@/lib/data/mock-data";
 import type { MedicalExamination } from "@/types";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils"; // If you have a classnames util
+import { cn } from "@/lib/utils";
 
 const statusTranslations: { [key: string]: string } = {
   scheduled: "Đã lên lịch",

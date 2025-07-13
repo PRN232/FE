@@ -4,48 +4,48 @@ import { useState, useEffect } from "react";
 
 import { medicalRequests } from "@/lib/data/mock-data";
 import RequestsTab from "@/components/Medical/MedicalRequest/RequestsTab";
-import {
-    getAllMedicationsGiven
-} from "@/lib/service/medical-record/medication-given/medication-given";
-import { MedicationGiven } from "@/types";
+// import {
+//     getAllMedicationsGiven
+// } from "@/lib/service/medical-record/medication-given/medication-given";
+// import { MedicationGiven } from "@/types";
 
 const MedicalRequest = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
-    const [medications, setMedications] = useState<MedicationGiven[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // const [medications, setMedications] = useState<MedicationGiven[]>([]);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchMedications = async () => {
-            try {
-                const response = await getAllMedicationsGiven();
-                if (response.success) {
-                    setMedications(response.data);
-                } else {
-                    // setError(response.message || "Failed to fetch medications");
-                }
-            } catch (err) {
-                // setError(err.message || "An error occurred while fetching medications");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        void fetchMedications();
+        // const fetchMedications = async () => {
+        //     try {
+        //         const response = await getAllMedicationsGiven();
+        //         if (response.success) {
+        //             setMedications(response.data);
+        //         } else {
+        //             // setError(response.message || "Failed to fetch medications");
+        //         }
+        //     } catch (err) {
+        //         // setError(err.message || "An error occurred while fetching medications");
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
+        //
+        // void fetchMedications();
     }, []);
 
-    if (loading) {
-        return <div className="min-h-screen flex items-center justify-center">
-            Loading...
-        </div>;
-    }
-
-    if (error) {
-        return <div className="min-h-screen flex items-center justify-center text-red-600">
-            Error: {error}
-        </div>;
-    }
+    // if (loading) {
+    //     return <div className="min-h-screen flex items-center justify-center">
+    //         Loading...
+    //     </div>;
+// }
+    //
+    // if (error) {
+    //     return <div className="min-h-screen flex items-center justify-center text-red-600">
+    //         Error: {error}
+    //     </div>;
+    // }
 
   return (
       <div
