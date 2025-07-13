@@ -2,9 +2,10 @@ import { Incident, MedicationGiven } from "@/types";
 import { CreateMedicalIncidentDto } from "./incident/IIncident";
 import { CreateMedicationGivenDto } from "./medication-given/IMedication-given";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const INCIDENT_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/medical-incidents`;
-const MEDICATION_API_URL = `${process.env.NEXT_PUBLIC_API_URL}/medications-given`;
+const INCIDENT_API_URL = `${NEXT_PUBLIC_API_URL}/medical-incidents`;
+const MEDICATION_API_URL = `${NEXT_PUBLIC_API_URL}/medications-given`;
 
 interface ApiIncidentResponse {
     id: number;

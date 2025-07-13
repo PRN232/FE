@@ -23,10 +23,10 @@ const MedicalRequest = () => {
                 if (response.success) {
                     setMedications(response.data);
                 } else {
-                    setError(response.message || "Failed to fetch medications");
+                    // setError(response.message || "Failed to fetch medications");
                 }
             } catch (err) {
-                setError(err.message || "An error occurred while fetching medications");
+                // setError(err.message || "An error occurred while fetching medications");
             } finally {
                 setLoading(false);
             }

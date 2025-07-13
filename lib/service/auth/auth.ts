@@ -1,8 +1,9 @@
 import type { User } from "@/types";
-import {JwtPayload} from "./JWTPayload";
-import {jwtDecode} from "jwt-decode";
+import { JwtPayload } from "./JWTPayload";
+import { jwtDecode } from "jwt-decode";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook"
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/Auth`;
+const BASE_URL = `${NEXT_PUBLIC_API_URL}/Auth`;
 
 export const register = async (
     fullName: string,

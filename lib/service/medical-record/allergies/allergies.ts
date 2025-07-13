@@ -5,8 +5,9 @@ import {
     ApiResponse
 } from "@/lib/service/medical-record/allergies/IAllergies";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const API_BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medicalprofiles`;
+const API_BASE_URL = `${NEXT_PUBLIC_API_URL}/medicalprofiles`;
 
 export const getAllergies = async (
     medicalProfileId: number

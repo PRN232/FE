@@ -5,8 +5,9 @@ import {
     ApiResponse
 } from "./IIncident";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medical-incidents`;
+const BASE_URL = `${NEXT_PUBLIC_API_URL}/medical-incidents`;
 
 const mapApiIncidentToIncident = (
     apiIncident: Incident

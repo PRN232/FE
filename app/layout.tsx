@@ -1,6 +1,7 @@
-import type React from "react"
+import { ReactNode } from "react";
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { PublicEnvScript } from "next-runtime-env";
 import "./globals.css"
 import Navbar from "@/components/Layout/Navbar/Navbar";
 import Footer from "@/components/Layout/Footer/Footer";
@@ -15,9 +16,12 @@ export const metadata: Metadata = {
         "Comprehensive health management system for schools, managing student health records, medical incidents, vaccinations, and health examinations.",
 }
 
-export default function RootLayout({children}: { children: React.ReactNode }) {
+export default function RootLayout({children}: { children: ReactNode }) {
     return (
         <html lang="en">
+        <head>
+            <PublicEnvScript />
+        </head>
         <body className={inter.className}>
         <AuthProvider>
             <div className="min-h-screen flex flex-col">

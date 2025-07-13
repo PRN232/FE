@@ -1,4 +1,5 @@
 import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
 export interface MedicalProfileResponse {
     success: boolean;
@@ -8,7 +9,7 @@ export interface MedicalProfileResponse {
     errors?: string[];
 }
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/MedicalProfile/by-student`;
+const BASE_URL = `${NEXT_PUBLIC_API_URL}/MedicalProfile/by-student`;
 
 export const getMedicalProfileByStudentId = async (
     studentId: number

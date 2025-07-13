@@ -1,8 +1,9 @@
 import type { User, ChildDTO } from "@/types";
 import type { ApiParent } from "./IParent";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/Parent`;
+const API_URL = `${NEXT_PUBLIC_API_URL}/Parent`;
 
 const mapApiParentToUser = (apiParent: ApiParent): User => ({
     id: apiParent.userId.toString(),

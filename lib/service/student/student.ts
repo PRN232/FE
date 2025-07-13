@@ -5,8 +5,9 @@ import type {
     UpdateStudentRequest
 } from "./IStudent";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/Student`;
+const API_URL = `${NEXT_PUBLIC_API_URL}/Student`;
 
 const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     id: apiStudent.id.toString(),

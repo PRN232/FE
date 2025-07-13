@@ -5,8 +5,9 @@ import {
     ApiResponse
 } from "./IMedication-given";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medications-given`;
+const BASE_URL = `${NEXT_PUBLIC_API_URL}/medications-given`;
 
 export const getAllMedicationsGiven = async ():
     Promise<ApiResponse<MedicationGiven[]>> =>

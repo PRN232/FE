@@ -5,8 +5,9 @@ import {
     CreateChronicDiseaseDto,
     UpdateChronicDiseaseDto
 } from "@/lib/service/medical-record/chronic-diseases/IChronic-diseases";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/medicalprofiles`;
+const BASE_URL = `${NEXT_PUBLIC_API_URL}/medicalprofiles`;
 
 export const getAllChronicDiseases = async (
     medicalProfileId: number

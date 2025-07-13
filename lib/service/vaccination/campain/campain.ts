@@ -5,8 +5,9 @@ import {
     StudentCampaign,
 } from "./ICampain";
 import { getAuthHeaders } from "@/lib/utils";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
-const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/vaccination-campaigns`;
+const BASE_URL = `${NEXT_PUBLIC_API_URL}/vaccination-campaigns`;
 
 export const getVaccinationCampaigns = async ():
     Promise<ApiListResponse<VaccinationCampaign>> =>
