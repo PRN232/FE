@@ -172,7 +172,7 @@ const RequestsTab = ({
                                         <User className="w-5 h-5 text-red-500 mt-0.5" />
                                         <div>
                                             <p className="font-semibold text-gray-800">
-                                                Phụ huynh liên lạc
+                                                Phụ huynh
                                             </p>
                                             <p className="text-gray-600">
                                                 {request.parentName}
