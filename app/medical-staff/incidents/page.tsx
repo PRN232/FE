@@ -16,9 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Plus } from "lucide-react";
-import IncidentModal from "@/components/Medical/HealthCheckUpForm/Incident";
-import ViewIncident from "@/components/Medical/HealthCheckUpForm/VIewIncident";
-import IncidentCard from "@/components/Medical/HealthCheckUpForm/IncidentCard";
+import IncidentModal from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
+import ViewIncident from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
+import IncidentCard from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
 
 import { Incident } from "@/types";
 import { getAllMedicalIncidents } from "@/lib/service/medical-record/incident/incident";

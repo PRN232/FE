@@ -42,7 +42,7 @@ import {
     getMedicalProfileByStudentId,
     MedicalProfileResponse
 } from "@/lib/service/medical-profile/medical";
-import NewRequest from "@/components/Medical/HealthCheckUpForm/NewRequest";
+import NewRequest from "@/components/Medical/HealthCheckUpForm/RecordIncident/NewRequest";
 
 const HealthRecord = () => {
     const [isNewRequestModalOpen, setIsRequestModalOpen] = useState(false)

@@ -8,7 +8,6 @@ export interface CreateMedicalIncidentDto {
     severity: "Low" | "Medium" | "High";
     incidentDate: string;
     parentNotified?: boolean;
-    request?: string;
 }
 
 export interface UpdateMedicalIncidentDto {
