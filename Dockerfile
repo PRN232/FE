@@ -23,7 +23,8 @@ FROM base AS build
 # Copy toàn bộ mã nguồn và cài devDependencies
 COPY . .
 RUN npm ci
-
+COPY next.config.ts ./
+COPY tsconfig.json ./ 
 # Build Next.js app
 RUN npm run build
 
