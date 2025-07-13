@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
-import { PublicEnvScript } from "next-runtime-env";
 import "./globals.css"
+
+import { PublicEnvScript } from "next-runtime-env";
+import { AuthProvider } from "@/lib/auth/auth-context";
 import Navbar from "@/components/Layout/Navbar/Navbar";
 import Footer from "@/components/Layout/Footer/Footer";
-
-import {AuthProvider} from "@/lib/auth/auth-context";
 
 const inter = Inter({ subsets: ["latin"] })
 

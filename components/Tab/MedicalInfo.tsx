@@ -50,7 +50,12 @@ const MedicalInfo = ({
     return (
         <>
             {hasMedicalProfile && (
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                <Tabs
+                    value={activeTab}
+                    onValueChange={setActiveTab}
+                    defaultValue="overview"
+                    className="space-y-4"
+                >
                     <TabsList className="grid w-full grid-cols-4 bg-red-50">
                         <TabsTrigger value="overview" className="data-[state=active]:bg-red-500 data-[state=active]:text-white">
                             Tổng quan

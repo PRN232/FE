@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import {
     Card,
     CardContent,
@@ -24,7 +25,6 @@ import {
 } from "lucide-react"
 import { Incident, MedicationGiven } from "@/types"
 import { getSeverityColor } from "@/lib/utils"
-import { useState } from "react"
 import AddMedicine from "@/components/Medical/HealthCheckUpForm/RecordIncident/AddMedicine";
 
 interface IncidentCardProps {
@@ -35,7 +35,8 @@ interface IncidentCardProps {
         incidentId: number,
         medicationData: {
             medicationId: number,
-            dosage: string
+            dosage: string,
+            giveAt: string
         }) => Promise<boolean>
 }
 
@@ -43,14 +44,14 @@ const getIncidentTypeIcon = (type: string) => {
     switch (type) {
         case "Injury":
         case "Fall":
-            return <AlertTriangle className="w-4 h-4" />
+            return <AlertTriangle className="w-5 h-5" />
         case "Illness":
-            return <Activity className="w-4 h-4" />
+            return <Activity className="w-5 h-5" />
         case "Allergic Reaction":
         case "Accident":
-            return <Stethoscope className="w-4 h-4" />
+            return <Stethoscope className="w-5 h-5" />
         default:
-            return <FileText className="w-4 h-4" />
+            return <FileText className="w-5 h-5" />
     }
 }
 
@@ -65,36 +66,44 @@ const IncidentCard = ({
 
     return (
         <>
-            <Card className="shadow-lg border-0 bg-white/90 backdrop-blur hover:shadow-xl transition-all duration-300">
-                <CardHeader className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200">
+            <Card className="relative overflow-hidden shadow-lg border-0 group hover:shadow-xl transition-all duration-300">
+                {/* Gradient accent bar */}
+                <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-red-500 to-red-600" />
+
+                <CardHeader className="bg-gradient-to-r from-red-50 via-white to-red-50 border-b border-red-100 px-6 py-4 group-hover:from-red-100 group-hover:via-white group-hover:to-red-100 transition-colors duration-300">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600">
+                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-red-600 border border-red-100 shadow-sm">
                                 {getIncidentTypeIcon(incident.type)}
                             </div>
                             <div>
-                                <CardTitle className="text-red-800">
+                                <CardTitle className="text-gray-800 font-medium">
                                     {incident.studentName}
                                 </CardTitle>
-                                <CardDescription className="text-red-600">
-                                    Mã học sinh: {incident.studentCode} • ID sự cố: {incident.id}
+                                <CardDescription className="text-gray-500">
+                                    Mã học sinh: {incident.studentCode} • ID: {incident.id}
                                 </CardDescription>
                             </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                            <Badge className={getSeverityColor(incident.severity)}>
+                            <Badge
+                                className={`${getSeverityColor(incident.severity)} px-3 py-1 rounded-full font-medium shadow-sm`}
+                            >
                                 {incident.severity}
                             </Badge>
                         </div>
                     </div>
                 </CardHeader>
+
                 <CardContent className="p-6">
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="space-y-4">
                             <div className="flex items-start space-x-3">
-                                <Clock className="w-5 h-5 text-red-500 mt-0.5" />
+                                <div className="p-2 bg-red-50 rounded-lg text-red-600">
+                                    <Clock className="w-5 h-5" />
+                                </div>
                                 <div>
-                                    <p className="font-semibold text-gray-800">
+                                    <p className="font-medium text-gray-700">
                                         Thời gian
                                     </p>
                                     <p className="text-gray-600">
@@ -102,10 +111,13 @@ const IncidentCard = ({
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex items-start space-x-3">
-                                <MapPin className="w-5 h-5 text-red-500 mt-0.5" />
+                                <div className="p-2 bg-red-50 rounded-lg text-red-600">
+                                    <MapPin className="w-5 h-5" />
+                                </div>
                                 <div>
-                                    <p className="font-semibold text-gray-800">
+                                    <p className="font-medium text-gray-700">
                                         Mô tả
                                     </p>
                                     <p className="text-gray-600">
@@ -114,11 +126,14 @@ const IncidentCard = ({
                                 </div>
                             </div>
                         </div>
+
                         <div className="space-y-4">
                             <div className="flex items-start space-x-3">
-                                <FileText className="w-5 h-5 text-red-500 mt-0.5" />
+                                <div className="p-2 bg-red-50 rounded-lg text-red-600">
+                                    <FileText className="w-5 h-5" />
+                                </div>
                                 <div>
-                                    <p className="font-semibold text-gray-800">
+                                    <p className="font-medium text-gray-700">
                                         Loại sự cố
                                     </p>
                                     <p className="text-gray-600">
@@ -126,10 +141,13 @@ const IncidentCard = ({
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex items-start space-x-3">
-                                <AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" />
+                                <div className="p-2 bg-red-50 rounded-lg text-red-600">
+                                    <AlertTriangle className="w-5 h-5" />
+                                </div>
                                 <div>
-                                    <p className="font-semibold text-gray-800">
+                                    <p className="font-medium text-gray-700">
                                         Triệu chứng
                                     </p>
                                     <p className="text-gray-600">
@@ -137,12 +155,13 @@ const IncidentCard = ({
                                     </p>
                                 </div>
                             </div>
+
                             <div className="flex items-center space-x-4">
                                 <div className="flex items-center space-x-2">
                                     {incident.parentNotified ? (
-                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
                                     ) : (
-                                        <XCircle className="w-4 h-4 text-red-500" />
+                                        <XCircle className="w-5 h-5 text-red-500" />
                                     )}
                                     <span className="text-sm text-gray-600">
                                         Phụ huynh đã được thông báo
@@ -153,17 +172,17 @@ const IncidentCard = ({
                     </div>
 
                     {/* Medications Section */}
-                    <div className="mt-6 space-y-3">
+                    <div className="mt-8 space-y-3">
                         <div className="flex items-center justify-between">
                             <h3 className="font-semibold text-gray-800 flex items-center">
-                                <Pill className="w-4 h-4 mr-2 text-red-500" />
+                                <Pill className="w-5 h-5 mr-2 text-red-500" />
                                 Thuốc đã sử dụng
                             </h3>
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setIsMedicationDialogOpen(true)}
-                                className="border-red-200 text-red-700 hover:bg-red-50 bg-transparent"
+                                className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 bg-white shadow-sm"
                             >
                                 <Plus className="w-4 h-4 mr-2" />
                                 Thêm thuốc
@@ -171,36 +190,45 @@ const IncidentCard = ({
                         </div>
 
                         {incidentMedications.length > 0 ? (
-                            <div className="border border-gray-200 rounded-md p-4 bg-gray-50">
+                            <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
                                 {incidentMedications.map((medication) => (
-                                    <div key={medication.id} className="py-2 border-b border-gray-100 last:border-b-0">
+                                    <div
+                                        key={medication.id}
+                                        className="py-3 px-4 border-b border-gray-100 last:border-b-0 hover:bg-red-50/50 transition-colors duration-200 rounded-md"
+                                    >
                                         <div className="flex justify-between items-center">
                                             <div>
-                                                <p className="font-medium">Thuốc ID: {medication.medicationId}</p>
-                                                <p className="text-sm text-gray-600">Liều dùng: {medication.dosage}</p>
+                                                <p className="font-medium text-gray-800">
+                                                    Thuốc ID: {medication.medicationId}
+                                                </p>
+                                                <p className="text-sm text-gray-600">
+                                                    Liều dùng: {medication.dosage}
+                                                </p>
                                             </div>
-                                            <div className="text-sm text-gray-500">
-                                                {medication.giveAt !== "0001-01-01T00:00:00" ?
-                                                    new Date(medication.giveAt).toLocaleString() :
-                                                    "Chưa xác định thời gian"}
+                                            <div className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                                                {medication.giveAt && medication.giveAt !== "0001-01-01T00:00:00" ? (
+                                                    new Date(medication.giveAt).toLocaleString()
+                                                ) : (
+                                                    "Chưa xác định thời gian"
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-md border border-gray-200">
+                            <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                                 Chưa có thuốc nào được ghi nhận
                             </div>
                         )}
                     </div>
 
-                    <div className="flex justify-end space-x-2 mt-6 pt-4 border-t border-red-100">
+                    <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-100">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => onView(incident)}
-                            className="border-red-200 text-red-700 hover:bg-red-50 bg-transparent"
+                            className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 bg-white shadow-sm"
                         >
                             <Eye className="w-4 h-4 mr-2" />
                             Xem chi tiết

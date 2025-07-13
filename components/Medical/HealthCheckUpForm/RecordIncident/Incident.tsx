@@ -62,8 +62,9 @@ interface IncidentFormData {
 
 const IncidentModal = ({
                            isOpen,
-                           onClose, onSuccess
-                       }: NewIncidentModalProps) => {
+                           onClose,
+                           onSuccess
+}: NewIncidentModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentSymptom, setCurrentSymptom] = useState("");
     const [formData, setFormData] = useState<IncidentFormData>({
@@ -290,6 +291,7 @@ const IncidentModal = ({
                                             <Calendar
                                                 mode="single"
                                                 selected={formData.date}
+                                                autoFocus={true}
                                                 onSelect={(date) => date && handleInputChange("date", date)}
                                                 captionLayout="dropdown"
                                             />
