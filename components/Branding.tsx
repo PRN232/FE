@@ -11,19 +11,20 @@ const Branding = () => {
                         HealthCare School
                     </h1>
                     <p className="text-lg text-red-100/90">
-                        Comprehensive digital solution for managing student health records, medical incidents, and health
-                        programs.
+                        Giải pháp số toàn diện cho việc quản lý hồ sơ sức khỏe học sinh, sự cố y tế và các chương trình chăm sóc sức khỏe.
                     </p>
                     <div className="space-y-4">
                         {[
-                            "Secure health record management",
-                            "Real-time incident tracking",
-                            "Vaccination program management",
-                            "Parent-school communication"
+                            "Quản lý hồ sơ sức khỏe bảo mật",
+                            "Theo dõi sự cố y tế thời gian thực",
+                            "Quản lý chương trình tiêm chủng",
+                            "Kênh liên lạc giữa nhà trường và phụ huynh"
                         ].map((feature, index) => (
                             <div key={index} className="flex items-center space-x-3 group">
                                 <div className="w-2 h-2 bg-white rounded-full transition-all duration-300 group-hover:bg-red-300 group-hover:scale-150" />
-                                <span className="transition-all duration-300 group-hover:text-red-200">{feature}</span>
+                                <span className="transition-all duration-300 group-hover:text-red-200">
+                                    {feature}
+                                </span>
                             </div>
                         ))}
                     </div>
