@@ -1,10 +1,6 @@
 "use client";
 
-import {
-    useState,
-    FormEvent,
-    KeyboardEvent
-} from "react";
+import { useState, FormEvent, KeyboardEvent } from "react";
 import {
     Dialog,
     DialogClose,
@@ -25,12 +21,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Loader2,
     Save,
     Plus,
-    X,
-    CalendarIcon
+    X
 } from "lucide-react";
 import {
     Popover,
@@ -39,14 +35,12 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { showSuccessAlert, showErrorAlert } from "@/lib/utils";
-import {
-    CreateMedicalIncidentDto
-} from "@/lib/service/medical-record/incident/IIncident";
-import {
-    createMedicalIncident
-} from "@/lib/service/medical-record/incident/incident";
-import {Checkbox} from "@/components/ui/checkbox";
+import
+{ showSuccessAlert,
+    showErrorAlert
+} from "@/lib/utils";
+import { CreateMedicalIncidentDto } from "@/lib/service/medical-record/incident/IIncident";
+import { createMedicalIncident } from "@/lib/service/medical-record/incident/incident";
 
 interface NewIncidentModalProps {
     isOpen: boolean;
@@ -66,7 +60,10 @@ interface IncidentFormData {
     parentNotified: boolean;
 }
 
-const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) => {
+const IncidentModal = ({
+                           isOpen,
+                           onClose, onSuccess
+                       }: NewIncidentModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentSymptom, setCurrentSymptom] = useState("");
     const [formData, setFormData] = useState<IncidentFormData>({
@@ -85,14 +82,9 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
         e.preventDefault();
         setIsLoading(true);
 
-        // Retrieve nurseId from localStorage
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        const nurseId = parseInt(user.id, 10);
-
         // Validation for incident fields
         if (
             !formData.studentId ||
-            !nurseId ||
             !formData.studentName ||
             !formData.incidentType ||
             !formData.description ||
@@ -100,7 +92,7 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
             !formData.severity ||
             !formData.date
         ) {
-            await showErrorAlert("Vui lòng điền đầy đủ thông tin bắt buộc cho sự cố, bao gồm yêu cầu.");
+            await showErrorAlert("Vui lòng điền đầy đủ thông tin bắt buộc cho sự cố.");
             setIsLoading(false);
             return;
         }
@@ -108,7 +100,7 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
         try {
             const incidentData: CreateMedicalIncidentDto = {
                 studentId: formData.studentId,
-                nurseId: nurseId,
+                nurseId: 2,
                 type: formData.incidentType as "Accident" | "Fever" | "Fall" | "Epidemic" | "Other",
                 description: formData.description,
                 symptoms: formData.symptoms.join(", "),
@@ -131,7 +123,8 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                 await showErrorAlert(response.message || "Có lỗi xảy ra khi ghi nhận sự cố.");
             }
         } catch (error) {
-            await showErrorAlert(error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định.");
+            const errorMessage = error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định.";
+            await showErrorAlert(errorMessage);
             console.error("Error creating incident:", error);
         } finally {
             setIsLoading(false);
@@ -186,28 +179,22 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
             <DialogContent className="bg-white sm:max-w-4xl max-h-[90vh] overflow-y-auto rounded-lg">
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <DialogHeader>
-                        <div className="flex items-center space-x-3">
+                        <DialogTitle className="flex items-center text-red-800 space-x-3">
                             <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center text-white">
                                 <Plus className="w-5 h-5" />
                             </div>
-                            <div>
-                                <DialogTitle className="text-2xl font-bold text-gray-800">
-                                    Ghi nhận sự cố y tế
-                                </DialogTitle>
-                                <DialogDescription className="text-gray-600">
-                                    Ghi nhận sự cố y tế mới cho học sinh
-                                </DialogDescription>
-                            </div>
-                        </div>
+                            <span>Ghi nhận sự cố y tế</span>
+                        </DialogTitle>
+                        <DialogDescription className="text-gray-600 pl-13">
+                            Ghi nhận sự cố y tế mới cho học sinh
+                        </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-6">
+                    <div className="space-y-6 px-1">
                         {/* Student Information Section */}
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                                Thông tin học sinh
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Thông tin học sinh</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="studentId" className="text-gray-700 font-medium">
                                         ID Học sinh <span className="text-red-500">*</span>
@@ -241,11 +228,9 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                         </div>
 
                         {/* Incident Details Section */}
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                                Chi tiết sự cố
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Chi tiết sự cố</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="incidentType" className="text-gray-700 font-medium">
                                         Loại sự cố <span className="text-red-500">*</span>
@@ -294,11 +279,10 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant="outline"
-                                                className={`w-full justify-start text-left font-normal border-gray-300 hover:bg-gray-50 ${
+                                                className={`border-gray-300 justify-start text-left font-normal w-full ${
                                                     !formData.date && "text-gray-400"
                                                 }`}
                                             >
-                                                <CalendarIcon className="mr-2 h-4 w-4 text-gray-500" />
                                                 {formData.date ? format(formData.date, "PPP") : <span>Chọn ngày</span>}
                                             </Button>
                                         </PopoverTrigger>
@@ -306,43 +290,27 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                                             <Calendar
                                                 mode="single"
                                                 selected={formData.date}
-                                                className="bg-white"
                                                 onSelect={(date) => date && handleInputChange("date", date)}
                                                 captionLayout="dropdown"
                                             />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                                <div className="space-y-2">
-                                    <Label className="text-gray-700 font-medium">
-                                        Thông báo phụ huynh
-                                    </Label>
-                                    <div className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id="parentNotified"
-                                            checked={formData.parentNotified}
-                                            onCheckedChange={(checked) => handleInputChange("parentNotified", !!checked)}
-                                            className="border-gray-300 text-red-600 focus:ring-red-500"
-                                        />
-                                        <Label htmlFor="parentNotified" className="text-gray-700">
-                                            Đã thông báo
-                                        </Label>
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
                         {/* Symptoms Section */}
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                                Triệu chứng <span className="text-red-500">*</span>
-                            </h3>
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Triệu chứng</h3>
                             <div className="space-y-2">
-                                <div className="flex flex-wrap gap-2 border border-gray-300 rounded-md p-2 min-h-12 bg-white">
+                                <Label htmlFor="symptoms" className="text-gray-700 font-medium">
+                                    Triệu chứng <span className="text-red-500">*</span>
+                                </Label>
+                                <div className="flex flex-wrap gap-2 border border-gray-300 rounded-md p-2 min-h-12 bg-gray-50">
                                     {formData.symptoms.map((symptom, index) => (
                                         <div
                                             key={index}
-                                            className="flex items-center bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm border border-red-100"
+                                            className="flex items-center bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm"
                                         >
                                             {symptom}
                                             <button
@@ -360,24 +328,21 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                                         value={currentSymptom}
                                         onChange={(e) => setCurrentSymptom(e.target.value)}
                                         onKeyDown={handleAddSymptom}
-                                        className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 min-w-[120px] bg-transparent"
+                                        className="border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 min-w-[100px]"
                                         placeholder="Nhập triệu chứng rồi nhấn Enter"
                                         disabled={isLoading}
                                     />
                                 </div>
-                                <p className="text-xs text-gray-500">Nhập triệu chứng và nhấn Enter để thêm</p>
                             </div>
                         </div>
 
                         {/* Description and Treatment Section */}
-                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">
-                                Thông tin chi tiết
-                            </h3>
-                            <div className="grid grid-cols-1 gap-4">
+                        <div className="space-y-4">
+                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Thông tin bổ sung</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="description" className="text-gray-700 font-medium">
-                                        Mô tả sự cố <span className="text-red-500">*</span>
+                                        Mô tả <span className="text-red-500">*</span>
                                     </Label>
                                     <Textarea
                                         id="description"
@@ -391,7 +356,7 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="treatment" className="text-gray-700 font-medium">
-                                        Biện pháp xử lý <span className="text-red-500">*</span>
+                                        Các biện pháp xử lý <span className="text-red-500">*</span>
                                     </Label>
                                     <Textarea
                                         id="treatment"
@@ -399,11 +364,24 @@ const IncidentModal = ({ isOpen, onClose, onSuccess }: NewIncidentModalProps) =>
                                         value={formData.treatment}
                                         onChange={(e) => handleInputChange("treatment", e.target.value)}
                                         className="border-gray-300 focus:border-red-500 focus:ring-red-500 min-h-32"
-                                        placeholder="Các biện pháp xử lý đã thực hiện..."
+                                        placeholder="Ví dụ: Băng bó vết thương, uống thuốc hạ sốt..."
                                         disabled={isLoading}
                                     />
                                 </div>
                             </div>
+                        </div>
+
+                        {/* Parent Notification */}
+                        <div className="flex items-center space-x-2 pt-2">
+                            <Checkbox
+                                id="parentNotified"
+                                checked={formData.parentNotified}
+                                onCheckedChange={(checked) => handleInputChange("parentNotified", checked as boolean)}
+                                disabled={isLoading}
+                            />
+                            <Label htmlFor="parentNotified" className="text-gray-700 font-medium">
+                                Đã thông báo cho phụ huynh
+                            </Label>
                         </div>
                     </div>
 

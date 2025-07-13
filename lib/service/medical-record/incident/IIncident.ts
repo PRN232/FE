@@ -14,7 +14,7 @@ export interface UpdateMedicalIncidentDto {
     description?: string;
     symptoms?: string;
     treatment?: string;
-    severity: 'Low' | 'Medium' | 'High';
+    severity?: "Low" | "Medium" | "High";
     parentNotified?: boolean;
 }
 

@@ -15,7 +15,9 @@ const mapApiUserToUser = (apiUser: ApiUser): User => ({
     role: apiUser.role === 0 ? "parent" : apiUser.role === 1 ? "schoolnurse" : "admin",
 });
 
-const fetchUser = async (url: string): Promise<User | null> => {
+const fetchUser = async (
+    url: string
+): Promise<User | null> => {
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -38,7 +40,9 @@ const fetchUser = async (url: string): Promise<User | null> => {
 export const getUserById = (id: number): Promise<User | null> =>
     fetchUser(`${API_URL}/${id}`);
 
-export const getUsersByRole = async (role: string): Promise<User[] | null> => {
+export const getUsersByRole = async (
+    role: string
+): Promise<User[] | null> => {
     try {
         const response = await fetch(`${API_URL}/roles/${role}`, {
             method: "GET",
