@@ -11,9 +11,11 @@ import {AuthProvider} from "@/lib/auth/auth-context";
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-    title: "HealthCare School - Hệ Thống Y Tế Học Đường",
-    description:
-        "Comprehensive health management system for schools, managing student health records, medical incidents, vaccinations, and health examinations.",
+  title: {
+    default: 'HealthCare School - Hệ Thống Y Tế Học Đường',
+    template: '%s | HealthCare School'
+  },
+  description: "Comprehensive health management system for schools, managing student health records, medical incidents, vaccinations, and health examinations.",
 }
 
 export default function RootLayout({children}: { children: ReactNode }) {
