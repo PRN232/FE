@@ -42,7 +42,7 @@ COPY --chown=node:node --from=build /app/public ./public
 COPY --chown=node:node --from=build /app/.next ./.next
 
 # Next.js cần file config nếu có custom alias
-COPY --chown=node:node next.config.js ./
+COPY --chown=node:node next.config.ts ./
 COPY --chown=node:node tsconfig.json ./
 
 EXPOSE 2006
