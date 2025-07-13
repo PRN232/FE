@@ -28,6 +28,7 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
 # Copy runtime files từ stage base
+COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/.next .next
 COPY --from=base /app/public ./public
 COPY --from=base /app/app ./app
