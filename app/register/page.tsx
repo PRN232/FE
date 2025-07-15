@@ -66,7 +66,10 @@ const RegisterPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleInputChange = (field: string, value: string) => {
+    const handleInputChange = (
+        field: string,
+        value: string
+    ) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
         if (errors[field]) {
             setErrors((prev) => ({ ...prev, [field]: "" }));

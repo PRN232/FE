@@ -24,20 +24,4 @@ export interface AuthContextType {
     logout: () => void;
     isAuthenticated: boolean;
     error: string | null;
-    create: (
-        email: string,
-        username: string,
-        password: string,
-        role: number,
-        phoneNumber: string
-    ) => Promise<boolean>;
-    update: (
-        id: number,
-        email: string,
-        username: string,
-        password: string,
-        role: number,
-        phoneNumber: string
-    ) => Promise<boolean>;
-    del: (id: number) => Promise<boolean>;
 }

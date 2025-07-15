@@ -35,9 +35,7 @@ function ListItem({ title, children, href, icon: Icon, ...props }: ComponentProp
     );
 }
 
-const LeftSide = ({
-                      user
-}: {
+const LeftSide = ({user}: {
     user: {
         role: string
     } | null
