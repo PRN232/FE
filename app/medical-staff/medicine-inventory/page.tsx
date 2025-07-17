@@ -76,7 +76,6 @@ export default function MedicineInventoryPage() {
     }));
   };
 
-  // Use createMedication API for submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -92,7 +91,6 @@ export default function MedicineInventoryPage() {
       };
       const res = await createMedication(dto);
       if (res.success && res.data) {
-        // Calculate extra fields for UI
         const med: Medication = {
           ...res.data,
           isExpired: new Date(res.data.expiryDate) < new Date(),
@@ -102,7 +100,7 @@ export default function MedicineInventoryPage() {
               (new Date(res.data.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
             ) || 0,
         };
-        setMedications([ med,...medications]);
+        setMedications([med, ...medications]);
         setForm({
           name: "",
           type: "",
@@ -122,7 +120,6 @@ export default function MedicineInventoryPage() {
     }
   };
 
- 
   const handleDelete = async (id: number) => {
     if (!window.confirm("Bạn có chắc muốn xóa vật tư này?")) return;
     setLoading(true);
@@ -157,232 +154,289 @@ export default function MedicineInventoryPage() {
     page * PAGE_SIZE
   );
 
-  // Color tone for project (red)
-  const mainRed = "bg-gradient-to-br from-red-50 to-red-100";
-  const borderRed = "border-red-100";
-  const textRed = "text-red-700";
-  const buttonRed = "bg-red-600 hover:bg-red-700 text-white";
-  const shadowRed = "shadow-md";
+  // Enhanced color scheme
+  const mainBg = "bg-gradient-to-br from-red-50 to-red-100";
+  const cardBg = "bg-white";
+  const borderColor = "border-red-200";
+  const textPrimary = "text-red-800";
+  const textSecondary = "text-red-700";
+  const buttonPrimary = "bg-red-600 hover:bg-red-700 text-white";
+  const buttonSecondary = "bg-white hover:bg-red-50 text-red-700 border border-red-200";
+  const shadow = "shadow-lg";
+  const dangerBg = "bg-red-100";
+  const warningBg = "bg-yellow-100";
+  const successBg = "bg-green-100";
 
   return (
-    <div className={`p-6 min-h-screen ${mainRed}`}>
+    <div className={`p-6 min-h-screen ${mainBg}`}>
       <div className="max-w-7xl mx-auto">
-        <h1 className={`text-3xl font-extrabold mb-6 ${textRed} tracking-tight`}>
-          Quản lý vật tư y tế
-        </h1>
-        <div className="flex flex-wrap gap-4 mb-6">
-          <Input
-            placeholder="Tìm kiếm theo tên, mô tả..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="border border-red-200 rounded-lg px-4 py-2 bg-red-50 w-60"
-          />
-          <select
-            value={filterType}
-            onChange={(e) => {
-              setFilterType(e.target.value);
-              setPage(1);
-            }}
-            className="border border-red-200 rounded-lg px-4 py-2 bg-red-50 w-48"
-          >
-            <option value="">Tất cả loại vật tư</option>
-            {Object.entries(medicationTypeTranslations).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value}
-              </option>
-            ))}
-          </select>
-          <Button
-            onClick={() => setShowForm(!showForm)}
-            className={`transition-all ${shadowRed} rounded-full px-6 py-2 font-semibold ${showForm
-              ? "bg-gray-200 text-red-700 hover:bg-gray-300"
-              : buttonRed
-              }`}
-          >
-            {showForm ? "Đóng" : "Thêm vật tư mới"}
-          </Button>
-        </div>
-        {showForm && (
-
-          <form
-            onSubmit={handleSubmit}
-            className={`mb-8 bg-white rounded-2xl ${shadowRed} p-6 space-y-4 ${borderRed}`}
-          >
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <h1 className={`text-3xl font-bold mb-4 md:mb-0 ${textPrimary}`}>
+            Quản lý vật tư y tế
+          </h1>
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <Input
-              name="name"
-              placeholder="Tên vật tư"
-              value={form.name}
-              onChange={handleChange}
-              required
-              className="w-full border border-red-200 rounded-lg px-4 py-2 bg-red-50"
+              placeholder="Tìm kiếm vật tư..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className={`border ${borderColor} rounded-lg px-4 py-2 bg-white w-full md:w-64 focus:ring-2 focus:ring-red-300`}
             />
             <select
-              name="type"
-              value={form.type}
-              onChange={handleChange}
-              required
-              className="w-full border border-red-200 rounded-lg px-4 py-2 bg-red-50"
+              value={filterType}
+              onChange={(e) => {
+                setFilterType(e.target.value);
+                setPage(1);
+              }}
+              className={`border ${borderColor} rounded-lg px-4 py-2 bg-white w-full md:w-48 focus:ring-2 focus:ring-red-300`}
             >
-              <option value="">Loại vật tư</option>
+              <option value="">Tất cả loại</option>
               {Object.entries(medicationTypeTranslations).map(([key, value]) => (
                 <option key={key} value={key}>
                   {value}
                 </option>
               ))}
             </select>
-            <Textarea
-              name="description"
-              placeholder="Mô tả"
-              value={form.description}
-              onChange={handleChange}
-              required
-              className="w-full border border-red-200 rounded-lg px-4 py-2 bg-red-50"
-            />
-            <Input
-              name="stockQuantity"
-              type="number"
-              min={0}
-              placeholder="Số lượng tồn kho"
-              value={form.stockQuantity}
-              onChange={handleChange}
-              required
-              className="w-full border border-red-200 rounded-lg px-4 py-2 bg-red-50"
-            />
-            <Input
-              name="expiryDate"
-              type="date"
-              placeholder="Ngày hết hạn"
-              value={form.expiryDate}
-              onChange={handleChange}
-              required
-              className="w-full border border-red-200 rounded-lg px-4 py-2 bg-red-50"
-            />
-            <Input
-              name="storageInstructions"
-              placeholder="Hướng dẫn bảo quản"
-              value={form.storageInstructions}
-              onChange={handleChange}
-              required
-              className="w-full border border-red-200 rounded-lg px-4 py-2 bg-red-50"
-            />
             <Button
-              type="submit"
-              className={`w-full ${buttonRed} font-bold py-2 rounded-lg ${shadowRed} transition-all`}
+              onClick={() => setShowForm(!showForm)}
+              className={`${buttonPrimary} rounded-lg px-6 py-2 font-semibold transition-all ${shadow} hover:shadow-md`}
             >
-              Lưu vật tư
+              {showForm ? "Đóng form" : "+ Thêm vật tư"}
             </Button>
-          </form>
+          </div>
+        </div>
 
-        )}
-        <div className="space-y-5"></div>
-        {loading && (
-          <div className={`text-center ${textRed} font-semibold`}>Đang tải vật tư...</div>
-        )}
-        {error && (
-          <div className="text-center text-red-600 font-semibold">{error}</div>
-        )}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          {paginatedMedications.map((med) => {
-            // Highlight logic
-            let bgColor = "bg-white";
-            if (med.isExpired) {
-              bgColor = "bg-red-100";
-            } else if (med.daysToExpiry <= 30 && !med.isExpired) {
-              bgColor = "bg-yellow-100";
-            }
-            return (
-              <div
-                key={med.id}
-                className={`${bgColor} ${borderRed} rounded-3xl ${shadowRed} p-7 flex flex-col gap-4 hover:shadow-xl transition-all border-2`}
-                style={{ minHeight: 220 }}
+        {showForm && (
+          <form
+            onSubmit={handleSubmit}
+            className={`mb-8 ${cardBg} rounded-xl ${shadow} p-6 space-y-4 border ${borderColor}`}
+          >
+            <h2 className={`text-xl font-semibold ${textPrimary} mb-4`}>Thêm vật tư mới</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium ${textSecondary}`}>Tên vật tư</label>
+                <Input
+                  name="name"
+                  placeholder="Nhập tên vật tư"
+                  value={form.name}
+                  onChange={handleChange}
+                  required
+                  className={`w-full border ${borderColor} rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-300`}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium ${textSecondary}`}>Loại vật tư</label>
+                <select
+                  name="type"
+                  value={form.type}
+                  onChange={handleChange}
+                  required
+                  className={`w-full border ${borderColor} rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-300`}
+                >
+                  <option value="">Chọn loại</option>
+                  {Object.entries(medicationTypeTranslations).map(([key, value]) => (
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className={`block text-sm font-medium ${textSecondary}`}>Mô tả</label>
+                <Textarea
+                  name="description"
+                  placeholder="Nhập mô tả"
+                  value={form.description}
+                  onChange={handleChange}
+                  required
+                  className={`w-full border ${borderColor} rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-300`}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium ${textSecondary}`}>Số lượng</label>
+                <Input
+                  name="stockQuantity"
+                  type="number"
+                  min={0}
+                  placeholder="Nhập số lượng"
+                  value={form.stockQuantity}
+                  onChange={handleChange}
+                  required
+                  className={`w-full border ${borderColor} rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-300`}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className={`block text-sm font-medium ${textSecondary}`}>Ngày hết hạn</label>
+                <Input
+                  name="expiryDate"
+                  type="date"
+                  placeholder="Chọn ngày"
+                  value={form.expiryDate}
+                  onChange={handleChange}
+                  required
+                  className={`w-full border ${borderColor} rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-300`}
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className={`block text-sm font-medium ${textSecondary}`}>Hướng dẫn bảo quản</label>
+                <Input
+                  name="storageInstructions"
+                  placeholder="Nhập hướng dẫn bảo quản"
+                  value={form.storageInstructions}
+                  onChange={handleChange}
+                  required
+                  className={`w-full border ${borderColor} rounded-lg px-4 py-2 bg-white focus:ring-2 focus:ring-red-300`}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end pt-2">
+              <Button
+                type="submit"
+                className={`${buttonPrimary} font-medium py-2 px-6 rounded-lg ${shadow} hover:shadow-md transition-all`}
               >
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="font-extrabold text-red-800 text-xl">{med.name}</span>
-                  <span className="text-red-500 font-semibold px-3 py-1 bg-red-50 rounded-full">
-                    {medicationTypeTranslations[med.type] || med.type}
-                  </span>
-                  <span
-                    className={`ml-auto px-3 py-1 rounded-full text-xs font-bold ${med.isExpired
-                      ? "bg-red-200 text-red-700"
-                      : med.isLowStock
-                        ? "bg-yellow-200 text-yellow-700"
-                        : "bg-green-100 text-green-700"
-                      }`}
-                  >
-                    {med.isExpired
-                      ? "Hết hạn"
-                      : med.isLowStock
-                        ? "Sắp hết"
-                        : "Còn hạn"}
-                  </span>
-                </div>
-                <div className="text-gray-700 mb-1">
-                  <b>Mô tả:</b> {med.description}
-                </div>
-                <div className="flex flex-wrap gap-6 text-gray-600 mb-1">
-                  <div>
-                    <b>Số lượng tồn kho:</b>{" "}
-                    <span
-                      className={`font-bold text-lg ${med.stockQuantity < 50 ? "text-red-600" : "text-red-700"
-                        }`}
-                    >
-                      {med.stockQuantity}
+                Lưu vật tư
+              </Button>
+            </div>
+          </form>
+        )}
+
+        {loading && (
+          <div className={`text-center py-8 ${textSecondary} font-medium`}>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-600 mb-2"></div>
+            <p>Đang tải dữ liệu...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className={`p-4 mb-6 rounded-lg bg-red-100 border border-red-200 text-red-700 text-center font-medium`}>
+            {error}
+          </div>
+        )}
+
+        {!loading && filteredMedications.length === 0 ? (
+          <div className={`text-center py-12 ${textSecondary} bg-white rounded-xl ${shadow} border ${borderColor}`}>
+            <p className="text-lg">Không tìm thấy vật tư nào</p>
+            <p className="text-sm mt-2">Thử thay đổi tiêu chí tìm kiếm hoặc thêm vật tư mới</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {paginatedMedications.map((med) => {
+              let cardClass = `${cardBg} border-2 ${borderColor} rounded-xl ${shadow} p-5 flex flex-col h-full transition-all hover:shadow-xl`;
+              let statusClass = "";
+              let statusText = "";
+
+              if (med.isExpired) {
+                cardClass = `${dangerBg} border-2 border-red-300 rounded-xl ${shadow} p-5 flex flex-col h-full`;
+                statusClass = "bg-red-200 text-red-800";
+                statusText = "Hết hạn";
+              } else if (med.daysToExpiry <= 30) {
+                cardClass = `${warningBg} border-2 border-yellow-300 rounded-xl ${shadow} p-5 flex flex-col h-full`;
+                statusClass = "bg-yellow-200 text-yellow-800";
+                statusText = `Còn ${med.daysToExpiry} ngày`;
+              } else if (med.isLowStock) {
+                statusClass = "bg-orange-200 text-orange-800";
+                statusText = "Sắp hết";
+              } else {
+                statusClass = "bg-green-200 text-green-800";
+                statusText = "Còn hạn";
+              }
+
+              return (
+                <div key={med.id} className={cardClass}>
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className={`font-bold text-lg ${textPrimary}`}>{med.name}</h3>
+                      <span className={`text-sm px-2 py-1 rounded-full ${med.stockQuantity < 50 ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
+                        {med.stockQuantity} trong kho
+                      </span>
+                    </div>
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusClass}`}>
+                      {statusText}
                     </span>
                   </div>
-                  <div>
-                    <b>Ngày hết hạn:</b>{" "}
-                    {new Date(med.expiryDate).toLocaleDateString()}
-                    {med.daysToExpiry <= 30 && !med.isExpired ? (
-                      <span className="ml-2 text-yellow-600 font-semibold">
-                        (Còn {med.daysToExpiry} ngày)
+
+                  <div className="mb-4">
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 ${textSecondary} mb-2`}>
+                      {medicationTypeTranslations[med.type] || med.type}
+                    </span>
+                    <p className="text-gray-600 text-sm line-clamp-2">{med.description}</p>
+                  </div>
+
+                  <div className="mt-auto space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">HSD:</span>
+                      <span className="font-medium">
+                        {new Date(med.expiryDate).toLocaleDateString()}
                       </span>
-                    ) : null}
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-500">Bảo quản:</span>
+                      <span className="font-medium text-right">{med.storageInstructions}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mt-4 pt-3 border-t border-gray-100">
+                    <Button
+                      onClick={() => handleDelete(med.id)}
+                      className="text-sm px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg"
+                      disabled={loading}
+                    >
+                      Xóa vật tư
+                    </Button>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-6 text-gray-600">
-                  <div>
-                    <b>Bảo quản:</b> {med.storageInstructions}
-                  </div>
-                </div>
-                <div className="flex justify-end mt-2">
-                  <Button
-                    onClick={() => handleDelete(med.id)}
-                    className="bg-red-500 hover:bg-red-700 text-white px-4 py-1 rounded-lg text-sm"
-                    disabled={loading}
-                  >
-                    Xóa
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        {!loading && filteredMedications.length === 0 && (
-          <div className="text-center text-gray-500">Chưa có vật tư nào.</div>
+              );
+            })}
+          </div>
         )}
-        {/* Pagination controls */}
+
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <Button
-              disabled={page === 1}
-              onClick={() => setPage(page - 1)}
-              className={`px-4 py-2 rounded ${buttonRed} ${page === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              Trước
-            </Button>
-            <span className="font-semibold text-red-700">
-              Trang {page}/{totalPages}
-            </span>
-            <Button
-              disabled={page === totalPages}
-              onClick={() => setPage(page + 1)}
-              className={`px-4 py-2 rounded ${buttonRed} ${page === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
-            >
-              Sau
-            </Button>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-8">
+            <div className={`text-sm ${textSecondary}`}>
+              Hiển thị {(page - 1) * PAGE_SIZE + 1}-{Math.min(page * PAGE_SIZE, filteredMedications.length)} trong {filteredMedications.length} vật tư
+            </div>
+            <div className="flex gap-2">
+              <Button
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+                className={`px-4 py-2 rounded-lg ${buttonSecondary} ${page === 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                Trang trước
+              </Button>
+              <div className="flex items-center">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (page <= 3) {
+                    pageNum = i + 1;
+                  } else if (page >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = page - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setPage(pageNum)}
+                      className={`w-10 h-10 mx-0.5 rounded-lg ${page === pageNum ? buttonPrimary : buttonSecondary}`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              <Button
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+                className={`px-4 py-2 rounded-lg ${buttonSecondary} ${page === totalPages ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
+                Trang sau
+              </Button>
+            </div>
           </div>
         )}
       </div>
