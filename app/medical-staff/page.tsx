@@ -1,292 +1,334 @@
+"use client"
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Activity, Pill, Shield, Calendar, AlertTriangle, Clock, Plus } from "lucide-react"
-import {
-    mockMedicalIncidents,
-    mockMedicineRequests,
-    mockVaccinationCampaigns,
-    mockMedicalExaminations,
-    mockStudents,
-} from "@/lib/data/mock-data"
+import { useEffect, useState } from "react"
+import { Incident } from "@/types"
+import { Medication } from "@/lib/service/medications/IMedications"
+import { VaccinationCampaign } from "@/lib/service/vaccination/campain/ICampain"
+import { Vaccination, VaccinationStatus } from "@/lib/service/health-check-campaign/IHealthCheckCampaign"
+import { getAllMedicalIncidents } from "@/lib/service/medical-record/incident/incident"
+import { getAllMedications } from "@/lib/service/medications/medications"
+import { getVaccinationCampaigns } from "@/lib/service/vaccination/campain/campain"
+import { getAllCampaigns } from "@/lib/service/health-check-campaign/healthCheckCampaign"
 
 export default function MedicalStaffPage() {
-    const activeIncidents = mockMedicalIncidents.filter((incident) => incident.status === "open")
-    const pendingMedicineRequests = mockMedicineRequests.filter((request) => request.status === "pending")
-    const activeCampaigns = mockVaccinationCampaigns.filter(
-        (campaign) => campaign.status === "consent_collection" || campaign.status === "in_progress",
-    )
-    const upcomingExams = mockMedicalExaminations.filter(
-        (exam) => exam.status === "scheduled" || exam.status === "in_progress",
-    )
+    const [activeIncidents, setActiveIncidents] = useState<Incident[]>([])
+    const [medications, setMedications] = useState<Medication[]>([])
+    const [vaccinationCampaigns, setVaccinationCampaigns] = useState<VaccinationCampaign[]>([])
+    const [healthCheckCampaigns, setHealthCheckCampaigns] = useState<Vaccination[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true)
+
+                // Fetch all data in parallel
+                const [incidentsRes, medsRes, vaxRes, healthRes] = await Promise.all([
+                    getAllMedicalIncidents(),
+                    getAllMedications(),
+                    getVaccinationCampaigns(),
+                    getAllCampaigns()
+                ])
+
+                if (incidentsRes.success) setActiveIncidents(incidentsRes.data.filter(i => i.severity !== 'Low'))
+                if (medsRes.success) setMedications(medsRes.data.filter(m => m.isLowStock))
+                if (vaxRes.success && vaxRes.data) {
+                    setVaccinationCampaigns(vaxRes.data.filter(v => v.status !== "Completed"))
+                } else {
+                    setVaccinationCampaigns([])
+                } if (healthRes.success) setHealthCheckCampaigns(healthRes.data.filter(h => h.status !== VaccinationStatus.Completed))
+
+            } catch (err) {
+                setError("Không thể tải dữ liệu. Vui lòng thử lại sau.")
+                console.error(err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [])
+
+    if (loading) return <div className="p-8 text-center">Đang tải dữ liệu...</div>
+    if (error) return <div className="p-8 text-center text-red-500">{error}</div>
 
     return (
         <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+            {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Medical Staff Portal</h2>
-                    <p className="text-muted-foreground">Manage medical incidents, medicine requests, and health programs</p>
+                    <h2 className="text-3xl font-bold tracking-tight">Trang Quản Lý Y Tế</h2>
+                    <p className="text-muted-foreground">Quản lý sự cố y tế, yêu cầu thuốc và chương trình sức khỏe</p>
                 </div>
                 <Button asChild>
                     <Link href="/medical-staff/incidents">
                         <Plus className="h-4 w-4 mr-2" />
-                        New Incident
+                        Báo cáo sự cố mới
                     </Link>
                 </Button>
             </div>
 
             {/* Quick Stats */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Incidents</CardTitle>
+                <div className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Sự cố cần xử lý</h3>
                         <Activity className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
+                    </div>
+                    <div className="mt-2">
                         <div className="text-2xl font-bold">{activeIncidents.length}</div>
-                        <p className="text-xs text-muted-foreground">Requiring attention</p>
-                    </CardContent>
-                </Card>
+                        <p className="text-xs text-muted-foreground">Cần theo dõi</p>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Medicine Requests</CardTitle>
+                <div className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Thuốc sắp hết</h3>
                         <Pill className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{pendingMedicineRequests.length}</div>
-                        <p className="text-xs text-muted-foreground">Pending approval</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="mt-2">
+                        <div className="text-2xl font-bold">{medications.length}</div>
+                        <p className="text-xs text-muted-foreground">Cần bổ sung</p>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Vaccination Campaigns</CardTitle>
+                <div className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Chiến dịch tiêm chủng</h3>
                         <Shield className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{activeCampaigns.length}</div>
-                        <p className="text-xs text-muted-foreground">In progress</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="mt-2">
+                        <div className="text-2xl font-bold">{vaccinationCampaigns.length}</div>
+                        <p className="text-xs text-muted-foreground">Đang diễn ra</p>
+                    </div>
+                </div>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Health Examinations</CardTitle>
+                <div className="border rounded-lg p-4 bg-white shadow-sm">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium">Khám sức khỏe</h3>
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{upcomingExams.length}</div>
-                        <p className="text-xs text-muted-foreground">Scheduled/In progress</p>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="mt-2">
+                        <div className="text-2xl font-bold">{healthCheckCampaigns.length}</div>
+                        <p className="text-xs text-muted-foreground">Đang thực hiện</p>
+                    </div>
+                </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* Active Medical Incidents */}
-                <Card>
-                    <CardHeader>
+                <div className="border rounded-lg bg-white shadow-sm">
+                    <div className="p-4 border-b">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Active Medical Incidents</CardTitle>
-                                <CardDescription>Incidents requiring immediate attention</CardDescription>
+                                <h3 className="font-semibold">Sự cố y tế gần đây</h3>
+                                <p className="text-sm text-muted-foreground">Các sự cố cần xử lý ngay</p>
                             </div>
-                            <Button size="sm" asChild>
-                                <Link href="/medical-staff/incidents">View All</Link>
+                            <Button size="sm" variant="outline" asChild>
+                                <Link href="/medical-staff/incidents">Xem tất cả</Link>
                             </Button>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {activeIncidents.slice(0, 3).map((incident) => {
-                                const student = mockStudents.find((s) => s.id === incident.studentId)
-                                return (
-                                    <div key={incident.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                                        <div className="flex-shrink-0">
-                                            <AlertTriangle
-                                                className={`h-5 w-5 ${
-                                                    incident.severity === "critical"
-                                                        ? "text-red-500"
-                                                        : incident.severity === "high"
-                                                            ? "text-orange-500"
-                                                            : incident.severity === "medium"
-                                                                ? "text-yellow-500"
-                                                                : "text-blue-500"
-                                                }`}
-                                            />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-medium">{student?.name}</h4>
-                                            <p className="text-sm text-muted-foreground">
-                                                {incident.type} - {incident.description.substring(0, 50)}...
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                {incident.date.toLocaleDateString()} at {incident.date.toLocaleTimeString()}
-                                            </p>
-                                        </div>
-                                        <Badge
-                                            variant={
-                                                incident.severity === "critical"
-                                                    ? "destructive"
-                                                    : incident.severity === "high"
-                                                        ? "destructive"
-                                                        : incident.severity === "medium"
-                                                            ? "default"
-                                                            : "secondary"
-                                            }
-                                        >
-                                            {incident.severity}
-                                        </Badge>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="p-4 space-y-3">
+                        {activeIncidents.slice(0, 3).map((incident) => (
+                            <div key={incident.id} className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                                <div className={`p-2 rounded-full ${incident.severity === 'High' ? 'bg-red-100 text-red-600' :
+                                    incident.severity === 'Medium' ? 'bg-orange-100 text-orange-600' : 'bg-blue-100 text-blue-600'
+                                    }`}>
+                                    <AlertTriangle className="h-4 w-4" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-medium">{incident.studentName} ({incident.studentCode})</h4>
+                                    <p className="text-sm text-muted-foreground line-clamp-1">
+                                        {incident.type}: {incident.description}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        {new Date(incident.incidentDate).toLocaleDateString('vi-VN')}
+                                    </p>
+                                </div>
+                                <Badge variant={
+                                    incident.severity === 'High' ? 'destructive' :
+                                        incident.severity === 'Medium' ? 'default' : 'secondary'
+                                }>
+                                    {incident.severity === 'High' ? 'Nghiêm trọng' :
+                                        incident.severity === 'Medium' ? 'Trung bình' : 'Nhẹ'}
+                                </Badge>
+                            </div>
+                        ))}
+                        {activeIncidents.length === 0 && (
+                            <p className="text-sm text-muted-foreground text-center py-4">Không có sự cố nào cần xử lý</p>
+                        )}
+                    </div>
+                </div>
 
-                {/* Pending Medicine Requests */}
-                <Card>
-                    <CardHeader>
+                {/* Low Stock Medications */}
+                <div className="border rounded-lg bg-white shadow-sm">
+                    <div className="p-4 border-b">
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>Pending Medicine Requests</CardTitle>
-                                <CardDescription>Requests awaiting approval</CardDescription>
+                                <h3 className="font-semibold">Thuốc sắp hết</h3>
+                                <p className="text-sm text-muted-foreground">Cần bổ sung gấp</p>
                             </div>
-                            <Button size="sm" asChild>
-                                <Link href="/medical-staff/medicine-inventory">View All</Link>
+                            <Button size="sm" variant="outline" asChild>
+                                <Link href="/medical-staff/medicine-inventory">Xem kho thuốc</Link>
                             </Button>
                         </div>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {pendingMedicineRequests.map((request) => {
-                                const student = mockStudents.find((s) => s.id === request.studentId)
-                                return (
-                                    <div key={request.id} className="flex items-center space-x-4 p-4 border rounded-lg">
-                                        <div className="flex-shrink-0">
-                                            <Clock className="h-5 w-5 text-orange-500" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className="font-medium">{request.medicineName}</h4>
-                                            <p className="text-sm text-muted-foreground">
-                                                For {student?.name} - {request.dosage}, {request.frequency}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground">
-                                                Requested: {request.requestDate.toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                        <div className="flex space-x-2">
-                                            <Button size="sm" variant="outline">
-                                                Approve
-                                            </Button>
-                                            <Button size="sm" variant="outline">
-                                                Reject
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </CardContent>
-                </Card>
+                    </div>
+                    <div className="p-4 space-y-3">
+                        {medications.slice(0, 3).map((med) => (
+                            <div key={med.id} className="flex items-start gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                                <div className="p-2 rounded-full bg-purple-100 text-purple-600">
+                                    <Pill className="h-4 w-4" />
+                                </div>
+                                <div className="flex-1">
+                                    <h4 className="font-medium">{med.name}</h4>
+                                    <p className="text-sm text-muted-foreground">
+                                        Số lượng: {med.stockQuantity} • {med.type}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground mt-1">
+                                        HSD: {new Date(med.expiryDate).toLocaleDateString('vi-VN')}
+                                    </p>
+                                </div>
+                                <Badge
+                                    variant={med.isExpired ? 'destructive' : 'default'}
+                                    className={!med.isExpired ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100' : ''}
+                                >
+                                    {med.isExpired ? 'Đã hết hạn' : 'Sắp hết'}
+                                </Badge>
+                            </div>
+                        ))}
+                        {medications.length === 0 && (
+                            <p className="text-sm text-muted-foreground text-center py-4">Kho thuốc đủ dùng</p>
+                        )}
+                    </div>
+                </div>
             </div>
 
             {/* Vaccination Campaigns */}
-            <Card>
-                <CardHeader>
+            <div className="border rounded-lg bg-white shadow-sm">
+                <div className="p-4 border-b">
                     <div className="flex items-center justify-between">
                         <div>
-                            <CardTitle>Active Vaccination Campaigns</CardTitle>
-                            <CardDescription>Current vaccination programs and their progress</CardDescription>
+                            <h3 className="font-semibold">Chiến dịch tiêm chủng</h3>
+                            <p className="text-sm text-muted-foreground">Các chiến dịch đang diễn ra</p>
                         </div>
-                        <Button size="sm" asChild>
-                            <Link href="/medical-staff/vaccination">Manage Campaigns</Link>
+                        <Button size="sm" variant="outline" asChild>
+                            <Link href="/medical-staff/vaccination">Quản lý chiến dịch</Link>
                         </Button>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-4 md:grid-cols-2">
-                        {activeCampaigns.map((campaign) => (
-                            <div key={campaign.id} className="p-4 border rounded-lg space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="font-medium">{campaign.name}</h4>
-                                    <Badge variant="outline">{campaign.status.replace("_", " ")}</Badge>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-sm">
-                                        <span>Consent Collection</span>
-                                        <span>
-                      {campaign.consentsReceived}/{campaign.studentsEligible}
-                    </span>
-                                    </div>
-                                    <div className="w-full bg-secondary rounded-full h-2">
-                                        <div
-                                            className="bg-primary h-2 rounded-full"
-                                            style={{ width: `${(campaign.consentsReceived / campaign.studentsEligible) * 100}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div className="flex justify-between text-xs text-muted-foreground">
-                                    <span>Target: {campaign.targetGrades.join(", ")}</span>
-                                    <span>Due: {campaign.consentDeadline.toLocaleDateString()}</span>
-                                </div>
+                </div>
+                <div className="p-4 grid gap-4 md:grid-cols-2">
+                    {vaccinationCampaigns.map((campaign) => (
+                        <div key={campaign.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="flex justify-between items-start">
+                                <h4 className="font-medium">{campaign.campaignName}</h4>
+                                <Badge variant="outline" className="capitalize">
+                                    {campaign.statusDisplay.toLowerCase()}
+                                </Badge>
                             </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
 
-            {/* Health Examinations */}
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <CardTitle>Health Examinations</CardTitle>
-                            <CardDescription>Scheduled and ongoing health examinations</CardDescription>
-                        </div>
-                        <Button size="sm" asChild>
-                            <Link href="/medical-staff/examination">Manage Examinations</Link>
-                        </Button>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <div className="grid gap-4 md:grid-cols-3">
-                        {upcomingExams.map((exam) => (
-                            <div key={exam.id} className="p-4 border rounded-lg space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="font-medium text-sm">{exam.name}</h4>
-                                    <Badge
-                                        variant={
-                                            exam.status === "completed" ? "default" : exam.status === "in_progress" ? "secondary" : "outline"
-                                        }
-                                    >
-                                        {exam.status.replace("_", " ")}
-                                    </Badge>
+                            <div className="mt-3 space-y-2">
+                                <div className="flex justify-between text-sm">
+                                    <span>Đồng ý tiêm</span>
+                                    <span>
+                                        {campaign.consentReceived}/{campaign.totalStudents}
+                                    </span>
                                 </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between text-sm">
-                                        <span>Progress</span>
-                                        <span>
-                      {exam.studentsExamined}/{exam.studentsScheduled}
-                    </span>
-                                    </div>
-                                    <div className="w-full bg-secondary rounded-full h-2">
-                                        <div
-                                            className="bg-primary h-2 rounded-full"
-                                            style={{ width: `${(exam.studentsExamined / exam.studentsScheduled) * 100}%` }}
-                                        ></div>
-                                    </div>
-                                </div>
-                                <div className="text-xs text-muted-foreground">
-                                    <p>Target: {exam.targetGrades.join(", ")} grades</p>
-                                    <p>Date: {exam.scheduledDate.toLocaleDateString()}</p>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-green-500 h-2 rounded-full"
+                                        style={{ width: `${campaign.consentRate}%` }}
+                                    ></div>
                                 </div>
                             </div>
-                        ))}
+
+                            <div className="mt-3 space-y-2">
+                                <div className="flex justify-between text-sm">
+                                    <span>Đã tiêm chủng</span>
+                                    <span>
+                                        {campaign.vaccinationsCompleted}/{campaign.totalStudents}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-blue-500 h-2 rounded-full"
+                                        style={{ width: `${campaign.completionRate}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-3 flex justify-between text-xs text-muted-foreground">
+                                <span>Khối: {campaign.targetGrades}</span>
+                                <span>Ngày: {new Date(campaign.scheduledDate).toLocaleDateString('vi-VN')}</span>
+                            </div>
+                        </div>
+                    ))}
+                    {vaccinationCampaigns.length === 0 && (
+                        <div className="col-span-2 text-sm text-muted-foreground text-center py-4">
+                            Hiện không có chiến dịch tiêm chủng nào đang diễn ra
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Health Check Campaigns */}
+            <div className="border rounded-lg bg-white shadow-sm">
+                <div className="p-4 border-b">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="font-semibold">Chương trình khám sức khỏe</h3>
+                            <p className="text-sm text-muted-foreground">Các đợt khám sức khỏe định kỳ</p>
+                        </div>
+                        <Button size="sm" variant="outline" asChild>
+                            <Link href="/medical-staff/examination">Quản lý khám sức khỏe</Link>
+                        </Button>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+                <div className="p-4 grid gap-4 md:grid-cols-3">
+                    {healthCheckCampaigns.map((campaign) => (
+                        <div key={campaign.id} className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                            <div className="flex justify-between items-start">
+                                <h4 className="font-medium text-sm">{campaign.campaignName}</h4>
+                                <Badge variant={
+                                    campaign.status === VaccinationStatus.InProgress ? 'secondary' : 'outline'
+                                }>
+                                    {campaign.statusDisplay}
+                                </Badge>
+                            </div>
+
+                            <div className="mt-3 space-y-2">
+                                <div className="flex justify-between text-sm">
+                                    <span>Tiến độ</span>
+                                    <span>
+                                        {campaign.checkupsCompleted}/{campaign.totalStudents}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-purple-500 h-2 rounded-full"
+                                        style={{ width: `${campaign.completionRate}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+
+                            <div className="mt-3 text-xs text-muted-foreground space-y-1">
+                                <p>Loại khám: {campaign.checkupTypes}</p>
+                                <p>Khối: {campaign.targetGrades}</p>
+                                <p>Ngày: {new Date(campaign.scheduledDate).toLocaleDateString('vi-VN')}</p>
+                            </div>
+                        </div>
+                    ))}
+                    {healthCheckCampaigns.length === 0 && (
+                        <div className="col-span-3 text-sm text-muted-foreground text-center py-4">
+                            Hiện không có chương trình khám sức khỏe nào đang diễn ra
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     )
 }
