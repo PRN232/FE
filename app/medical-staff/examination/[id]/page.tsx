@@ -46,6 +46,20 @@ const HealthCheckDetailPage: React.FC = () => {
         checkupDate: new Date().toISOString().split('T')[0]
     });
 
+    // Color scheme
+    const primaryColor = "bg-red-600";
+    const primaryHover = "hover:bg-red-700";
+    const secondaryColor = "bg-white";
+    const secondaryHover = "hover:bg-gray-50";
+    const textPrimary = "text-red-800";
+    const textSecondary = "text-gray-700";
+    const borderColor = "border-red-200";
+    const cardBg = "bg-white";
+    const dangerBg = "bg-red-100";
+    const warningBg = "bg-yellow-100";
+    const successBg = "bg-green-100";
+    const shadow = "shadow-lg";
+
     useEffect(() => {
         setLoading(true);
         getCampaignById(campaignId)
@@ -125,7 +139,6 @@ const HealthCheckDetailPage: React.FC = () => {
             setLoading(true);
             const result = await createHealthCheckupResult(newResult);
             
-            // Refresh student details
             const res = await getHealthCheckupResultsByCampaign(campaignId);
             if (res.success) {
                 setStudentDetails(res.data);
@@ -134,7 +147,6 @@ const HealthCheckDetailPage: React.FC = () => {
             alert('Thêm kết quả thành công!');
             setShowAddForm(false);
             
-            // Reset form
             setNewResult({
                 studentId: 0,
                 campaignId: campaignId,
@@ -187,7 +199,6 @@ const HealthCheckDetailPage: React.FC = () => {
             setLoading(true);
             await updateHealthCheckupResult(editResult.id, editResult);
             
-            // Refresh student details
             const res = await getHealthCheckupResultsByCampaign(campaignId);
             if (res.success) {
                 setStudentDetails(res.data);
@@ -223,142 +234,192 @@ const HealthCheckDetailPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-10">
+        <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 py-8">
             {loading && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
-                    <div className="text-gray-700">Đang tải dữ liệu...</div>
+                    <div className="flex flex-col items-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600 mb-4"></div>
+                        <p className="text-red-700 font-medium">Đang tải dữ liệu...</p>
+                    </div>
                 </div>
             )}
-            <div className="mx-auto bg-white rounded-2xl  w-full max-w-7xl p-8 relative overflow-hidden">
+            
+            <div className="mx-auto bg-white rounded-xl shadow-lg w-full max-w-7xl p-6 relative overflow-hidden border border-red-100">
+                {/* Back button */}
                 <button
-                    className="absolute top-4 left-4 text-gray-500 hover:text-gray-700 flex items-center gap-2 p-2 rounded transition"
+                    className="absolute top-6 left-6 text-red-700 hover:text-red-800 flex items-center gap-2 p-2 rounded-lg transition"
                     onClick={() => router.push('/medical-staff/examination')}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Quay lại
+                    <span className="font-medium">Quay lại</span>
                 </button>
-                <h1 className="text-3xl font-bold mb-6 mt-7 text-gray-800 tracking-tight">
-                    Chi tiết khám sức khỏe
-                </h1>
 
-                <h2 className="text-3xl font-extrabold mb-6 text-red-700">
-                    {editMode ? (
-                        <input
-                            type="text"
-                            name="campaignName"
-                            value={editData?.campaignName || ''}
-                            onChange={handleInputChange}
-                            className="border rounded px-2 py-1 w-full"
-                        />
-                    ) : (
-                        campaign?.campaignName
-                    )}
-                    <div className="mt-2">
+                {/* Header */}
+                <div className="text-center mb-8 pt-4">
+                    <h1 className="text-3xl font-bold text-red-800 tracking-tight mb-2">
+                        Chi tiết khám sức khỏe
+                    </h1>
+                    <div className="w-20 h-1 bg-red-600 mx-auto rounded-full"></div>
+                </div>
+
+                {/* Campaign Info */}
+                <div className={`p-6 rounded-xl bg-gradient-to-r from-red-50 to-red-100 mb-8 border ${borderColor} ${shadow}`}>
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-2xl font-bold text-red-800">
+                            {editMode ? (
+                                <input
+                                    type="text"
+                                    name="campaignName"
+                                    value={editData?.campaignName || ''}
+                                    onChange={handleInputChange}
+                                    className="border rounded-lg px-4 py-2 w-full bg-white focus:ring-2 focus:ring-red-300"
+                                />
+                            ) : (
+                                campaign?.campaignName
+                            )}
+                        </h2>
                         {editMode ? (
-                            <button
-                                className="px-2 py-1 bg-green-600 text-white rounded text-sm"
-                                onClick={handleSave}
-                            >
-                                Lưu
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    className={`px-4 py-2 rounded-lg ${secondaryColor} ${secondaryHover} text-red-700 border ${borderColor} font-medium transition`}
+                                    onClick={() => setEditMode(false)}
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    className={`px-4 py-2 rounded-lg ${primaryColor} ${primaryHover} text-white font-medium transition`}
+                                    onClick={handleSave}
+                                >
+                                    Lưu thay đổi
+                                </button>
+                            </div>
                         ) : (
                             <button
-                                className="px-2 py-1 bg-blue-600 text-white rounded text-sm"
+                                className={`px-4 py-2 rounded-lg ${primaryColor} ${primaryHover} text-white font-medium transition`}
                                 onClick={handleEdit}
                             >
                                 Chỉnh sửa
                             </button>
                         )}
                     </div>
-                </h2>
 
-                <div className="mb-8 grid grid-cols-2 gap-x-8 gap-y-2 text-gray-700">
-                    <div>
-                        <strong>Ngày dự kiến:</strong>{" "}
-                        {editMode ? (
-                            <input
-                                type="date"
-                                name="scheduledDate"
-                                value={editData?.scheduledDate?.slice(0, 10) || ''}
-                                onChange={handleInputChange}
-                                className="border rounded px-2 py-1"
-                            />
-                        ) : (
-                            new Date(campaign?.scheduledDate || "").toLocaleDateString()
-                        )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-gray-700">
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Ngày dự kiến</div>
+                            <div className="font-semibold">
+                                {editMode ? (
+                                    <input
+                                        type="date"
+                                        name="scheduledDate"
+                                        value={editData?.scheduledDate?.slice(0, 10) || ''}
+                                        onChange={handleInputChange}
+                                        className="border rounded-lg px-3 py-1 w-full bg-white focus:ring-2 focus:ring-red-300"
+                                    />
+                                ) : (
+                                    new Date(campaign?.scheduledDate || "").toLocaleDateString()
+                                )}
+                            </div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Loại khám</div>
+                            <div className="font-semibold">
+                                {editMode ? (
+                                    <input
+                                        type="text"
+                                        name="checkupTypes"
+                                        value={editData?.checkupTypes || ''}
+                                        onChange={handleInputChange}
+                                        className="border rounded-lg px-3 py-1 w-full bg-white focus:ring-2 focus:ring-red-300"
+                                    />
+                                ) : (
+                                    campaign?.checkupTypes
+                                )}
+                            </div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Khối học sinh</div>
+                            <div className="font-semibold">
+                                {editMode ? (
+                                    <input
+                                        type="text"
+                                        name="targetGrades"
+                                        value={editData?.targetGrades || ''}
+                                        onChange={handleInputChange}
+                                        className="border rounded-lg px-3 py-1 w-full bg-white focus:ring-2 focus:ring-red-300"
+                                    />
+                                ) : (
+                                    campaign?.targetGrades
+                                )}
+                            </div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Trạng thái</div>
+                            <div className="font-semibold">
+                                {editMode ? (
+                                    <select
+                                        name="status"
+                                        value={editData?.status || ''}
+                                        onChange={handleInputChange}
+                                        className="border rounded-lg px-3 py-1 w-full bg-white focus:ring-2 focus:ring-red-300"
+                                    >
+                                        <option value={0}>Planned</option>
+                                        <option value={1}>InProgress</option>
+                                        <option value={2}>Completed</option>
+                                        <option value={3}>Cancelled</option>
+                                    </select>
+                                ) : (
+                                    <span className={`px-2 py-1 rounded-full ${campaign?.status === VaccinationStatus.Completed ? 'bg-green-100 text-green-800' : campaign?.status === VaccinationStatus.InProgress ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}`}>
+                                        {campaign?.statusDisplay}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <strong>Loại khám:</strong>{" "}
-                        {editMode ? (
-                            <input
-                                type="text"
-                                name="checkupTypes"
-                                value={editData?.checkupTypes || ''}
-                                onChange={handleInputChange}
-                                className="border rounded px-2 py-1"
-                            />
-                        ) : (
-                            campaign?.checkupTypes
-                        )}
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Tổng số học sinh</div>
+                            <div className="text-xl font-bold text-red-700">{campaign?.totalStudents}</div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Đã nhận đồng ý</div>
+                            <div className="text-xl font-bold text-red-700">{campaign?.consentReceived} <span className="text-sm font-normal">({campaign?.consentRate}%)</span></div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Đã khám</div>
+                            <div className="text-xl font-bold text-red-700">{campaign?.checkupsCompleted} <span className="text-sm font-normal">({campaign?.completionRate}%)</span></div>
+                        </div>
+                        <div className="bg-white p-3 rounded-lg border border-gray-200">
+                            <div className="text-sm font-medium text-gray-500">Cần theo dõi</div>
+                            <div className="text-xl font-bold text-red-700">{campaign?.requiringFollowup}</div>
+                        </div>
                     </div>
-                    <div>
-                        <strong>Khối học sinh:</strong>{" "}
-                        {editMode ? (
-                            <input
-                                type="text"
-                                name="targetGrades"
-                                value={editData?.targetGrades || ''}
-                                onChange={handleInputChange}
-                                className="border rounded px-2 py-1"
-                            />
-                        ) : (
-                            campaign?.targetGrades
-                        )}
-                    </div>
-                    <div>
-                        <strong>Trạng thái:</strong>{" "}
-                        {editMode ? (
-                            <select
-                                name="status"
-                                value={editData?.status || ''}
-                                onChange={handleInputChange}
-                                className="border rounded px-2 py-1"
-                            >
-                                <option value={0}>Planned</option>
-                                <option value={1}>InProgress</option>
-                                <option value={2}>Completed</option>
-                                <option value={3}>Cancelled</option>
-                            </select>
-                        ) : (
-                            <span className="px-2 py-1 rounded bg-red-100 text-red-700">{campaign?.statusDisplay}</span>
-                        )}
-                    </div>
-                    <div><strong>Tổng số học sinh:</strong> {campaign?.totalStudents}</div>
-                    <div><strong>Đã nhận đồng ý:</strong> {campaign?.consentReceived} ({campaign?.consentRate}%)</div>
-                    <div><strong>Đã khám:</strong> {campaign?.checkupsCompleted} ({campaign?.completionRate}%)</div>
-                    <div><strong>Cần theo dõi:</strong> {campaign?.requiringFollowup}</div>
                 </div>
 
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-semibold text-gray-800">Chi tiết kết quả học sinh</h3>
+                {/* Student Results Section */}
+                <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h3 className="text-xl font-bold text-red-800">Kết quả khám sức khỏe học sinh</h3>
                     <button
-                        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                        className={`px-4 py-2 rounded-lg ${primaryColor} ${primaryHover} text-white font-medium transition flex items-center gap-2`}
                         onClick={() => setShowAddForm(true)}
                     >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
                         Thêm kết quả
                     </button>
                 </div>
 
                 {/* Edit Result Form Modal */}
                 {showEditForm && editingResult && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                        <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xl font-semibold">Cập nhật kết quả khám sức khỏe</h3>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                        <div className={`${cardBg} rounded-xl ${shadow} p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border ${borderColor}`}>
+                            <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-200">
+                                <h3 className="text-xl font-bold text-red-800">Cập nhật kết quả khám sức khỏe</h3>
                                 <button
-                                    className="text-gray-500 hover:text-gray-700"
+                                    className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
                                     onClick={() => {
                                         setShowEditForm(false);
                                         setEditingResult(null);
@@ -370,133 +431,133 @@ const HealthCheckDetailPage: React.FC = () => {
                                 </button>
                             </div>
                             
-                            <div className="mb-4 p-3 bg-gray-50 rounded">
-                                <p><strong>Học sinh:</strong> {editingResult.studentName} ({editingResult.studentCode})</p>
+                            <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                                <p className="font-medium"><span className="text-gray-600">Học sinh:</span> {editingResult.studentName} (Mã: {editingResult.studentCode})</p>
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Chiều cao (cm)</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Chiều cao (cm)</label>
                                     <input
                                         type="number"
                                         name="height"
                                         value={editResult.height}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         step="0.1"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Cân nặng (kg)</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Cân nặng (kg)</label>
                                     <input
                                         type="number"
                                         name="weight"
                                         value={editResult.weight}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         step="0.1"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Huyết áp</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Huyết áp</label>
                                     <input
                                         type="text"
                                         name="bloodPressure"
                                         value={editResult.bloodPressure}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: 120/80"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Thị lực</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Thị lực</label>
                                     <input
                                         type="text"
                                         name="visionTest"
                                         value={editResult.visionTest}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: 10/10"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Thính lực</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Thính lực</label>
                                     <input
                                         type="text"
                                         name="hearingTest"
                                         value={editResult.hearingTest}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: Bình thường"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Sức khỏe chung</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Sức khỏe chung</label>
                                     <input
                                         type="text"
                                         name="generalHealth"
                                         value={editResult.generalHealth}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: Tốt"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ngày khám</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Ngày khám</label>
                                     <input
                                         type="date"
                                         name="checkupDate"
                                         value={editResult.checkupDate}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         required
                                     />
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Khuyến nghị</label>
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">Khuyến nghị</label>
                                     <textarea
                                         name="recommendations"
                                         value={editResult.recommendations}
                                         onChange={handleEditResultChange}
-                                        className="w-full border rounded px-3 py-2 h-20"
+                                        className="w-full border rounded-lg px-4 py-2 h-24 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="Nhập khuyến nghị..."
                                     />
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="flex items-center">
+                                <div className="md:col-span-2">
+                                    <label className="flex items-center space-x-2">
                                         <input
                                             type="checkbox"
                                             name="requiresFollowup"
                                             checked={editResult.requiresFollowup}
                                             onChange={handleEditResultChange}
-                                            className="mr-2"
+                                            className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                                         />
-                                        <span className="text-sm font-medium text-gray-700">Cần theo dõi</span>
+                                        <span className="text-sm font-medium text-gray-700">Cần theo dõi thêm</span>
                                     </label>
                                 </div>
                             </div>
                             
-                            <div className="flex justify-end gap-2 mt-6">
+                            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                                 <button
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                                    className={`px-4 py-2 rounded-lg ${secondaryColor} ${secondaryHover} text-red-700 border ${borderColor} font-medium transition`}
                                     onClick={() => {
                                         setShowEditForm(false);
                                         setEditingResult(null);
                                     }}
                                 >
-                                    Hủy
+                                    Hủy bỏ
                                 </button>
                                 <button
-                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                    className={`px-4 py-2 rounded-lg ${primaryColor} ${primaryHover} text-white font-medium transition`}
                                     onClick={handleUpdateResult}
                                 >
-                                    Cập nhật
+                                    Cập nhật kết quả
                                 </button>
                             </div>
                         </div>
@@ -505,12 +566,12 @@ const HealthCheckDetailPage: React.FC = () => {
 
                 {/* Add Result Form Modal */}
                 {showAddForm && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                        <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                            <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-xl font-semibold">Thêm kết quả khám sức khỏe</h3>
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                        <div className={`${cardBg} rounded-xl ${shadow} p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto border ${borderColor}`}>
+                            <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-200">
+                                <h3 className="text-xl font-bold text-red-800">Thêm kết quả khám sức khỏe</h3>
                                 <button
-                                    className="text-gray-500 hover:text-gray-700"
+                                    className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
                                     onClick={() => setShowAddForm(false)}
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -519,145 +580,145 @@ const HealthCheckDetailPage: React.FC = () => {
                                 </button>
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ID Học sinh</label>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">ID Học sinh</label>
                                     <input
                                         type="number"
                                         name="studentId"
                                         value={newResult.studentId}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">ID Y tá</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">ID Y tá</label>
                                     <input
                                         type="number"
                                         name="nurseId"
                                         value={newResult.nurseId}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Chiều cao (cm)</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Chiều cao (cm)</label>
                                     <input
                                         type="number"
                                         name="height"
                                         value={newResult.height}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         step="0.1"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Cân nặng (kg)</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Cân nặng (kg)</label>
                                     <input
                                         type="number"
                                         name="weight"
                                         value={newResult.weight}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         step="0.1"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Huyết áp</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Huyết áp</label>
                                     <input
                                         type="text"
                                         name="bloodPressure"
                                         value={newResult.bloodPressure}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: 120/80"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Thị lực</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Thị lực</label>
                                     <input
                                         type="text"
                                         name="visionTest"
                                         value={newResult.visionTest}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: 10/10"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Thính lực</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Thính lực</label>
                                     <input
                                         type="text"
                                         name="hearingTest"
                                         value={newResult.hearingTest}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: Bình thường"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Sức khỏe chung</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Sức khỏe chung</label>
                                     <input
                                         type="text"
                                         name="generalHealth"
                                         value={newResult.generalHealth}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="VD: Tốt"
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Ngày khám</label>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">Ngày khám</label>
                                     <input
                                         type="date"
                                         name="checkupDate"
                                         value={newResult.checkupDate}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2"
+                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         required
                                     />
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Khuyến nghị</label>
+                                <div className="space-y-1 md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">Khuyến nghị</label>
                                     <textarea
                                         name="recommendations"
                                         value={newResult.recommendations}
                                         onChange={handleAddResultChange}
-                                        className="w-full border rounded px-3 py-2 h-20"
+                                        className="w-full border rounded-lg px-4 py-2 h-24 focus:ring-2 focus:ring-red-300 focus:border-red-300"
                                         placeholder="Nhập khuyến nghị..."
                                     />
                                 </div>
-                                <div className="col-span-2">
-                                    <label className="flex items-center">
+                                <div className="md:col-span-2">
+                                    <label className="flex items-center space-x-2">
                                         <input
                                             type="checkbox"
                                             name="requiresFollowup"
                                             checked={newResult.requiresFollowup}
                                             onChange={handleAddResultChange}
-                                            className="mr-2"
+                                            className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
                                         />
-                                        <span className="text-sm font-medium text-gray-700">Cần theo dõi</span>
+                                        <span className="text-sm font-medium text-gray-700">Cần theo dõi thêm</span>
                                     </label>
                                 </div>
                             </div>
                             
-                            <div className="flex justify-end gap-2 mt-6">
+                            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                                 <button
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition"
+                                    className={`px-4 py-2 rounded-lg ${secondaryColor} ${secondaryHover} text-red-700 border ${borderColor} font-medium transition`}
                                     onClick={() => setShowAddForm(false)}
                                 >
-                                    Hủy
+                                    Hủy bỏ
                                 </button>
                                 <button
-                                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                                    className={`px-4 py-2 rounded-lg ${primaryColor} ${primaryHover} text-white font-medium transition`}
                                     onClick={handleAddResult}
                                 >
                                     Thêm kết quả
@@ -667,66 +728,81 @@ const HealthCheckDetailPage: React.FC = () => {
                     </div>
                 )}
 
-                <div className="rounded border border-gray-200 shadow-inner">
-                    <table className="min-w-full text-sm text-gray-700">
-                        <thead>
-                            <tr className="bg-red-50">
-                                <th className="border px-3 py-2 font-semibold">Mã HS</th>
-                                <th className="border px-3 py-2 font-semibold">Tên HS</th>
-                                <th className="border px-3 py-2 font-semibold">Ngày khám</th>
-                                <th className="border px-3 py-2 font-semibold">Chiều cao (cm)</th>
-                                <th className="border px-3 py-2 font-semibold">Cân nặng (kg)</th>
-                                <th className="border px-3 py-2 font-semibold">BMI</th>
-                                <th className="border px-3 py-2 font-semibold">Huyết áp</th>
-                                <th className="border px-3 py-2 font-semibold">Thị lực</th>
-                                <th className="border px-3 py-2 font-semibold">Thính lực</th>
-                                <th className="border px-3 py-2 font-semibold">Sức khỏe chung</th>
-                                <th className="border px-3 py-2 font-semibold">Cần theo dõi</th>
-                                <th className="border px-3 py-2 font-semibold">Khuyến nghị</th>
-                                <th className="border px-3 py-2 font-semibold">Y tá</th>
-                                <th className="border px-3 py-2 font-semibold">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {studentDetails.map((detail, idx) => (
-                                <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                                    <td className="border px-3 py-2">{detail.studentCode}</td>
-                                    <td className="border px-3 py-2">{detail.studentName}</td>
-                                    <td className="border px-3 py-2">{new Date(detail.checkupDate).toLocaleDateString()}</td>
-                                    <td className="border px-3 py-2">{detail.height}</td>
-                                    <td className="border px-3 py-2">{detail.weight}</td>
-                                    <td className="border px-3 py-2">{detail.bmi.toFixed(2)}</td>
-                                    <td className="border px-3 py-2">{detail.bloodPressure}</td>
-                                    <td className="border px-3 py-2">{detail.visionTest}</td>
-                                    <td className="border px-3 py-2">{detail.hearingTest}</td>
-                                    <td className="border px-3 py-2">{detail.generalHealth}</td>
-                                    <td className="border px-3 py-2">
-                                        <span className={`px-2 py-1 rounded ${detail.requiresFollowup ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>
-                                            {detail.requiresFollowup ? 'Có' : 'Không'}
-                                        </span>
-                                    </td>
-                                    <td className="border px-3 py-2">{detail.recommendations}</td>
-                                    <td className="border px-3 py-2">{detail.nurseName}</td>
-                                    <td className="border px-3 py-2">
-                                        <div className="flex gap-2">
-                                            <button
-                                                className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
-                                                onClick={() => handleEditResult(detail)}
-                                            >
-                                                Sửa
-                                            </button>
-                                            <button
-                                                className="px-2 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 transition"
-                                                onClick={() => handleDeleteResult(detail.id)}
-                                            >
-                                                Xóa
-                                            </button>
-                                        </div>
-                                    </td>
+                {/* Results Table */}
+                <div className="rounded-xl border border-gray-200 shadow-inner overflow-hidden">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm">
+                            <thead>
+                                <tr className="bg-red-100">
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Mã HS</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Tên HS</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Ngày khám</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Chiều cao</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Cân nặng</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">BMI</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Huyết áp</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Thị lực</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Thính lực</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Sức khỏe</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Theo dõi</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Y tá</th>
+                                    <th className="px-4 py-3 font-semibold text-left text-red-800">Thao tác</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {studentDetails.length > 0 ? (
+                                    studentDetails.map((detail, idx) => (
+                                        <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.studentCode}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200 font-medium">{detail.studentName}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200 whitespace-nowrap">{new Date(detail.checkupDate).toLocaleDateString()}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.height}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.weight}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.bmi.toFixed(2)}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.bloodPressure}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.visionTest}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.hearingTest}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.generalHealth}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200">
+                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${detail.requiresFollowup ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}>
+                                                    {detail.requiresFollowup ? 'Có' : 'Không'}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 border-t border-gray-200">{detail.nurseName}</td>
+                                            <td className="px-4 py-3 border-t border-gray-200 whitespace-nowrap">
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        className="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 transition flex items-center gap-1"
+                                                        onClick={() => handleEditResult(detail)}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                        </svg>
+                                                        Sửa
+                                                    </button>
+                                                    <button
+                                                        className="px-3 py-1 bg-red-600 text-white rounded-lg text-xs hover:bg-red-700 transition flex items-center gap-1"
+                                                        onClick={() => handleDeleteResult(detail.id)}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                        Xóa
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={13} className="px-4 py-8 text-center text-gray-500">
+                                            Chưa có kết quả khám sức khỏe nào. Vui lòng thêm kết quả mới.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
