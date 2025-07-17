@@ -29,7 +29,7 @@ export interface UpdateVaccinationDto {
     checkupTypes: string;
     scheduledDate: string;
     targetGrades: string;
-    status: VaccinationStatus;
+    status: number;
 }
 export interface ApiResponse<T> {
     success: boolean;
