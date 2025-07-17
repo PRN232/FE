@@ -1,7 +1,7 @@
 "use client";
 
 import { getCampaignById, updateCampaign } from '@/lib/service/health-check-campaign/healthCheckCampaign';
-import { UpdateVaccinationDto, Vaccination } from '@/lib/service/health-check-campaign/IHealthCheckCampaign';
+import { UpdateVaccinationDto, Vaccination, VaccinationStatus } from '@/lib/service/health-check-campaign/IHealthCheckCampaign';
 import { getHealthCheckupResultsByCampaign } from '@/lib/service/health-checkup-result/health-checkup-result';
 import { HealthCheckupResult } from '@/lib/service/health-checkup-result/IHealth-checkup-result';
 import { useParams, useRouter } from 'next/navigation';
@@ -55,7 +55,10 @@ const HealthCheckDetail: React.FC<HealthCheckDetailProps> = ({ setIsShowDetail, 
                 checkupTypes: campaign.checkupTypes,
                 scheduledDate: campaign.scheduledDate,
                 targetGrades: campaign.targetGrades,
-                status: campaign.status,
+                status: campaign.status === VaccinationStatus.Planned ? 0 :
+                        campaign.status === VaccinationStatus.InProgress ? 1 :
+                        campaign.status === VaccinationStatus.Completed ? 2 :
+                        3 // Cancelled
             });
         }
     }, [campaign]);
@@ -115,9 +118,15 @@ const HealthCheckDetail: React.FC<HealthCheckDetailProps> = ({ setIsShowDetail, 
                             <input name="scheduledDate" value={formData.scheduledDate} onChange={handleFormChange} className="border px-2 py-1" />
                             <input name="targetGrades" value={formData.targetGrades} onChange={handleFormChange} className="border px-2 py-1" />
                             <select name="status" value={formData.status} onChange={handleFormChange} className="border px-2 py-1">
-                                <option value="PENDING">PENDING</option>
+                                {/* <option value="PENDING">PENDING</option>
                                 <option value="ACTIVE">ACTIVE</option>
-                                <option value="COMPLETED">COMPLETED</option>
+                                <option value="COMPLETED">COMPLETED</option> */}
+                                {/* Planned, InProgress, Completed, Cancelled */}
+                                <option value={0}>Planned</option>
+                                <option value={1}>InProgress</option>
+                                <option value={2}>Completed</option>
+                                <option value={3}>Cancelled</option>
+                                
                             </select>
                             <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded" disabled={updating}>
                                 {updating ? 'Đang cập nhật...' : 'Lưu'}
@@ -193,17 +202,7 @@ const HealthCheckDetail: React.FC<HealthCheckDetailProps> = ({ setIsShowDetail, 
                             className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow hover:bg-blue-700 transition font-semibold"
                             onClick={() => router.push('/medical-staff/examination/' + id)}
                         >
-                            <svg fill="#000000" xmlns="http://www.w3.org/2000/svg"
-                                width="10px" height="10px" viewBox="0 0 52 52" enableBackground="new 0 0 52 52" >
-                                <path d="M48.8,2H33.3c-1,0-1.3,0.9-0.5,1.7l4.9,4.9l-9,9c-0.5,0.5-0.5,1.3,0,1.9l3.7,3.7c0.5,0.5,1.3,0.5,1.9,0
-    l9.1-9.1l4.9,4.9c0.8,0.8,1.7,0.5,1.7-0.5V3.1C50,2.5,49.4,2,48.8,2z"/>
-                                <path d="M3.5,50h15.4c1,0,1.3-1.1,0.5-1.9l-4.9-5l9-9.1c0.5-0.5,0.5-1.4,0-1.9l-3.7-3.7c-0.5-0.5-1.3-0.5-1.9,0l-9,9
-    l-5-4.9C3,31.7,2,32,2,33v15.4C2,49.1,2.8,50,3.5,50z"/>
-                                <path d="M50,48.8V33.3c0-1-0.9-1.3-1.7-0.5l-4.9,4.9l-9-9c-0.5-0.5-1.3-0.5-1.9,0l-3.7,3.7c-0.5,0.5-0.5,1.3,0,1.9
-    l9.1,9.1L33,48.3c-0.8,0.8-0.5,1.7,0.5,1.7h15.4C49.5,50,50,49.4,50,48.8z"/>
-                                <path d="M2,3.5v15.4c0,1,1.1,1.3,1.9,0.5l5-4.9l9.1,9c0.5,0.5,1.4,0.5,1.9,0l3.7-3.7c0.5-0.5,0.5-1.3,0-1.9l-9-9
-    l4.9-5C20.3,3,20,2,19,2H3.6C2.9,2,2,2.8,2,3.5z"/>
-                            </svg>
+                           Chi tiết
                         </button>
                     </div>
                 </div>
