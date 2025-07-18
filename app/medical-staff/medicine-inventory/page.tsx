@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getAllMedications, createMedication, deleteMedication } from "@/lib/service/medications/medications";
+import { getAllMedications, createMedication, deleteMedication, updateMedication } from "@/lib/service/medications/medications";
 import { Medication } from "@/lib/service/medications/IMedications";
 
 const medicationTypeTranslations: Record<string, string> = {
@@ -21,8 +21,9 @@ export default function MedicineInventoryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Form state for adding new medication
+  // Form state for adding/editing medication
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<{
     name: string;
     type: string;
@@ -39,6 +40,10 @@ export default function MedicineInventoryPage() {
     storageInstructions: "",
   });
 
+  // Bulk update state
+  const [showBulkUpdate, setShowBulkUpdate] = useState(false);
+  const [bulkUpdates, setBulkUpdates] = useState<Record<number, number>>({});
+
   // Search & filter state
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -54,6 +59,12 @@ export default function MedicineInventoryPage() {
         const res = await getAllMedications();
         if (res.success) {
           setMedications(res.data);
+          // Initialize bulk updates with current quantities
+          const initialBulkUpdates: Record<number, number> = {};
+          res.data.forEach(med => {
+            initialBulkUpdates[med.id] = med.stockQuantity;
+          });
+          setBulkUpdates(initialBulkUpdates);
         } else {
           setError(res.message || "Không thể tải danh sách vật tư.");
         }
@@ -76,6 +87,13 @@ export default function MedicineInventoryPage() {
     }));
   };
 
+  const handleBulkQuantityChange = (id: number, value: number) => {
+    setBulkUpdates(prev => ({
+      ...prev,
+      [id]: Math.max(0, value) // Ensure quantity doesn't go below 0
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -89,9 +107,16 @@ export default function MedicineInventoryPage() {
         expiryDate: form.expiryDate,
         storageInstructions: form.storageInstructions,
       };
-      const res = await createMedication(dto);
+
+      let res;
+      if (editingId) {
+        res = await updateMedication(editingId, dto);
+      } else {
+        res = await createMedication(dto);
+      }
+
       if (res.success && res.data) {
-        const med: Medication = {
+        const updatedMed: Medication = {
           ...res.data,
           isExpired: new Date(res.data.expiryDate) < new Date(),
           isLowStock: res.data.stockQuantity < 50,
@@ -100,24 +125,56 @@ export default function MedicineInventoryPage() {
               (new Date(res.data.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
             ) || 0,
         };
-        setMedications([med, ...medications]);
-        setForm({
-          name: "",
-          type: "",
-          description: "",
-          stockQuantity: 0,
-          expiryDate: "",
-          storageInstructions: "",
-        });
-        setShowForm(false);
+
+        if (editingId) {
+          setMedications(prev => prev.map(med => 
+            med.id === editingId ? updatedMed : med
+          ));
+        } else {
+          setMedications(prev => [updatedMed, ...prev]);
+        }
+
+        // Update bulk updates if needed
+        setBulkUpdates(prev => ({
+          ...prev,
+          [updatedMed.id]: updatedMed.stockQuantity
+        }));
+
+        resetForm();
       } else {
-        setError(res.message || "Không thể thêm vật tư.");
+        setError(res.message || `Không thể ${editingId ? 'cập nhật' : 'thêm'} vật tư.`);
       }
     } catch (err: any) {
-      setError(err.message || "Lỗi khi thêm vật tư.");
+      setError(err.message || `Lỗi khi ${editingId ? 'cập nhật' : 'thêm'} vật tư.`);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEdit = (med: Medication) => {
+    setEditingId(med.id);
+    setForm({
+      name: med.name,
+      type: med.type,
+      description: med.description,
+      stockQuantity: med.stockQuantity,
+      expiryDate: med.expiryDate.split('T')[0], // Format date for input
+      storageInstructions: med.storageInstructions,
+    });
+    setShowForm(true);
+  };
+
+  const resetForm = () => {
+    setForm({
+      name: "",
+      type: "",
+      description: "",
+      stockQuantity: 0,
+      expiryDate: "",
+      storageInstructions: "",
+    });
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const handleDelete = async (id: number) => {
@@ -128,11 +185,61 @@ export default function MedicineInventoryPage() {
       const res = await deleteMedication(id);
       if (res.success) {
         setMedications((prev) => prev.filter((med) => med.id !== id));
+        // Remove from bulk updates
+        setBulkUpdates(prev => {
+          const newUpdates = {...prev};
+          delete newUpdates[id];
+          return newUpdates;
+        });
       } else {
         setError(res.message || "Không thể xóa vật tư.");
       }
     } catch (err: any) {
       setError(err.message || "Lỗi khi xóa vật tư.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBulkUpdate = async () => {
+    if (!window.confirm("Bạn có chắc muốn cập nhật số lượng hàng loạt?")) return;
+    
+    setLoading(true);
+    setError(null);
+    try {
+      const updates = Object.entries(bulkUpdates).map(([id, quantity]) => ({
+        id: Number(id),
+        quantity
+      }));
+
+      // We'll process updates sequentially to handle errors properly
+      const results = [];
+      for (const update of updates) {
+        const med = medications.find(m => m.id === update.id);
+        if (med && med.stockQuantity !== update.quantity) {
+          try {
+            const res = await updateMedication(update.id, {
+              ...med,
+              stockQuantity: update.quantity
+            });
+            results.push(res);
+          } catch (err) {
+            console.error(`Failed to update medication ${update.id}:`, err);
+            results.push({ success: false, message: `Failed to update medication ${update.id}` });
+          }
+        }
+      }
+
+      // Refresh the list
+      const refreshRes = await getAllMedications();
+      if (refreshRes.success) {
+        setMedications(refreshRes.data);
+        setShowBulkUpdate(false);
+      } else {
+        setError("Cập nhật thành công nhưng không thể làm mới danh sách.");
+      }
+    } catch (err: any) {
+      setError(err.message || "Lỗi khi cập nhật số lượng hàng loạt.");
     } finally {
       setLoading(false);
     }
@@ -200,20 +307,74 @@ export default function MedicineInventoryPage() {
               ))}
             </select>
             <Button
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => setShowBulkUpdate(!showBulkUpdate)}
+              className={`${buttonSecondary} rounded-lg px-4 py-2 font-medium transition-all ${shadow} hover:shadow-md`}
+            >
+              {showBulkUpdate ? "Đóng nhập hàng" : "Nhập hàng loạt"}
+            </Button>
+            <Button
+              onClick={() => {
+                if (showForm) resetForm();
+                else setShowForm(!showForm);
+              }}
               className={`${buttonPrimary} rounded-lg px-6 py-2 font-semibold transition-all ${shadow} hover:shadow-md`}
             >
-              {showForm ? "Đóng form" : "+ Thêm vật tư"}
+              {showForm ? "Đóng form" : editingId ? "Chỉnh sửa vật tư" : "+ Thêm vật tư"}
             </Button>
           </div>
         </div>
+
+        {showBulkUpdate && (
+          <div className={`mb-8 ${cardBg} rounded-xl ${shadow} p-6 space-y-4 border ${borderColor}`}>
+            <h2 className={`text-xl font-semibold ${textPrimary} mb-4`}>Cập nhật số lượng hàng loạt</h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên vật tư</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng hiện tại</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Số lượng mới</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {medications.map(med => (
+                    <tr key={med.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{med.name}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{med.stockQuantity}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <Input
+                          type="number"
+                          min={0}
+                          value={bulkUpdates[med.id] || 0}
+                          onChange={(e) => handleBulkQuantityChange(med.id, parseInt(e.target.value) || 0)}
+                          className="w-24 border-gray-300 rounded"
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-end pt-4">
+              <Button
+                onClick={handleBulkUpdate}
+                className={`${buttonPrimary} font-medium py-2 px-6 rounded-lg ${shadow} hover:shadow-md transition-all`}
+                disabled={loading}
+              >
+                Cập nhật hàng loạt
+              </Button>
+            </div>
+          </div>
+        )}
 
         {showForm && (
           <form
             onSubmit={handleSubmit}
             className={`mb-8 ${cardBg} rounded-xl ${shadow} p-6 space-y-4 border ${borderColor}`}
           >
-            <h2 className={`text-xl font-semibold ${textPrimary} mb-4`}>Thêm vật tư mới</h2>
+            <h2 className={`text-xl font-semibold ${textPrimary} mb-4`}>
+              {editingId ? "Chỉnh sửa vật tư" : "Thêm vật tư mới"}
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className={`block text-sm font-medium ${textSecondary}`}>Tên vật tư</label>
@@ -291,12 +452,20 @@ export default function MedicineInventoryPage() {
                 />
               </div>
             </div>
-            <div className="flex justify-end pt-2">
+            <div className="flex justify-end pt-2 gap-3">
+              <Button
+                type="button"
+                onClick={resetForm}
+                className={`${buttonSecondary} font-medium py-2 px-6 rounded-lg ${shadow} hover:shadow-md transition-all`}
+              >
+                Hủy
+              </Button>
               <Button
                 type="submit"
                 className={`${buttonPrimary} font-medium py-2 px-6 rounded-lg ${shadow} hover:shadow-md transition-all`}
+                disabled={loading}
               >
-                Lưu vật tư
+                {editingId ? "Cập nhật" : "Lưu vật tư"}
               </Button>
             </div>
           </form>
@@ -377,7 +546,14 @@ export default function MedicineInventoryPage() {
                     </div>
                   </div>
 
-                  <div className="flex justify-end mt-4 pt-3 border-t border-gray-100">
+                  <div className="flex justify-end gap-2 mt-4 pt-3 border-t border-gray-100">
+                    <Button
+                      onClick={() => handleEdit(med)}
+                      className="text-sm px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg"
+                      disabled={loading}
+                    >
+                      Chỉnh sửa
+                    </Button>
                     <Button
                       onClick={() => handleDelete(med.id)}
                       className="text-sm px-3 py-1 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg"
