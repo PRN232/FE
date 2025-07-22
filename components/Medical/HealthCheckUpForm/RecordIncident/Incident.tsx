@@ -26,6 +26,7 @@ import { Loader2, Save, Plus, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
+import { vi } from "date-fns/locale";
 import { showSuccessAlert, showErrorAlert } from "@/lib/utils";
 import { CreateMedicalIncidentDto } from "@/lib/service/medical-record/incident/IIncident";
 import { createMedicalIncident } from "@/lib/service/medical-record/incident/incident";
@@ -211,8 +212,20 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                                         </SelectTrigger>
                                         <SelectContent className="bg-white">
                                             {students.map((student) => (
-                                                <SelectItem key={student.id} value={student.id.toString()}>
-                                                    {student.fullName} ({student.studentCode} - {student.className})
+                                                <SelectItem
+                                                    key={student.id}
+                                                    value={student.id.toString()}
+                                                    className="flex justify-between items-center w-full"
+                                                >
+                                                    <span className="flex-1 min-w-0 truncate">
+                                                        {student.fullName}
+                                                    </span>
+                                                    <span className="mx-2 text-gray-500">
+                                                        {student.studentCode}
+                                                    </span>
+                                                    <span className="text-gray-600">
+                                                        {student.className}
+                                                    </span>
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
@@ -277,7 +290,12 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                                                     !formData.date && "text-gray-400"
                                                 }`}
                                             >
-                                                {formData.date ? format(formData.date, "PPP") : <span>Chọn ngày</span>}
+                                                {
+                                                    formData.date ? format(formData.date, "PPP",
+                                                        { locale: vi }) : <span>
+                                                        Chọn ngày
+                                                    </span>
+                                                }
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0 bg-white">
@@ -287,6 +305,7 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                                                 autoFocus={true}
                                                 onSelect={(date) => date && handleInputChange("date", date)}
                                                 captionLayout="dropdown"
+                                                locale={vi}
                                             />
                                         </PopoverContent>
                                     </Popover>
