@@ -22,12 +22,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Loader2,
-    Save,
-    Plus,
-    X
-} from "lucide-react";
+import { Loader2, Save, Plus, X } from "lucide-react";
 import {
     Popover,
     PopoverContent,
@@ -35,17 +30,20 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import
-{ showSuccessAlert,
-    showErrorAlert
-} from "@/lib/utils";
-import { CreateMedicalIncidentDto } from "@/lib/service/medical-record/incident/IIncident";
-import { createMedicalIncident } from "@/lib/service/medical-record/incident/incident";
+import { showSuccessAlert, showErrorAlert } from "@/lib/utils";
+import {
+    CreateMedicalIncidentDto
+} from "@/lib/service/medical-record/incident/IIncident";
+import {
+    createMedicalIncident
+} from "@/lib/service/medical-record/incident/incident";
+import { ChildDTO } from "@/types";
 
 interface NewIncidentModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess?: () => void;
+    students: ChildDTO[];
 }
 
 interface IncidentFormData {
@@ -63,7 +61,8 @@ interface IncidentFormData {
 const IncidentModal = ({
                            isOpen,
                            onClose,
-                           onSuccess
+                           onSuccess,
+                           students
 }: NewIncidentModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentSymptom, setCurrentSymptom] = useState("");
@@ -159,6 +158,17 @@ const IncidentModal = ({
         }));
     };
 
+    const handleStudentSelect = (studentId: string) => {
+        const selectedStudent = students.find((student) => student.id.toString() === studentId);
+        if (selectedStudent) {
+            handleInputChange("studentId", selectedStudent.id);
+            handleInputChange("studentName", selectedStudent.fullName);
+        } else {
+            handleInputChange("studentId", 0);
+            handleInputChange("studentName", "");
+        }
+    };
+
     const handleAddSymptom = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter" && currentSymptom.trim()) {
             e.preventDefault();
@@ -197,33 +207,25 @@ const IncidentModal = ({
                             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Thông tin học sinh</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <Label htmlFor="studentId" className="text-gray-700 font-medium">
-                                        ID Học sinh <span className="text-red-500">*</span>
+                                    <Label htmlFor="student" className="text-gray-700 font-medium">
+                                        Học sinh <span className="text-red-500">*</span>
                                     </Label>
-                                    <Input
-                                        id="studentId"
-                                        name="studentId"
-                                        type="number"
-                                        placeholder="Nhập ID học sinh"
-                                        value={formData.studentId || ""}
-                                        onChange={(e) => handleInputChange("studentId", parseInt(e.target.value, 10) || 0)}
-                                        className="border-gray-300 focus:border-red-500 focus:ring-red-500"
-                                        disabled={isLoading}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="studentName" className="text-gray-700 font-medium">
-                                        Tên học sinh <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Input
-                                        id="studentName"
-                                        name="studentName"
-                                        placeholder="Tên học sinh"
-                                        value={formData.studentName}
-                                        onChange={(e) => handleInputChange("studentName", e.target.value)}
-                                        className="border-gray-300 focus:border-red-500 focus:ring-red-500"
-                                        disabled={isLoading}
-                                    />
+                                    <Select
+                                        value={formData.studentId.toString()}
+                                        onValueChange={handleStudentSelect}
+                                        disabled={isLoading || students.length === 0}
+                                    >
+                                        <SelectTrigger className="border-gray-300 focus:border-red-500 focus:ring-red-500">
+                                            <SelectValue placeholder={students.length === 0 ? "Không có học sinh" : "Chọn học sinh"} />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-white">
+                                            {students.map((student) => (
+                                                <SelectItem key={student.id} value={student.id.toString()}>
+                                                    {student.fullName} ({student.studentCode} - {student.className})
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                             </div>
                         </div>

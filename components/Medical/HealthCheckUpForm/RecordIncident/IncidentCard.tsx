@@ -60,7 +60,7 @@ const IncidentCard = ({
                           onView,
                           medicationsGiven,
                           onAddMedication
-                      }: IncidentCardProps) => {
+}: IncidentCardProps) => {
     const [isMedicationDialogOpen, setIsMedicationDialogOpen] = useState(false)
     const incidentMedications = medicationsGiven.filter(m => m.incidentId === incident.id)
 
@@ -199,7 +199,7 @@ const IncidentCard = ({
                                         <div className="flex justify-between items-center">
                                             <div>
                                                 <p className="font-medium text-gray-800">
-                                                    Thuốc ID: {medication.medicationId}
+                                                    ID Thuốc: {medication.medicationId}
                                                 </p>
                                                 <p className="text-sm text-gray-600">
                                                     Liều dùng: {medication.dosage}

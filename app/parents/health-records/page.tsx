@@ -1,36 +1,12 @@
 "use client";
 
-import {
-    useState,
-    useEffect,
-    useCallback
-} from "react";
-
-import {Button} from "@/components/ui/button";
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-    Search,
-    User,
-    AlertTriangle,
-    HeartPulse,
-    Syringe,
-    Plus
-} from "lucide-react";
-
+import { Search, User, AlertTriangle, HeartPulse, Syringe, Plus } from "lucide-react";
 import StudentInfoCard from "@/components/Medical/MedicalRecord/StudentInfoCard";
 import OverviewTab from "@/components/Medical/MedicalRecord/MedicalTabs/OverviewTab";
 import AllergiesTab from "@/components/Medical/MedicalRecord/MedicalTabs/AllergiesTab";
@@ -38,14 +14,11 @@ import ConditionsTab from "@/components/Medical/MedicalRecord/MedicalTabs/Condit
 import VaccinationsTab from "@/components/Medical/MedicalRecord/MedicalTabs/VaccinationsTab";
 import { User as UserType, ChildDTO } from "@/types";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
-import {
-    getMedicalProfileByStudentId,
-    MedicalProfileResponse
-} from "@/lib/service/medical-profile/medical";
+import { getMedicalProfileByStudentId, MedicalProfileResponse } from "@/lib/service/medical-profile/medical";
 import NewRequest from "@/components/Medical/HealthCheckUpForm/RecordIncident/NewRequest";
 
 const HealthRecord = () => {
-    const [isNewRequestModalOpen, setIsRequestModalOpen] = useState(false)
+    const [isNewRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState("");
     const [activeTab, setActiveTab] = useState("overview");
     const [children, setChildren] = useState<ChildDTO[]>([]);
@@ -67,9 +40,8 @@ const HealthRecord = () => {
         setMedicalError(null);
         try {
             const response = await getMedicalProfileByStudentId(parseInt(selectedStudent, 10));
-
             if (response.success && response.profile) {
-                setMedicalProfile(response);
+                setMedicalProfile({ ...response });
             } else {
                 setMedicalError(response.error || "Failed to fetch medical profile");
                 setMedicalProfile(null);
@@ -81,7 +53,7 @@ const HealthRecord = () => {
         } finally {
             setMedicalLoading(false);
         }
-    }, [selectedStudent, setMedicalProfile, setMedicalLoading, setMedicalError]);
+    }, [selectedStudent]);
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -124,8 +96,30 @@ const HealthRecord = () => {
         void fetchMedicalProfile();
     }, [fetchMedicalProfile, selectedStudent]);
 
+    const handleNewIncidentSuccess = async () => {
+        if (!selectedStudent) return;
+
+        let attempts = 0;
+        const maxAttempts = 5;
+        const pollInterval = 2000; // 2 seconds
+
+        while (attempts < maxAttempts) {
+            await fetchMedicalProfile();
+            if (medicalProfile?.profile) {
+                console.log("Profile updated successfully after attempt", attempts + 1);
+                break;
+            }
+            await new Promise((resolve) => setTimeout(resolve, pollInterval));
+            attempts++;
+        }
+
+        if (attempts >= maxAttempts) {
+            setMedicalError("Failed to fetch updated profile after multiple attempts");
+        }
+    };
+
     const renderTabContent = () => {
-        if (!selectedStudent || medicalLoading) return null;
+        if (!selectedStudent || medicalLoading) return <Skeleton className="h-64 w-full" />;
         if (medicalError) return <p className="text-red-500">{medicalError}</p>;
 
         const profile = medicalProfile?.profile;
@@ -144,11 +138,6 @@ const HealthRecord = () => {
     };
 
     const selectedChild = children.find((child) => child.id.toString() === selectedStudent);
-    const handleNewIncidentSuccess = async () => {
-        if (selectedStudent) {
-            await fetchMedicalProfile();
-        }
-    }
 
     if (!user && error) {
         return (
@@ -167,16 +156,11 @@ const HealthRecord = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-red-50/50 via-white to-red-100/50 relative">
-            {/* Animated background elements */}
             <div className="absolute inset-0 bg-[url('/images/medical-pattern-light.svg')] bg-[length:300px_300px] opacity-[0.03] animate-[pulse_20s_linear_infinite]" />
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-red-50/20 pointer-events-none" />
-
-            {/* Header with improved gradient and shadow */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 shadow-lg relative overflow-hidden">
-                {/* Animated header elements */}
                 <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-[0.03]" />
                 <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 to-red-700/30 pointer-events-none" />
-
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="space-y-2">
@@ -199,13 +183,9 @@ const HealthRecord = () => {
                     </div>
                 </div>
             </div>
-
             <div className="max-w-7xl mx-auto p-6 relative z-10">
-                {/* Student Selection */}
                 <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 mb-6 group overflow-hidden">
-                    {/* Glow effect */}
                     <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
                     <CardHeader className="bg-gradient-to-r from-red-500 to-red-600 text-white rounded-t-lg">
                         <CardTitle className="flex items-center">
                             <Search className="w-5 h-5 mr-2" />
@@ -221,7 +201,7 @@ const HealthRecord = () => {
                                     <Select
                                         value={selectedStudent}
                                         onValueChange={setSelectedStudent}
-                                        disabled={loading || !user}
+                                        disabled={ loading || !user}
                                     >
                                         <SelectTrigger className="border-red-200 focus:border-red-500">
                                             <SelectValue
@@ -248,18 +228,10 @@ const HealthRecord = () => {
                         </div>
                     </CardContent>
                 </Card>
-
                 {selectedStudent && selectedChild ? (
                     <>
-                        {/* Student Info Card */}
                         <StudentInfoCard child={selectedChild} medicalProfile={medicalProfile?.profile} />
-
-                        {/* Health Records Tabs */}
-                        <Tabs
-                            value={activeTab}
-                            onValueChange={setActiveTab}
-                            className="space-y-6"
-                        >
+                        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                             <div className="relative">
                                 <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm rounded-lg overflow-hidden border border-red-100">
                                     <TabsTrigger
@@ -267,8 +239,8 @@ const HealthRecord = () => {
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
                                         <span className="relative z-10 flex items-center justify-center gap-2">
-                                          <User className="w-4 h-4" />
-                                          Tổng quan
+                                            <User className="w-4 h-4" />
+                                            Tổng quan
                                         </span>
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
@@ -277,8 +249,8 @@ const HealthRecord = () => {
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
                                         <span className="relative z-10 flex items-center justify-center gap-2">
-                                          <AlertTriangle className="w-4 h-4" />
-                                          Dị ứng
+                                            <AlertTriangle className="w-4 h-4" />
+                                            Dị ứng
                                         </span>
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
@@ -287,11 +259,10 @@ const HealthRecord = () => {
                                         className="relative data-[state=active]:bg-gradient-to-r data-[state=active]:from-red-500 data-[state=active]:to-red-600 data-[state=active]:text-white transition-all duration-300 group"
                                     >
                                         <span className="relative z-10 flex items-center justify-center gap-2">
-                                          <HeartPulse className="w-4 h-4" />
-                                          Tình trạng
+                                            <HeartPulse className="w-4 h-4" />
+                                            Tình trạng
                                         </span>
-                                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10
-                                        opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
                                     <TabsTrigger
                                         value="vaccinations"
@@ -304,37 +275,38 @@ const HealthRecord = () => {
                                         <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                     </TabsTrigger>
                                 </TabsList>
-                                {/* Animated underline for active tab */}
-                                <div className="absolute bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-red-600 transition-all duration-300"
-                                     style={{
-                                         width: '25%',
-                                         left: activeTab === 'overview' ? '0%' :
-                                             activeTab === 'allergies' ? '25%' :
-                                                 activeTab === 'conditions' ? '50%' :
-                                                     activeTab === 'vaccinations' ? '75%' : '0%'
-                                     }} />
+                                <div
+                                    className="absolute bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-red-600 transition-all duration-300"
+                                    style={{
+                                        width: "25%",
+                                        left:
+                                            activeTab === "overview"
+                                                ? "0%"
+                                                : activeTab === "allergies"
+                                                    ? "25%"
+                                                    : activeTab === "conditions"
+                                                        ? "50%"
+                                                        : activeTab === "vaccinations"
+                                                            ? "75%"
+                                                            : "0%",
+                                    }}
+                                />
                             </div>
-
-                            {/* Tab content container with subtle animation */}
                             <div className="bg-white rounded-lg shadow-sm border border-red-50 overflow-hidden transition-all duration-300 hover:shadow-md">
-                                <div className="p-6">
-                                    {medicalLoading ? <Skeleton className="h-64 w-full" /> : renderTabContent()}
-                                </div>
+                                <div className="p-6">{renderTabContent()}</div>
                             </div>
                         </Tabs>
                     </>
                 ) : (
                     <Card className="shadow-lg border-0 bg-white/90 backdrop-blur-sm p-6 text-center">
                         <p className="text-gray-500">
-                            {children.length === 0 ?
-                                "Không có học sinh nào để hiển thị" :
-                                "Vui lòng chọn học sinh để xem hồ sơ sức khỏe"}
+                            {children.length === 0
+                                ? "Không có học sinh nào để hiển thị"
+                                : "Vui lòng chọn học sinh để xem hồ sơ sức khỏe"}
                         </p>
                     </Card>
                 )}
             </div>
-
-            {/* Modals */}
             {selectedChild ? (
                 <NewRequest
                     isOpen={isNewRequestModalOpen}

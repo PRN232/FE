@@ -10,7 +10,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { Loader2, Save } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getParentByUserId, updateParent } from "@/lib/service/parent/parent";
-import ChildrenSection from "./ChildrenSection"; // Adjust the import path as needed
+import ChildrenSection from "./ChildrenSection";
 
 const ProfileTab = () => {
     const { user } = useAuth();

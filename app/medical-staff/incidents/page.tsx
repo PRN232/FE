@@ -16,11 +16,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Search, Plus } from "lucide-react";
-import IncidentModal from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
-import ViewIncident from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
-import IncidentCard from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
+import
+  IncidentModal
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
+import
+  ViewIncident
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
+import
+  IncidentCard
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
 
-import { Incident, MedicationGiven } from "@/types";
+import { Incident, MedicationGiven, ChildDTO } from "@/types";
 import {
   getAllMedicalIncidents
 } from "@/lib/service/medical-record/incident/incident";
@@ -28,6 +34,7 @@ import {
   createMedicationGiven,
   getAllMedicationsGiven
 } from "@/lib/service/medical-record/medication-given/medication-given";
+import { getAllStudents } from "@/lib/service/student/student";
 
 const IncidentsPage = () => {
   const [isNewIncidentModalOpen, setIsNewIncidentModalOpen] = useState(false);
@@ -37,13 +44,15 @@ const IncidentsPage = () => {
   const [filterSeverity, setFilterSeverity] = useState("all");
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [medicationsGiven, setMedicationsGiven] = useState<MedicationGiven[]>([]);
+  const [students, setStudents] = useState<ChildDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAllData = async () => {
     try {
-      const [incidentsResponse, medicationsResponse] = await Promise.all([
+      const [incidentsResponse, medicationsResponse, studentsResponse] = await Promise.all([
         getAllMedicalIncidents(),
-        getAllMedicationsGiven()
+        getAllMedicationsGiven(),
+        getAllStudents()
       ]);
 
       if (incidentsResponse.success) {
@@ -56,6 +65,12 @@ const IncidentsPage = () => {
         setMedicationsGiven(medicationsResponse.data);
       } else {
         setError(medicationsResponse.message || "Failed to fetch medications");
+      }
+
+      if (studentsResponse.success && studentsResponse.students) {
+        setStudents(studentsResponse.students);
+      } else {
+        setError(studentsResponse.error || "Failed to fetch students");
       }
     } catch (err) {
       setError("An error occurred while fetching data");
@@ -214,6 +229,7 @@ const IncidentsPage = () => {
             isOpen={isNewIncidentModalOpen}
             onClose={() => setIsNewIncidentModalOpen(false)}
             onSuccess={handleNewIncidentSuccess}
+            students={students}
         />
         <ViewIncident
             isOpen={isViewModalOpen}

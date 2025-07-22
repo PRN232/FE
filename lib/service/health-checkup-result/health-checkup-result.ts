@@ -13,8 +13,7 @@ export const getHealthCheckupResultsByCampaign = async (
     campaignId: number
 ): Promise<ApiResponse<HealthCheckupResult[]>> => {
     const response = await fetch(
-        `${BASE_URL}/by-campaign/${campaignId}`,
-        {
+        `${BASE_URL}/by-campaign/${campaignId}`, {
             method: 'GET',
             headers: getAuthHeaders(),
         }
@@ -30,8 +29,7 @@ export const getHealthCheckupResultsByCampaign = async (
 export const getHealthCheckupResultById = async (
     resultId: number
 ): Promise<ApiResponse<HealthCheckupResult>> => {
-    const response = await fetch(`${BASE_URL}/${resultId}`,
-        {
+    const response = await fetch(`${BASE_URL}/${resultId}`, {
             method: 'GET',
             headers: getAuthHeaders(),
         }
@@ -47,8 +45,7 @@ export const getHealthCheckupResultById = async (
 export const createHealthCheckupResult = async (
     resultData: CreateHealthCheckupResultDto
 ): Promise<HealthCheckupResult> => {
-    const response = await fetch(`${BASE_URL}`,
-        {
+    const response = await fetch(`${BASE_URL}`, {
             method: "POST",
             headers: getAuthHeaders(),
             body: JSON.stringify(resultData),
@@ -68,8 +65,7 @@ export const updateHealthCheckupResult = async (
     resultId: number,
     resultData: UpdateHealthCheckupResultDto
 ): Promise<HealthCheckupResult> => {
-    const response = await fetch(`${BASE_URL}/${resultId}`,
-        {
+    const response = await fetch(`${BASE_URL}/${resultId}`, {
             method: "PUT",
             headers: getAuthHeaders(),
             body: JSON.stringify(resultData),
@@ -88,8 +84,7 @@ export const updateHealthCheckupResult = async (
 export const deleteHealthCheckupResult = async (
     resultId: number
 ): Promise<ApiResponse<boolean>> => {
-    const response = await fetch(`${BASE_URL}/${resultId}`,
-        {
+    const response = await fetch(`${BASE_URL}/${resultId}`, {
             method: 'DELETE',
             headers: getAuthHeaders(),
         }

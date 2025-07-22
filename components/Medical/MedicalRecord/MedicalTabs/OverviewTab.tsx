@@ -96,19 +96,19 @@ const OverviewTab = ({
                             </h3>
                             <div className="space-y-2 pl-6">
                                 <p>
-                                    <span className="font-medium">Huyết áp:</span>
+                                    <span className="font-medium">Huyết áp: </span>
                                     {profile?.bloodPressure || "Chưa có dữ liệu"}
                                 </p>
                                 <p>
-                                    <span className="font-medium">Kiểm tra mắt:</span>
+                                    <span className="font-medium">Kiểm tra mắt: </span>
                                     {profile?.visionTest || "Chưa có dữ liệu"}
                                 </p>
                                 <p>
-                                    <span className="font-medium">Kiểm tra tai:</span>
+                                    <span className="font-medium">Kiểm tra tai: </span>
                                     {profile?.hearingTest || "Chưa có dữ liệu"}
                                 </p>
                                 <p>
-                                    <span className="font-medium">Kiểm tra cuối:</span>
+                                    <span className="font-medium">Kiểm tra cuối: </span>
                                     {lastCheckup}
                                 </p>
                             </div>

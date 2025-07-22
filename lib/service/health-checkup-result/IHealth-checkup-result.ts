@@ -21,7 +21,7 @@ export interface HealthCheckupResult {
 
 export interface CreateHealthCheckupResultDto {
     studentId: number;
-    campaignId: number;
+    studentName: string;
     height: number;
     weight: number;
     bloodPressure: string;
@@ -30,7 +30,6 @@ export interface CreateHealthCheckupResultDto {
     generalHealth: string;
     requiresFollowup: boolean;
     recommendations: string;
-    nurseId: number;
     checkupDate: string;
 }
 

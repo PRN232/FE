@@ -1,4 +1,4 @@
-import type {  User, ChildDTO } from "@/types";
+import type { User, ChildDTO } from "@/types";
 import type {
     ApiStudent,
     CreateStudentRequest,
@@ -19,9 +19,18 @@ const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     role: "student",
 });
 
-const mapApiStudentToChildDTO = (student: ChildDTO): ChildDTO => ({
-    ...student,
+const mapApiStudentToChildDTO = (student: ApiStudent): ChildDTO => ({
+    id: student.id,
+    studentCode: student.studentCode,
+    fullName: student.fullName,
     dateOfBirth: new Date(student.dateOfBirth),
+    age: student.age,
+    gender: student.gender,
+    className: student.className,
+    parentId: student.parentId,
+    parentName: student.parentName,
+    parentPhone: student.parentPhone,
+    hasMedicalProfile: student.hasMedicalProfile,
 });
 
 const handleResponse = async <T, RawData = unknown>(
@@ -36,6 +45,31 @@ const handleResponse = async <T, RawData = unknown>(
 
     const mapped = mapper ? mapper(json.data as RawData) : (json.data as T);
     return { success: true, data: mapped };
+};
+
+export const getAllStudents = async (): Promise<{
+    success: boolean;
+    students?: ChildDTO[];
+    error?: string;
+}> => {
+    try {
+        const res = await fetch(API_URL, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
+
+        const result = await handleResponse(res, (data: ApiStudent[]) =>
+            data.map(mapApiStudentToChildDTO)
+        );
+        return {
+            success: result.success,
+            students: result.data,
+            error: result.error,
+        };
+    } catch (err) {
+        console.error("Fetch all students error:", err);
+        return { success: false, error: "An error occurred while fetching all students" };
+    }
 };
 
 export const createStudent = async (

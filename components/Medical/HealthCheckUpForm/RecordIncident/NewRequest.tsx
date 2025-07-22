@@ -6,9 +6,9 @@ import {
     DialogClose,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Save, Plus, CheckCircle, AlertTriangle } from "lucide-react";
-import { getAuthHeaders } from "@/lib/utils";
+import {
+    createHealthCheckupResult
+} from "@/lib/service/health-checkup-result/health-checkup-result";
 import { ChildDTO } from "@/types";
+import {
+    CreateHealthCheckupResultDto
+} from "@/lib/service/health-checkup-result/IHealth-checkup-result";
 
 interface NewHealthRecordModalProps {
     isOpen: boolean;
@@ -26,30 +31,16 @@ interface NewHealthRecordModalProps {
     selectedChild?: ChildDTO;
 }
 
-interface HealthRecordFormData {
-    studentId: number;
-    studentName: string;
-    height: number;
-    weight: number;
-    bloodPressure: string;
-    visionTest: string;
-    hearingTest: string;
-    generalHealth: string;
-    requiresFollowup: boolean;
-    recommendations: string;
-    checkupDate: string;
-}
-
 const NewRequest = ({
-                             isOpen,
-                             onClose,
-                             onSuccess,
-                             selectedChild
+                        isOpen,
+                        onClose,
+                        onSuccess,
+                        selectedChild
 }: NewHealthRecordModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
-    const [formData, setFormData] = useState<HealthRecordFormData>({
+    const [formData, setFormData] = useState<CreateHealthCheckupResultDto>({
         studentId: selectedChild?.id || 0,
         studentName: selectedChild?.fullName || "",
         height: 0,
@@ -63,7 +54,9 @@ const NewRequest = ({
         checkupDate: new Date().toISOString(),
     });
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (
+        e: FormEvent
+    ) => {
         e.preventDefault();
         setIsLoading(true);
         setErrorMessage("");
@@ -85,13 +78,14 @@ const NewRequest = ({
             return;
         }
 
-        const response = await fetch("https://localhost:7106/api/results", {
-            method: "POST",
-            headers: getAuthHeaders(),
-            body: JSON.stringify({...formData, studentId: selectedChild?.id}),
-        });
+        try {
+            const resultData: CreateHealthCheckupResultDto = {
+                ...formData,
+                studentId: selectedChild?.id || formData.studentId,
+            };
 
-        if (response.ok) {
+            await createHealthCheckupResult(resultData);
+
             setSuccessMessage("Ghi nhận hồ sơ sức khỏe thành công!");
 
             setTimeout(() => {
@@ -99,9 +93,12 @@ const NewRequest = ({
                 onSuccess?.();
                 onClose();
             }, 1500);
-        } else {
-            const errorText = await response.text();
-            throw new Error(`Failed to create health record: ${errorText}`);
+        } catch (error) {
+            setErrorMessage(
+                error instanceof Error ? error.message : "Failed to create health record"
+            );
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -129,7 +126,7 @@ const NewRequest = ({
     };
 
     const handleInputChange = (
-        field: keyof HealthRecordFormData,
+        field: keyof CreateHealthCheckupResultDto,
         value: string | number | boolean
     ) => {
         setFormData((prev) => ({
@@ -168,7 +165,7 @@ const NewRequest = ({
                                     value={formData.studentName}
                                     onChange={(e) => handleInputChange("studentName", e.target.value)}
                                     className="border-red-200 focus:border-red-500"
-                                    disabled={isLoading || !!selectedChild} // Disable if selectedChild is present
+                                    disabled={isLoading || !!selectedChild}
                                 />
                             </div>
                         </div>
@@ -184,8 +181,8 @@ const NewRequest = ({
                                     name="height"
                                     type="number"
                                     placeholder="Chiều cao (cm)"
-                                    value={formData.height}
-                                    onChange={(e) => handleInputChange("height", parseInt(e.target.value))}
+                                    value={formData.height || ""}
+                                    onChange={(e) => handleInputChange("height", parseInt(e.target.value) || 0)}
                                     className="border-red-200 focus:border-red-500"
                                     disabled={isLoading}
                                 />
@@ -199,8 +196,8 @@ const NewRequest = ({
                                     name="weight"
                                     type="number"
                                     placeholder="Cân nặng (kg)"
-                                    value={formData.weight}
-                                    onChange={(e) => handleInputChange("weight", parseInt(e.target.value))}
+                                    value={formData.weight || ""}
+                                    onChange={(e) => handleInputChange("weight", parseInt(e.target.value) || 0)}
                                     className="border-red-200 focus:border-red-500"
                                     disabled={isLoading}
                                 />
