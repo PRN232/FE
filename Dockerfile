@@ -1,42 +1,72 @@
-# 1. Base image với Node.js
+# syntax=docker/dockerfile:1
+
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Dockerfile reference guide at
+# https://docs.docker.com/go/dockerfile-reference/
+
+# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
+
 ARG NODE_VERSION=20.17.0
-FROM node:${NODE_VERSION}-alpine AS base
 
-WORKDIR /app
+################################################################################
+# Use node image for base image for all stages.
+FROM node:${NODE_VERSION}-alpine as base
 
-RUN apk add --no-cache libc6-compat
+# Set working directory for all build stages.
+WORKDIR /usr/src/app
 
-# Copy file cấu hình trước
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
 
-# Cài dependencies (gồm ts-node, typescript, v.v.)
-RUN npm install
+################################################################################
+# Create a stage for installing production dependecies.
+FROM base as deps
 
-# Copy toàn bộ mã nguồn
+# Download dependencies as a separate step to take advantage of Docker's caching.
+# Leverage a cache mount to /root/.npm to speed up subsequent builds.
+# Leverage bind mounts to package.json and package-lock.json to avoid having to copy them
+# into this layer.
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci --omit=dev
+
+################################################################################
+# Create a stage for building the application.
+FROM deps as build
+
+# Download additional development dependencies before building, as some projects require
+# "devDependencies" to be installed to build. If you don't need this, remove this step.
+RUN --mount=type=bind,source=package.json,target=package.json \
+    --mount=type=bind,source=package-lock.json,target=package-lock.json \
+    --mount=type=cache,target=/root/.npm \
+    npm ci
+
+# Copy the rest of the source files into the image.
 COPY . .
-
-# ✅ DÙNG ts-node để chạy next.config.ts khi build
+# Run the build script.
 RUN npm run build
 
-# === Final Image ===
-FROM node:${NODE_VERSION}-alpine AS runner
+################################################################################
+# Create a new stage to run the application with minimal runtime dependencies
+# where the necessary files are copied from the build stage.
+FROM base as final
 
-WORKDIR /app
+# Use production node environment by default.
+ENV NODE_ENV production
 
-RUN apk add --no-cache libc6-compat
+# Run the application as a non-root user.
+USER node
 
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/.next .next
-COPY --from=base /app/public ./public
-COPY --from=base /app/app ./app
-COPY --from=base /app/components ./components
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/tsconfig.json ./tsconfig.json
-COPY --from=base /app/next.config.ts ./next.config.ts
-COPY --from=base /app/next-env.d.ts ./next-env.d.ts
+# Copy package.json so that package manager commands can be used.
+COPY package.json .
 
-ENV NODE_ENV=production
+# Copy the production dependencies from the deps stage and also
+# the built application from the build stage into the image.
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/.next ./.next
 
+
+# Expose the port that the application listens on.
 EXPOSE 2006
 
-CMD ["npm", "start"]
+# Run the application.
+CMD npm start

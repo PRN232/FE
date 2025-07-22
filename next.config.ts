@@ -1,17 +1,15 @@
-console.log("🟢 Using next.config.ts");
-
-import path from "path";
 import type { NextConfig } from "next";
+import path from "path";
 
-const config: NextConfig = {
+const nextConfig: NextConfig = {
   output: "standalone",
-  webpack: (cfg) => {
-    cfg.resolve.alias = {
-      ...(cfg.resolve.alias || {}),
-      "@": path.resolve(__dirname),
+  webpack: (config, { isServer }) => {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "~": path.join(__dirname, "src"),
     };
-    return cfg;
+    return config;
   },
 };
 
-export default config;
+export default nextConfig;
