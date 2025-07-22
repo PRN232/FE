@@ -23,20 +23,12 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Save, Plus, X } from "lucide-react";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { showSuccessAlert, showErrorAlert } from "@/lib/utils";
-import {
-    CreateMedicalIncidentDto
-} from "@/lib/service/medical-record/incident/IIncident";
-import {
-    createMedicalIncident
-} from "@/lib/service/medical-record/incident/incident";
+import { CreateMedicalIncidentDto } from "@/lib/service/medical-record/incident/IIncident";
+import { createMedicalIncident } from "@/lib/service/medical-record/incident/incident";
 import { ChildDTO } from "@/types";
 
 interface NewIncidentModalProps {
@@ -58,12 +50,7 @@ interface IncidentFormData {
     parentNotified: boolean;
 }
 
-const IncidentModal = ({
-                           isOpen,
-                           onClose,
-                           onSuccess,
-                           students
-}: NewIncidentModalProps) => {
+const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModalProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [currentSymptom, setCurrentSymptom] = useState("");
     const [formData, setFormData] = useState<IncidentFormData>({
@@ -159,13 +146,15 @@ const IncidentModal = ({
     };
 
     const handleStudentSelect = (studentId: string) => {
-        const selectedStudent = students.find((student) => student.id.toString() === studentId);
-        if (selectedStudent) {
-            handleInputChange("studentId", selectedStudent.id);
-            handleInputChange("studentName", selectedStudent.fullName);
-        } else {
+        if (studentId === "") {
             handleInputChange("studentId", 0);
             handleInputChange("studentName", "");
+        } else {
+            const selectedStudent = students.find((student) => student.id.toString() === studentId);
+            if (selectedStudent) {
+                handleInputChange("studentId", selectedStudent.id);
+                handleInputChange("studentName", selectedStudent.fullName);
+            }
         }
     };
 
@@ -211,12 +200,14 @@ const IncidentModal = ({
                                         Học sinh <span className="text-red-500">*</span>
                                     </Label>
                                     <Select
-                                        value={formData.studentId.toString()}
+                                        value={formData.studentId === 0 ? "" : formData.studentId.toString()}
                                         onValueChange={handleStudentSelect}
                                         disabled={isLoading || students.length === 0}
                                     >
                                         <SelectTrigger className="border-gray-300 focus:border-red-500 focus:ring-red-500">
-                                            <SelectValue placeholder={students.length === 0 ? "Không có học sinh" : "Chọn học sinh"} />
+                                            <SelectValue
+                                                placeholder={students.length === 0 ? "Không có học sinh" : "Chọn học sinh"}
+                                            />
                                         </SelectTrigger>
                                         <SelectContent className="bg-white">
                                             {students.map((student) => (
@@ -233,7 +224,7 @@ const IncidentModal = ({
                         {/* Incident Details Section */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Chi tiết sự cố</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-2">
                                     <Label htmlFor="incidentType" className="text-gray-700 font-medium">
                                         Loại sự cố <span className="text-red-500">*</span>
@@ -289,7 +280,7 @@ const IncidentModal = ({
                                                 {formData.date ? format(formData.date, "PPP") : <span>Chọn ngày</span>}
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0">
+                                        <PopoverContent className="w-auto p-0 bg-white">
                                             <Calendar
                                                 mode="single"
                                                 selected={formData.date}
