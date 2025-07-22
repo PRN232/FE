@@ -2,32 +2,29 @@
 ARG NODE_VERSION=20.17.0
 FROM node:${NODE_VERSION}-alpine AS base
 
-# Tạo thư mục app
 WORKDIR /app
 
-# Cài thêm các dependency hệ thống cần thiết
 RUN apk add --no-cache libc6-compat
 
-# Copy file cấu hình trước để tận dụng cache
+# Copy file cấu hình trước
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
 
-# Cài đặt các dependency (dùng npm ở đây, có thể thay bằng yarn hoặc pnpm tùy project)
+# Cài dependencies (gồm ts-node, typescript, v.v.)
 RUN npm install
 
 # Copy toàn bộ mã nguồn
 COPY . .
 
-# Build Next.js project (production)
+# ✅ DÙNG ts-node để chạy next.config.ts khi build
 RUN npm run build
 
-# === Final Image: chỉ chứa mã đã build ===
+# === Final Image ===
 FROM node:${NODE_VERSION}-alpine AS runner
 
 WORKDIR /app
 
 RUN apk add --no-cache libc6-compat
 
-# Copy runtime files từ stage base
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/.next .next
 COPY --from=base /app/public ./public
