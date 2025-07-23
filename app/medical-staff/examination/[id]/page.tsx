@@ -21,7 +21,7 @@ const HealthCheckDetailPage: React.FC = () => {
     const [editingResult, setEditingResult] = useState<HealthCheckupResult | null>(null);
     const [newResult, setNewResult] = useState<CreateHealthCheckupResultDto>({
         studentId: 0,
-        campaignId: campaignId,
+        campaignId: number,
         height: 0,
         weight: 0,
         bloodPressure: '',

@@ -1,45 +1,50 @@
-# 1. Base image với Node.js
+# syntax=docker/dockerfile:1
+
 ARG NODE_VERSION=20.17.0
 FROM node:${NODE_VERSION}-alpine AS base
 
-# Tạo thư mục app
 WORKDIR /app
-
-# Cài thêm các dependency hệ thống cần thiết
 RUN apk add --no-cache libc6-compat
 
-# Copy file cấu hình trước để tận dụng cache
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+################################################################################
+# Install all dependencies (including devDependencies)
+FROM base AS deps
 
-# Cài đặt các dependency (dùng npm ở đây, có thể thay bằng yarn hoặc pnpm tùy project)
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund --loglevel=error
 
-# Copy toàn bộ mã nguồn
+################################################################################
+# Build the application
+FROM base AS build
+
+# NODE_ENV=production is NOT set here to allow full devDependencies usage
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build Next.js project (production)
 RUN npm run build
 
-# === Final Image: chỉ chứa mã đã build ===
-FROM node:${NODE_VERSION}-alpine AS runner
-
-WORKDIR /app
-
-RUN apk add --no-cache libc6-compat
-
-# Copy runtime files từ stage base
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/.next .next
-COPY --from=base /app/public ./public
-COPY --from=base /app/app ./app
-COPY --from=base /app/components ./components
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/tsconfig.json ./tsconfig.json
-COPY --from=base /app/next.config.ts ./next.config.ts
-COPY --from=base /app/next-env.d.ts ./next-env.d.ts
+################################################################################
+# Final runtime image
+FROM base AS final
 
 ENV NODE_ENV=production
 
-EXPOSE 2006
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nextjs
 
-CMD ["npm", "start"]
+WORKDIR /app
+
+# Copy only necessary build output
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+
+# Optional: clean up source maps
+RUN find .next -name "*.map" -type f -delete
+
+USER nextjs
+EXPOSE 2006
+ENV PORT=2006
+
+CMD ["node", "server.js"]
