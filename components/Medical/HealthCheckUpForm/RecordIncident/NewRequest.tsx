@@ -43,6 +43,8 @@ const NewRequest = ({
     const [formData, setFormData] = useState<CreateHealthCheckupResultDto>({
         studentId: selectedChild?.id || 0,
         studentName: selectedChild?.fullName || "",
+        nurseId: 0,
+        campaignId: 0,
         height: 0,
         weight: 0,
         bloodPressure: "",
@@ -82,6 +84,8 @@ const NewRequest = ({
             const resultData: CreateHealthCheckupResultDto = {
                 ...formData,
                 studentId: selectedChild?.id || formData.studentId,
+                nurseId: 2,
+                campaignId: 1
             };
 
             await createHealthCheckupResult(resultData);
@@ -106,6 +110,8 @@ const NewRequest = ({
         setFormData({
             studentId: selectedChild?.id || 0,
             studentName: selectedChild?.fullName || "",
+            nurseId: 0,
+            campaignId: 0,
             height: 0,
             weight: 0,
             bloodPressure: "",

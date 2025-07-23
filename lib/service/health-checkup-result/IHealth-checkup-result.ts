@@ -22,6 +22,8 @@ export interface HealthCheckupResult {
 export interface CreateHealthCheckupResultDto {
     studentId: number;
     studentName: string;
+    nurseId: number;
+    campaignId: number;
     height: number;
     weight: number;
     bloodPressure: string;
