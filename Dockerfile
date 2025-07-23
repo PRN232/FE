@@ -17,8 +17,7 @@ RUN npm install --production=false --no-audit --no-fund --loglevel=error
 ################################################################################
 # Build the application
 FROM base AS build
-
-ENV NEXT_PUBLIC_APP_ENV=$APP_ENV
+ENV NODE_ENV=production
 
 WORKDIR /usr/src/app
 
@@ -56,6 +55,5 @@ USER nextjs
 
 EXPOSE 2006
 ENV PORT=2006
-ENV NODE_ENV=production
 
 CMD ["node", "server.js"]

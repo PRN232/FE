@@ -1,13 +1,10 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   output: 'standalone',
-  webpack(config, _options) {
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      '@': path.resolve(__dirname), // project root
-    };
+  webpack: (config, { isServer }) => {
+    config.resolve.alias['~'] = path.join(__dirname);
     return config;
   },
 };
