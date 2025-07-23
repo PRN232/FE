@@ -50,8 +50,7 @@ RUN npm run build
 # where the necessary files are copied from the build stage.
 FROM base AS final
 
-# Use production node environment by default.
-ENV NODE_ENV=production
+
 
 # Run the application as a non-root user.
 USER node
@@ -63,7 +62,8 @@ COPY package.json .
 # the built application from the build stage into the image.
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/.next ./.next
-
+# Use production node environment by default.
+ENV NODE_ENV=production
 
 # Expose the port that the application listens on.
 EXPOSE 2006
