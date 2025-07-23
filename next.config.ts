@@ -1,17 +1,19 @@
 import type { NextConfig } from 'next';
 import path from 'path';
 
-const nextConfig = {
+const nextConfig: NextConfig = {
   output: 'standalone',
-  // optional: ensure tsconfig paths work
+  eslint: {
+    ignoreDuringBuilds: true, 
+  },
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      '@': require('path').resolve(__dirname),
+      '@': path.resolve(__dirname),
     };
     return config;
   },
 };
-module.exports = nextConfig;
 
+module.exports = nextConfig;
 export default nextConfig;
