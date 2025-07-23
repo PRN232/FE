@@ -1,3 +1,4 @@
+# Ignore heavy/development-only files and folders
 node_modules
 .next
 out
@@ -10,26 +11,13 @@ coverage
 *.log
 .env*
 
+# Ignore IDE/project files
 .idea/
 .vscode/
 .vercel
 .git
 .gitignore
 
+# Ignore Docker files (optional if not used in app)
 Dockerfile*
 docker-compose*
-.dockerignore
-
-!app/
-!components/
-!lib/
-!hooks/
-!public/
-!tsconfig.json
-!package.json
-!package-lock.json
-!next.config.js
-!next.config.ts
-!postcss.config.js
-!tailwind.config.js
-!shadcn-ui.json
