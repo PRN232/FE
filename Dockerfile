@@ -10,6 +10,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 
 COPY package.json package-lock.json* ./
+
 # --production=false ensures devDependencies are installed
 RUN npm install --production=false --no-audit --no-fund --loglevel=error
 
@@ -21,11 +22,11 @@ ENV NEXT_PUBLIC_APP_ENV=$APP_ENV
 
 WORKDIR /usr/src/app
 
-# Copy deps including devDependencies
+# Copy installed deps including devDependencies
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 
-# Run the build
+# Ensure correct tsconfig.json settings (e.g., paths) take effect
 RUN npm run build
 
 ################################################################################
@@ -35,7 +36,9 @@ FROM base AS final
 WORKDIR /usr/src/app
 
 RUN apk add --no-cache libc6-compat
-RUN npm install sharp --no-audit --no-fund --loglevel=error
+
+# Install production-only dependencies (e.g., sharp)
+RUN npm install --omit=dev sharp --no-audit --no-fund --loglevel=error
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs \
@@ -46,7 +49,7 @@ COPY --from=build --chown=nextjs:nodejs /usr/src/app/public ./public
 COPY --from=build --chown=nextjs:nodejs /usr/src/app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /usr/src/app/.next/static ./.next/static
 
-# Clean source maps to reduce image size
+# Clean up source maps to reduce image size
 RUN cd .next && find . -name "*.map" -type f -delete
 
 USER nextjs
