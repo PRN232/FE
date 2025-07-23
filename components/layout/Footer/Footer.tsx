@@ -1,7 +1,7 @@
-import About from "@/components/Layout/Footer/About";
-import Links from "@/components/Layout/Footer/Links";
-import ContactInfo from "@/components/Layout/Footer/ContactInfo";
-import Copyright from "@/components/Layout/Footer/Copyright";
+import About from "@/components/layout/Footer/About";
+import Links from "@/components/layout/Footer/Links";
+import ContactInfo from "@/components/layout/Footer/ContactInfo";
+import Copyright from "@/components/layout/Footer/Copyright";
 
 const Footer = () => {
     return (
