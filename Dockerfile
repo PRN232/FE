@@ -27,7 +27,7 @@ RUN npm run build
 # Final runtime image
 FROM base AS final
 
-# ENV NODE_ENV=production
+ENV NODE_ENV=production
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs \

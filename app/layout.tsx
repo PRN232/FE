@@ -5,8 +5,8 @@ import "./globals.css"
 
 import { PublicEnvScript } from "next-runtime-env";
 import { AuthProvider } from "@/lib/auth/auth-context";
-import Navbar from "@/components/Layout/Navbar/Navbar";
-import Footer from "@/components/Layout/Footer/Footer";
+import Navbar from "@/components/layout/Navbar/Navbar";
+import Footer from "@/components/layout/Footer/Footer";
 
 const inter = Inter({ subsets: ["latin"] })
 
