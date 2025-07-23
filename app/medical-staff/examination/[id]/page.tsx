@@ -1,7 +1,12 @@
 "use client";
 import { getCampaignById, updateCampaign } from '@/lib/service/health-check-campaign/healthCheckCampaign';
 import { Vaccination, UpdateVaccinationDto, VaccinationStatus } from '@/lib/service/health-check-campaign/IHealthCheckCampaign';
-import { getHealthCheckupResultsByCampaign, createHealthCheckupResult, updateHealthCheckupResult, deleteHealthCheckupResult } from '@/lib/service/health-checkup-result/health-checkup-result';
+import {
+    getHealthCheckupResultsByCampaign,
+    // createHealthCheckupResult,
+    updateHealthCheckupResult,
+    deleteHealthCheckupResult
+} from '@/lib/service/health-checkup-result/health-checkup-result';
 import { HealthCheckupResult, CreateHealthCheckupResultDto, UpdateHealthCheckupResultDto } from '@/lib/service/health-checkup-result/IHealth-checkup-result';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -18,10 +23,12 @@ const HealthCheckDetailPage: React.FC = () => {
     const [editData, setEditData] = useState<UpdateVaccinationDto | null>(null);
     const [showAddForm, setShowAddForm] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [editingResult, setEditingResult] = useState<HealthCheckupResult | null>(null);
     const [newResult, setNewResult] = useState<CreateHealthCheckupResultDto>({
         studentId: 0,
-        campaignId: number,
+        studentName: '',
+        campaignId: 0,
         height: 0,
         weight: 0,
         bloodPressure: '',
@@ -51,13 +58,13 @@ const HealthCheckDetailPage: React.FC = () => {
     const primaryHover = "hover:bg-red-700";
     const secondaryColor = "bg-white";
     const secondaryHover = "hover:bg-gray-50";
-    const textPrimary = "text-red-800";
-    const textSecondary = "text-gray-700";
+    // const textPrimary = "text-red-800";
+    // const textSecondary = "text-gray-700";
     const borderColor = "border-red-200";
     const cardBg = "bg-white";
-    const dangerBg = "bg-red-100";
-    const warningBg = "bg-yellow-100";
-    const successBg = "bg-green-100";
+    // const dangerBg = "bg-red-100";
+    // const warningBg = "bg-yellow-100";
+    // const successBg = "bg-green-100";
     const shadow = "shadow-lg";
 
     useEffect(() => {
@@ -110,16 +117,18 @@ const HealthCheckDetailPage: React.FC = () => {
         if (!editData) return;
         try {
             setLoading(true);
+            setErrorMessage("");
             const res = await updateCampaign(editData);
             if (res.success) {
                 setCampaign(res.data);
-                alert('Cập nhật thành công!');
                 setEditMode(false);
             } else {
-                alert(res.message || 'Cập nhật thất bại!');
+                setErrorMessage(res.message || 'Cập nhật thất bại!');
             }
-        } catch (err: any) {
-            alert(err?.message || 'Lỗi khi cập nhật!');
+        } catch (error) {
+            setErrorMessage(
+                error instanceof Error ? error.message : "Failed to update campaign"
+            );
         } finally {
             setLoading(false);
         }
@@ -137,32 +146,35 @@ const HealthCheckDetailPage: React.FC = () => {
     const handleAddResult = async () => {
         try {
             setLoading(true);
-            const result = await createHealthCheckupResult(newResult);
-            
+            setErrorMessage(""); // Clear previous errors
+            // const result = await createHealthCheckupResult(newResult);
+
             const res = await getHealthCheckupResultsByCampaign(campaignId);
             if (res.success) {
                 setStudentDetails(res.data);
+                setShowAddForm(false);
+                setNewResult({
+                    studentId: 0,
+                    studentName: '',
+                    campaignId: campaignId,
+                    height: 0,
+                    weight: 0,
+                    bloodPressure: '',
+                    visionTest: '',
+                    hearingTest: '',
+                    generalHealth: '',
+                    requiresFollowup: false,
+                    recommendations: '',
+                    nurseId: 0,
+                    checkupDate: new Date().toISOString().split('T')[0]
+                });
+            } else {
+                setErrorMessage(res.message || 'Failed to fetch updated results');
             }
-            
-            alert('Thêm kết quả thành công!');
-            setShowAddForm(false);
-            
-            setNewResult({
-                studentId: 0,
-                campaignId: campaignId,
-                height: 0,
-                weight: 0,
-                bloodPressure: '',
-                visionTest: '',
-                hearingTest: '',
-                generalHealth: '',
-                requiresFollowup: false,
-                recommendations: '',
-                nurseId: 0,
-                checkupDate: new Date().toISOString().split('T')[0]
-            });
-        } catch (err: any) {
-            alert(err?.message || 'Lỗi khi thêm kết quả!');
+        } catch (error) {
+            setErrorMessage(
+                error instanceof Error ? error.message : "Failed to create health record"
+            );
         } finally {
             setLoading(false);
         }
@@ -197,18 +209,21 @@ const HealthCheckDetailPage: React.FC = () => {
     const handleUpdateResult = async () => {
         try {
             setLoading(true);
+            setErrorMessage("");
             await updateHealthCheckupResult(editResult.id, editResult);
-            
+
             const res = await getHealthCheckupResultsByCampaign(campaignId);
             if (res.success) {
                 setStudentDetails(res.data);
+                setShowEditForm(false);
+                setEditingResult(null);
+            } else {
+                setErrorMessage(res.message || 'Failed to fetch updated results');
             }
-            
-            alert('Cập nhật kết quả thành công!');
-            setShowEditForm(false);
-            setEditingResult(null);
-        } catch (err: any) {
-            alert(err?.message || 'Lỗi khi cập nhật kết quả!');
+        } catch (error) {
+            setErrorMessage(
+                error instanceof Error ? error.message : "Failed to update health record"
+            );
         } finally {
             setLoading(false);
         }
@@ -221,13 +236,14 @@ const HealthCheckDetailPage: React.FC = () => {
 
         try {
             setLoading(true);
+            setErrorMessage("");
             await deleteHealthCheckupResult(resultId);
 
             setStudentDetails(prev => prev.filter(detail => detail.id !== resultId));
-            
-            alert('Xóa kết quả thành công!');
-        } catch (err: any) {
-            alert(err?.message || 'Lỗi khi xóa kết quả!');
+        } catch (error) {
+            setErrorMessage(
+                error instanceof Error ? error.message : "Failed to delete health record"
+            );
         } finally {
             setLoading(false);
         }
@@ -240,6 +256,26 @@ const HealthCheckDetailPage: React.FC = () => {
                     <div className="flex flex-col items-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600 mb-4"></div>
                         <p className="text-red-700 font-medium">Đang tải dữ liệu...</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Add the error message component right here */}
+            {errorMessage && (
+                <div className="fixed top-4 right-4 z-50">
+                    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-lg flex justify-between items-start max-w-md">
+                        <div>
+                            <p className="font-bold">Error</p>
+                            <p>{errorMessage}</p>
+                        </div>
+                        <button
+                            onClick={() => setErrorMessage("")}
+                            className="ml-4 text-red-700 hover:text-red-900"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             )}
