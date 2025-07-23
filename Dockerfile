@@ -7,26 +7,27 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat
 
 ################################################################################
-# Install all dependencies including devDependencies
+# Install all dependencies (including devDependencies)
 FROM base AS deps
 
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund --loglevel=error
 
 ################################################################################
-# Build the Next.js app
+# Build the application
 FROM base AS build
 
-ENV NODE_ENV=production
+# NODE_ENV=production is NOT set here to allow full devDependencies usage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build the app (make sure tsconfig paths work here)
 RUN npm run build
 
 ################################################################################
-# Create final optimized image
+# Final runtime image
 FROM base AS final
+
+ENV NODE_ENV=production
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs \
@@ -34,12 +35,12 @@ RUN addgroup --system --gid 1001 nodejs \
 
 WORKDIR /app
 
-# Copy only the necessary build outputs
+# Copy only necessary build output
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 
-# Remove source maps
+# Optional: clean up source maps
 RUN find .next -name "*.map" -type f -delete
 
 USER nextjs
