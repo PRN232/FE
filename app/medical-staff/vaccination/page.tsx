@@ -5,7 +5,17 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { VaccinationCampaign } from "@/lib/service/vaccination/campain/ICampain";
-import { getVaccinationCampaigns } from "@/lib/service/vaccination/campain/campain";
+import { getVaccinationCampaigns, updateVaccinationCampaign, createVaccinationCampaign, deleteVaccinationCampaign } from "@/lib/service/vaccination/campain/campain";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const statusColors: { [key: string]: string } = {
   "Planned": "bg-red-100 text-red-700",
@@ -14,8 +24,14 @@ const statusColors: { [key: string]: string } = {
   "Cancelled": "bg-gray-100 text-gray-500",
 };
 
-const PAGE_SIZE = 5;
+const statusOptions = [
+  { value: "Planned", label: "Planned" },
+  { value: "InProgress", label: "In Progress" },
+  { value: "Completed", label: "Completed" },
+  { value: "Cancelled", label: "Cancelled" },
+];
 
+const PAGE_SIZE = 5;
 
 export default function VaccinationPage() {
   const router = useRouter();
@@ -24,6 +40,16 @@ export default function VaccinationPage() {
   // Search & Pagination
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  // Form states
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [currentCampaign, setCurrentCampaign] = useState<Partial<VaccinationCampaign>>({
+    campaignName: "",
+    vaccineType: "",
+    scheduledDate: "",
+    targetGrades: "",
+    status: "Planned",
+  });
 
   useEffect(() => {
     fetchCampaigns();
@@ -38,6 +64,81 @@ export default function VaccinationPage() {
       .finally(() => setLoading(false));
   };
 
+  const handleEditClick = (campaign: VaccinationCampaign) => {
+    setIsEditMode(true);
+    setCurrentCampaign({
+      id: campaign.id,
+      campaignName: campaign.campaignName,
+      vaccineType: campaign.vaccineType,
+      scheduledDate: campaign.scheduledDate.split('T')[0], // Format date for input
+      targetGrades: campaign.targetGrades,
+      status: campaign.status,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setIsEditMode(false);
+    setCurrentCampaign({
+      campaignName: "",
+      vaccineType: "",
+      scheduledDate: "",
+      targetGrades: "",
+      status: "Planned",
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteClick = async (id: number) => {
+    if (confirm("Bạn có chắc chắn muốn xóa chiến dịch này?")) {
+      try {
+        const response = await deleteVaccinationCampaign(id);
+        if (response.success) {
+          alert(response.message || "Xóa chiến dịch thành công");
+          fetchCampaigns();
+        } else {
+          alert(response.message || "Xóa chiến dịch thất bại");
+        }
+      } catch (error) {
+        console.error("Error deleting campaign:", error);
+        alert("Đã xảy ra lỗi khi xóa chiến dịch");
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      let response;
+      if (isEditMode && currentCampaign.id) {
+        response = await updateVaccinationCampaign(currentCampaign.id, {
+          campaignName: currentCampaign.campaignName || "",
+          vaccineType: currentCampaign.vaccineType || "",
+          scheduledDate: currentCampaign.scheduledDate || "",
+          targetGrades: currentCampaign.targetGrades || "",
+          status: currentCampaign.status || "Planned",
+        });
+      } else {
+        response = await createVaccinationCampaign({
+          campaignName: currentCampaign.campaignName || "",
+          vaccineType: currentCampaign.vaccineType || "",
+          scheduledDate: currentCampaign.scheduledDate || "",
+          targetGrades: currentCampaign.targetGrades || "",
+        });
+      }
+
+      if (response.success) {
+        alert(response.message || "Operation successful");
+        fetchCampaigns();
+        setIsDialogOpen(false);
+      } else {
+        alert(response.message || "Operation failed");
+      }
+    } catch (error) {
+      console.error("Error submitting campaign:", error);
+      alert("An error occurred while processing your request.");
+    }
+  };
 
   // Filter campaigns by search
   const filteredCampaigns = campaigns.filter(c =>
@@ -61,29 +162,34 @@ export default function VaccinationPage() {
   return (
     <div className="p-4 md:p-8 bg-gradient-to-br from-red-50 to-white min-h-screen">
       <div className="max-w-7xl mx-auto">
-        {/* Header với search */}
+        {/* Header with search and create button */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
             <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
               Quản lý chiến dịch tiêm chủng
             </h1>
 
-            <div className="relative w-full md:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                </svg>
+            <div className="flex items-center gap-4">
+              <div className="relative w-full md:w-96">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <input
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Tìm kiếm chiến dịch..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
               </div>
-              <input
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Tìm kiếm chiến dịch..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
+              <Button onClick={handleCreateClick} className="whitespace-nowrap">
+                Thêm chiến dịch mới
+              </Button>
             </div>
           </div>
 
-          {/* Thống kê nhanh */}
+          {/* Quick stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
               <p className="text-sm text-gray-500">Tổng chiến dịch</p>
@@ -104,13 +210,15 @@ export default function VaccinationPage() {
             <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
               <p className="text-sm text-gray-500">Tỉ lệ hoàn thành TB</p>
               <p className="text-2xl font-bold text-purple-600">
-                {Math.round(campaigns.reduce((acc, c) => acc + c.completionRate, 0) / campaigns.length)}%
+                {campaigns.length > 0 
+                  ? Math.round(campaigns.reduce((acc, c) => acc + c.completionRate, 0) / campaigns.length) 
+                  : 0}%
               </p>
             </div>
           </div>
         </div>
 
-        {/* Danh sách chiến dịch */}
+        {/* Campaign list */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
@@ -226,13 +334,25 @@ export default function VaccinationPage() {
                       </div>
                     </div>
 
-                    <div className="bg-gray-50 px-6 py-3 flex justify-end border-t border-gray-200">
-                      <button
+                    <div className="bg-gray-50 px-6 py-3 flex justify-end gap-2 border-t border-gray-200">
+                      <Button
+                        variant="outline"
+                        onClick={() => handleEditClick(c)}
+                      >
+                        Chỉnh sửa
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                        onClick={() => handleDeleteClick(c.id)}
+                      >
+                        Xóa
+                      </Button>
+                      <Button
                         onClick={() => router.push(`/medical-staff/vaccination/${c.id}`)}
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                       >
                         Xem chi tiết
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -303,6 +423,104 @@ export default function VaccinationPage() {
           </div>
         )}
       </div>
+
+      {/* Create/Edit Campaign Dialog */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isEditMode ? "Chỉnh sửa chiến dịch" : "Thêm chiến dịch mới"}
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="campaignName" className="text-right">
+                  Tên chiến dịch
+                </Label>
+                <Input
+                  id="campaignName"
+                  value={currentCampaign.campaignName}
+                  onChange={(e) => setCurrentCampaign({...currentCampaign, campaignName: e.target.value})}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="vaccineType" className="text-right">
+                  Loại vaccine
+                </Label>
+                <Input
+                  id="vaccineType"
+                  value={currentCampaign.vaccineType}
+                  onChange={(e) => setCurrentCampaign({...currentCampaign, vaccineType: e.target.value})}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="targetGrades" className="text-right">
+                  Khối lớp mục tiêu
+                </Label>
+                <Input
+                  id="targetGrades"
+                  value={currentCampaign.targetGrades}
+                  onChange={(e) => setCurrentCampaign({...currentCampaign, targetGrades: e.target.value})}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="scheduledDate" className="text-right">
+                  Ngày tiêm dự kiến
+                </Label>
+                <Input
+                  id="scheduledDate"
+                  type="date"
+                  value={currentCampaign.scheduledDate}
+                  onChange={(e) => setCurrentCampaign({...currentCampaign, scheduledDate: e.target.value})}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+              {isEditMode && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="status" className="text-right">
+                    Trạng thái
+                  </Label>
+                  <Select
+                    value={currentCampaign.status}
+                    onValueChange={(value) => setCurrentCampaign({...currentCampaign, status: value})}
+                  >
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsDialogOpen(false)}
+              >
+                Hủy
+              </Button>
+              <Button type="submit">
+                {isEditMode ? "Cập nhật" : "Tạo mới"}
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
