@@ -123,7 +123,6 @@ const IncidentsPage = () => {
   };
 
   const handleEditIncident = (incident: Incident) => {
-    // Implement edit functionality
     console.log("Edit incident:", incident.id);
   };
 
