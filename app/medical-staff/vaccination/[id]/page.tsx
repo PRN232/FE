@@ -11,7 +11,6 @@ import { getVaccinationRecordByCampaign, createCampaignRecord, updateCampaign, d
 import { VaccinationCampaign } from "@/lib/service/vaccination/campain/ICampain";
 import { VaccinationResult, CreateVaccinationResultDto, UpdateVaccinationResultDto } from "@/lib/service/vaccination-result/IVaccination-Result";
 import { getAllStudents } from "@/lib/service/student/student";
-import { ChildDTO } from "@/lib/service/student/IStudent";
 import {
     Dialog,
     DialogContent,
@@ -22,6 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChildDTO } from "@/types";
 
 const statusColors: { [key: string]: string } = {
     "Planned": "bg-blue-100 text-blue-700",
