@@ -21,29 +21,29 @@ const MedicalRequest = () => {
 
     const parentId = JSON.parse(localStorage.getItem("user") || "{}")?.id;
 
+    const fetchMedications = async () => {
+        if (!parentId) {
+            setError("Parent ID not found");
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const response = await getStudentMedicationsByParentId(parentId);
+            if (response.success) {
+                setMedications(response.data);
+            } else {
+                setError(response.message || "Failed to fetch medications");
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+            setError(errorMessage);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchMedications = async () => {
-            if (!parentId) {
-                setError("Parent ID not found");
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const response = await getStudentMedicationsByParentId(parentId);
-                if (response.success) {
-                    setMedications(response.data);
-                } else {
-                    setError(response.message || "Failed to fetch medications");
-                }
-            } catch (err) {
-                const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
-                setError(errorMessage);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         void fetchMedications();
     }, [parentId]);
 
@@ -120,6 +120,7 @@ const MedicalRequest = () => {
                             setSearchTerm={setSearchTerm}
                             setFilterStatus={setFilterStatus}
                             medicalRequests={medications}
+                            onRefresh={fetchMedications}
                         />
                     </div>
                 </div>
