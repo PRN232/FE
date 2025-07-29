@@ -10,6 +10,8 @@ import { getVaccinationCampaigns } from "@/lib/service/vaccination/campain/campa
 import { getVaccinationRecordByCampaign, createCampaignRecord, updateCampaign, deleteCampaign } from "@/lib/service/vaccination-result/Vaccination-Result";
 import { VaccinationCampaign } from "@/lib/service/vaccination/campain/ICampain";
 import { VaccinationResult, CreateVaccinationResultDto, UpdateVaccinationResultDto } from "@/lib/service/vaccination-result/IVaccination-Result";
+import { getAllStudents } from "@/lib/service/student/student";
+import { ChildDTO } from "@/lib/service/student/IStudent";
 import {
     Dialog,
     DialogContent,
@@ -20,7 +22,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
 
 const statusColors: { [key: string]: string } = {
     "Planned": "bg-blue-100 text-blue-700",
@@ -42,12 +43,14 @@ export default function VaccinationDetailPage() {
     const router = useRouter();
     const params = useParams();
     const campaignId = Number(params.id);
-    //   const { toast } = useToast();
 
     const [campaign, setCampaign] = useState<VaccinationCampaign | null>(null);
     const [vaccinationRecords, setVaccinationRecords] = useState<VaccinationResult[]>([]);
     const [loading, setLoading] = useState(true);
     const [recordsLoading, setRecordsLoading] = useState(true);
+    const [students, setStudents] = useState<ChildDTO[]>([]);
+    const [studentSearch, setStudentSearch] = useState("");
+    const [showStudentDropdown, setShowStudentDropdown] = useState(false);
 
     // Search & Pagination for records
     const [search, setSearch] = useState("");
@@ -75,6 +78,23 @@ export default function VaccinationDetailPage() {
         fetchVaccinationRecords();
     }, [campaignId]);
 
+    useEffect(() => {
+        if (openDialog) {
+            const fetchStudents = async () => {
+                try {
+                    const response = await getAllStudents();
+                    if (response.success && response.students) {
+                        setStudents(response.students);
+                    }
+                } catch (error) {
+                    console.error("Error fetching students:", error);
+                    alert("Error fetching students");
+                }
+            };
+            fetchStudents();
+        }
+    }, [openDialog]);
+
     const fetchCampaignData = async () => {
         setLoading(true);
         try {
@@ -82,7 +102,6 @@ export default function VaccinationDetailPage() {
             if (response.success) {
                 const foundCampaign = response?.data?.find(c => c.id === campaignId);
                 setCampaign(foundCampaign || null);
-                // Set default vaccine type from campaign
                 if (foundCampaign) {
                     setFormData(prev => ({
                         ...prev,
@@ -93,11 +112,6 @@ export default function VaccinationDetailPage() {
             }
         } catch (error) {
             console.error("Error fetching campaign data:", error);
-            //   toast({
-            //     title: "Lỗi",
-            //     description: "Không thể tải thông tin chiến dịch",
-            //     variant: "destructive",
-            //   });
             alert("Error fetching campaign data");
         } finally {
             setLoading(false);
@@ -119,7 +133,6 @@ export default function VaccinationDetailPage() {
         }
     };
 
-    // Handle form input changes
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -128,20 +141,22 @@ export default function VaccinationDetailPage() {
         }));
     };
 
-    // Handle status select change
     const handleStatusChange = (value: string) => {
-        // convert string to VaccinationStatus enum
         setFormData(prev => ({
             ...prev,
             result: value as unknown as VaccinationStatus,
         }));
-        // setFormData(prev => ({
-        //     ...prev,
-        //     result: value,
-        // }));
     };
 
-    // Open form for creating new record
+    const handleStudentSelect = (student: ChildDTO) => {
+        setFormData(prev => ({
+            ...prev,
+            studentId: student.id,
+        }));
+        setStudentSearch(`${student.studentCode} - ${student.fullName}`);
+        setShowStudentDropdown(false);
+    };
+
     const handleCreateNew = () => {
         setCurrentRecord(null);
         setFormData({
@@ -154,10 +169,10 @@ export default function VaccinationDetailPage() {
             sideEffects: "",
             result: VaccinationStatus.Planned,
         });
+        setStudentSearch("");
         setOpenDialog(true);
     };
 
-    // Open form for editing existing record
     const handleEdit = (record: VaccinationResult) => {
         setCurrentRecord(record);
         setFormData({
@@ -170,16 +185,18 @@ export default function VaccinationDetailPage() {
             sideEffects: record.sideEffects || "",
             result: record.result as VaccinationStatus,
         });
+        const studentRecord = vaccinationRecords.find(r => r.id === record.id);
+        if (studentRecord) {
+            setStudentSearch(`${studentRecord.studentCode} - ${studentRecord.studentName}`);
+        }
         setOpenDialog(true);
     };
 
-    // Prepare delete confirmation
     const handleDeleteClick = (record: VaccinationResult) => {
         setCurrentRecord(record);
         setOpenDeleteDialog(true);
     };
 
-    // Submit form (create or update)
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -187,10 +204,8 @@ export default function VaccinationDetailPage() {
         try {
             let response;
             if (currentRecord) {
-                // Update existing record
                 response = await updateCampaign(currentRecord.id, formData as UpdateVaccinationResultDto);
             } else {
-                // Create new record
                 response = await createCampaignRecord(formData);
             }
 
@@ -209,7 +224,6 @@ export default function VaccinationDetailPage() {
         }
     };
 
-    // Confirm delete
     const handleConfirmDelete = async () => {
         if (!currentRecord) return;
 
@@ -231,7 +245,6 @@ export default function VaccinationDetailPage() {
         }
     };
 
-    // Filter records by search and status
     const filteredRecords = vaccinationRecords.filter(record => {
         const matchesSearch =
             record.studentName.toLowerCase().includes(search.toLowerCase()) ||
@@ -244,19 +257,16 @@ export default function VaccinationDetailPage() {
         return matchesSearch && matchesStatus;
     });
 
-    // Pagination logic
     const totalPages = Math.ceil(filteredRecords.length / PAGE_SIZE);
     const paginatedRecords = filteredRecords.slice(
         (currentPage - 1) * PAGE_SIZE,
         currentPage * PAGE_SIZE
     );
 
-    // Reset page when filters change
     useEffect(() => {
         setCurrentPage(1);
     }, [search, statusFilter]);
 
-    // Statistics
     const stats = {
         total: vaccinationRecords.length,
         completed: vaccinationRecords.filter(r => r.result === VaccinationStatus.Completed).length,
@@ -570,7 +580,12 @@ export default function VaccinationDetailPage() {
             </div>
 
             {/* Create/Edit Dialog */}
-            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <Dialog open={openDialog} onOpenChange={(open) => {
+                setOpenDialog(open);
+                if (!open) {
+                    setShowStudentDropdown(false);
+                }
+            }}>
                 <DialogContent className="sm:max-w-[600px] bg-white">
                     <DialogHeader>
                         <DialogTitle>
@@ -579,18 +594,46 @@ export default function VaccinationDetailPage() {
                     </DialogHeader>
                     <form onSubmit={handleSubmit}>
                         <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="studentId">Mã học sinh</Label>
+                            <div className="space-y-2">
+                                <Label htmlFor="studentId">Học sinh</Label>
+                                <div className="relative">
                                     <Input
                                         id="studentId"
                                         name="studentId"
-                                        type="number"
-                                        required
-                                        value={formData.studentId}
-                                        onChange={handleInputChange}
+                                        placeholder="Nhập mã học sinh hoặc tên để tìm kiếm"
+                                        value={studentSearch}
+                                        onChange={(e) => {
+                                            setStudentSearch(e.target.value);
+                                            setShowStudentDropdown(true);
+                                        }}
+                                        onFocus={() => setShowStudentDropdown(true)}
                                     />
+                                    {showStudentDropdown && (
+                                        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                                            {students
+                                                .filter(student => 
+                                                    student.studentCode.includes(studentSearch) || 
+                                                    student.fullName.toLowerCase().includes(studentSearch.toLowerCase())
+                                                )
+                                                .map(student => (
+                                                    <div
+                                                        key={student.id}
+                                                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                        onClick={() => handleStudentSelect(student)}
+                                                    >
+                                                        <div className="font-medium">{student.studentCode} - {student.fullName}</div>
+                                                        <div className="text-sm text-gray-600">{student.className}</div>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    )}
                                 </div>
+                                <div className="text-sm text-gray-500 mt-1">
+                                    Hoặc chọn học sinh từ danh sách
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="vaccineType">Loại vaccine</Label>
                                     <Input
@@ -601,9 +644,6 @@ export default function VaccinationDetailPage() {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="vaccinationDate">Ngày tiêm</Label>
                                     <Input
@@ -614,6 +654,9 @@ export default function VaccinationDetailPage() {
                                         onChange={handleInputChange}
                                     />
                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="batchNumber">Số lô</Label>
                                     <Input
@@ -623,9 +666,6 @@ export default function VaccinationDetailPage() {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="nurseId">Mã y tá</Label>
                                     <Input
@@ -636,20 +676,21 @@ export default function VaccinationDetailPage() {
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="result">Trạng thái</Label>
-                                    <select
-                                        value={formData.result}
-                                        onChange={(e) => handleStatusChange(e.target.value)}
-                                        className="w-full border rounded-lg px-3 py-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="" disabled selected>Chọn trạng thái</option>
-                                        <option value={VaccinationStatus.Planned}>Đã lên lịch</option>
-                                        <option value={VaccinationStatus.InProgress}>Đang tiến hành</option>
-                                        <option value={VaccinationStatus.Completed}>Hoàn thành</option>
-                                        <option value={VaccinationStatus.Cancelled}>Đã hủy</option>
-                                    </select>
-                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="result">Trạng thái</Label>
+                                <select
+                                    value={formData.result}
+                                    onChange={(e) => handleStatusChange(e.target.value)}
+                                    className="w-full border rounded-lg px-3 py-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="" disabled selected>Chọn trạng thái</option>
+                                    <option value={VaccinationStatus.Planned}>Đã lên lịch</option>
+                                    <option value={VaccinationStatus.InProgress}>Đang tiến hành</option>
+                                    <option value={VaccinationStatus.Completed}>Hoàn thành</option>
+                                    <option value={VaccinationStatus.Cancelled}>Đã hủy</option>
+                                </select>
                             </div>
 
                             <div className="space-y-2">
@@ -666,7 +707,10 @@ export default function VaccinationDetailPage() {
                             <Button
                                 type="button"
                                 variant="outline"
-                                onClick={() => setOpenDialog(false)}
+                                onClick={() => {
+                                    setOpenDialog(false);
+                                    setShowStudentDropdown(false);
+                                }}
                                 disabled={isSubmitting}
                             >
                                 Hủy
