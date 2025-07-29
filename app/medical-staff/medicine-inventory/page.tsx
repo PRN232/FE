@@ -1,10 +1,16 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { getAllMedications, createMedication, deleteMedication, updateMedication } from "@/lib/service/medications/medications";
-import { Medication } from "@/lib/service/medications/IMedications";
+import {
+  getAllMedications,
+  createMedication,
+  deleteMedication,
+  updateMedication
+} from "@/lib/service/medications/medications";
+import { Medication } from "@/types";
 
 const medicationTypeTranslations: Record<string, string> = {
   PainRelief: "Giảm đau",
@@ -272,7 +278,6 @@ export default function MedicineInventoryPage() {
   const shadow = "shadow-lg";
   const dangerBg = "bg-red-100";
   const warningBg = "bg-yellow-100";
-  const successBg = "bg-green-100";
 
   return (
     <div className={`p-6 min-h-screen ${mainBg}`}>

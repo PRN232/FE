@@ -1,11 +1,13 @@
 
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
-import { ApiResponse, CreateMedicationDto, Medication } from "./IMedications";
+import { Medication } from "@/types";
+import { ApiResponse, CreateMedicationDto } from "./IMedications";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/medications`;
 
-export const getAllMedications = async (): Promise<ApiResponse<Medication[]>> => {
+export const getAllMedications = async ():
+    Promise<ApiResponse<Medication[]>> => {
     const response = await fetch(`${BASE_URL}`, {
         method: 'GET',
         headers: getAuthHeaders(),
@@ -17,6 +19,23 @@ export const getAllMedications = async (): Promise<ApiResponse<Medication[]>> =>
 
     return await response.json();
 };
+
+export const getMedicationById = async (
+    id: number
+):
+    Promise<ApiResponse<Medication>> => {
+    const response = await fetch(`${BASE_URL}/${id}`, {
+        method: 'GET',
+        headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+};
+
 export const createMedication = async (
     medicationData: CreateMedicationDto
 ): Promise<ApiResponse<Medication>> => {
@@ -44,7 +63,6 @@ export const deleteMedication = async (
     });
 
     if (response.status === 204) {
-        // No content, but successful deletion
         return {
             success: true,
             data: true,

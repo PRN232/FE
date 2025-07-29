@@ -1,6 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import {
+    useEffect,
+    useState
+} from "react"
 import {
     Card,
     CardContent,
@@ -26,6 +29,7 @@ import {
 import { Incident, MedicationGiven } from "@/types"
 import { getSeverityColor } from "@/lib/utils"
 import AddMedicine from "@/components/Medical/HealthCheckUpForm/RecordIncident/AddMedicine";
+import {getMedicationById} from "@/lib/service/medications/medications";
 
 interface IncidentCardProps {
     incident: Incident
@@ -62,7 +66,32 @@ const IncidentCard = ({
                           onAddMedication
 }: IncidentCardProps) => {
     const [isMedicationDialogOpen, setIsMedicationDialogOpen] = useState(false)
+    const [medicationNames, setMedicationNames] = useState<Record<number, string>>({})
     const incidentMedications = medicationsGiven.filter(m => m.incidentId === incident.id)
+
+    useEffect(() => {
+        const fetchMedicationNames = async () => {
+            const names: Record<number, string> = {}
+
+            for (const med of incidentMedications) {
+                try {
+                    const response = await getMedicationById(med.medicationId)
+                    if (response.success && response.data) {
+                        names[med.medicationId] = response.data.name
+                    }
+                } catch (error) {
+                    console.error(`Failed to fetch medication ${med.medicationId}:`, error)
+                    names[med.medicationId] = `Thuốc ID: ${med.medicationId}`
+                }
+            }
+
+            setMedicationNames(names)
+        }
+
+        if (incidentMedications.length > 0) {
+            void fetchMedicationNames()
+        }
+    }, [incidentMedications])
 
     return (
         <>
@@ -199,7 +228,7 @@ const IncidentCard = ({
                                         <div className="flex justify-between items-center">
                                             <div>
                                                 <p className="font-medium text-gray-800">
-                                                    ID Thuốc: {medication.medicationId}
+                                                    {medicationNames[medication.medicationId] || `Đang tải thông tin thuốc...`}
                                                 </p>
                                                 <p className="text-sm text-gray-600">
                                                     Liều dùng: {medication.dosage}

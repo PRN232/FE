@@ -46,7 +46,11 @@ export const getParentByUserId = async (
 
 export const getChildrenByParentId = async (
     parentId: number
-): Promise<{ success: boolean; children?: ChildDTO[]; error?: string }> => {
+): Promise<{
+    success: boolean;
+    children?: ChildDTO[];
+    error?: string
+}> => {
     try {
         const response = await fetch(`${API_URL}/${parentId}/children`, {
             method: "GET",

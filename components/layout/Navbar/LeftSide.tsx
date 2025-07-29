@@ -1,4 +1,7 @@
-import {ComponentPropsWithoutRef, ComponentType} from "react";
+import {
+    ComponentPropsWithoutRef,
+    ComponentType
+} from "react";
 import {
     NavigationMenu,
     NavigationMenuContent,
@@ -10,10 +13,18 @@ import {
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
 import {Users, FileText, BookOpen } from "lucide-react";
-import { medicalFeatures, parentFeatures } from "@/lib/data/mock-data";
-import {useAuth} from "@/lib/auth/auth-context";
+import {
+    medicalFeatures,
+    parentFeatures
+} from "@/lib/data/mock-data";
 
-function ListItem({ title, children, href, icon: Icon, ...props }: ComponentPropsWithoutRef<"li"> & {
+function ListItem({
+                      title,
+                      children,
+                      href,
+                      icon: Icon,
+                      ...props
+}: ComponentPropsWithoutRef<"li"> & {
     href: string;
     icon?: ComponentType<{ className?: string }>;
 }) {
@@ -40,10 +51,7 @@ const LeftSide = ({user}: {
         role: string
     } | null
 }) => {
-    const {isAuthenticated} = useAuth();
     const isParent = user?.role === "parent";
-    const isMedicalStaff = user?.role === "schoolnurse";
-    const idAdmin = user?.role === "admin";
 
     return (
         <div className="flex items-center">
@@ -67,63 +75,43 @@ const LeftSide = ({user}: {
                             </NavigationMenuLink>
                         </NavigationMenuItem>
 
-                        {isAuthenticated && (
+                        {isParent ? (
                             <>
-                                {idAdmin && (
-                                    <NavigationMenuItem>
-                                        <NavigationMenuLink
-                                            asChild
-                                            className={navigationMenuTriggerStyle()}
-                                        >
-                                            <Link href="/dashboard" className="text-xl">Dashboard</Link>
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-                                )}
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
+                                    <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                            {parentFeatures.map((feature) => (
+                                                <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                    {feature.description}
+                                                </ListItem>
+                                            ))}
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            </>
+                        ) : (
+                            <>
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
+                                    <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                            {medicalFeatures.map((feature) => (
+                                                <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                    {feature.description}
+                                                </ListItem>
+                                            ))}
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
 
-                                {!isMedicalStaff && (
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="text-lg">
-                                            Phụ huynh
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent
-                                            className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                                {parentFeatures.map((feature) => (
-                                                    <ListItem
-                                                        key={feature.title}
-                                                        title={feature.title}
-                                                        href={feature.href}
-                                                        icon={feature.icon}
-                                                    >
-                                                        {feature.description}
-                                                    </ListItem>
-                                                ))}
-                                            </ul>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                )}
-
-                                {!isParent && (
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="text-lg">
-                                            Nhân viên Y tế
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                                {medicalFeatures.map((feature) => (
-                                                    <ListItem
-                                                        key={feature.title}
-                                                        title={feature.title}
-                                                        href={feature.href}
-                                                        icon={feature.icon}
-                                                    >
-                                                        {feature.description}
-                                                    </ListItem>
-                                                ))}
-                                            </ul>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                )}
+                                <NavigationMenuItem>
+                                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                        <Link href="/medical-staff/student" className="text-xl">
+                                            Học Sinh
+                                        </Link>
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
                             </>
                         )}
 

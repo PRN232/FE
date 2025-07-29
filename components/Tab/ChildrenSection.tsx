@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Loader2 } from "lucide-react";
 import {
@@ -10,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
-import ViewChildProfile from "@/components/Tab/ViewChildProfile";
 import { ChildDTO } from "@/types";
 
 interface ChildrenSectionProps {
@@ -20,6 +20,7 @@ interface ChildrenSectionProps {
 const ChildrenSection = ({
                              user
                          }: ChildrenSectionProps) => {
+    const router = useRouter();
     const [childrenData, setChildrenData] = useState<ChildDTO[]>([]);
     const [childrenLoading, setChildrenLoading] = useState(true);
     const [fetchError, setFetchError] = useState<string | null>(null);
@@ -81,8 +82,7 @@ const ChildrenSection = ({
     }
 
     const handleViewProfile = (id: number) => {
-        setSelectedChildId(id);
-        setIsProfileOpen(true);
+        router.push("/parents/health-records");
     };
 
     const handleCloseProfile = () => {
@@ -192,12 +192,6 @@ const ChildrenSection = ({
                     </div>
                 </div>
             )}
-
-            <ViewChildProfile
-                isOpen={isProfileOpen}
-                onClose={handleCloseProfile}
-                childId={selectedChildId}
-            />
         </>
     );
 };

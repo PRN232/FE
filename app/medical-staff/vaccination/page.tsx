@@ -426,7 +426,7 @@ export default function VaccinationPage() {
 
       {/* Create/Edit Campaign Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-[600px] bg-white">
           <DialogHeader>
             <DialogTitle>
               {isEditMode ? "Chỉnh sửa chiến dịch" : "Thêm chiến dịch mới"}

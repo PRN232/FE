@@ -6,14 +6,12 @@ import { useAuth } from "@/lib/auth/auth-context";
 
 interface ProtectRouteProps {
     allowedRoles: string[];
-    isAdminOnly?: boolean;
     children: ReactNode;
 }
 
 const ProtectRoute = ({
                           allowedRoles,
-                          isAdminOnly = false,
-                          children,
+                          children
                       }: ProtectRouteProps) => {
     const { user } = useAuth();
     const router = useRouter();
@@ -43,9 +41,7 @@ const ProtectRoute = ({
                 clearInterval(interval);
                 if (!user) {
                     router.push("/login");
-                } else if (isAdminOnly && user.role !== "admin") {
-                    router.push("/");
-                } else if (!isAdminOnly && !allowedRoles.includes(user.role)) {
+                } else if (!allowedRoles.includes(user.role)) {
                     router.push("/");
                 } else {
                     setIsLoading(false);
@@ -53,13 +49,8 @@ const ProtectRoute = ({
             }
         }, 2000);
 
-        if (user) {
-            const roleCheck = isAdminOnly
-                ? user.role === "admin"
-                : allowedRoles.includes(user.role);
-            if (!roleCheck && isMounted) {
-                router.push("/");
-            }
+        if (user && !allowedRoles.includes(user.role) && isMounted) {
+            router.push("/");
         }
 
         return () => {
@@ -67,7 +58,7 @@ const ProtectRoute = ({
             clearTimeout(timer);
             clearInterval(interval);
         };
-    }, [allowedRoles, isAdminOnly, router, user]);
+    }, [allowedRoles, router, user]);
 
     if (isLoading) {
         return (
@@ -82,7 +73,7 @@ const ProtectRoute = ({
         );
     }
 
-    if (!user || (isAdminOnly && user.role !== "admin") || (!isAdminOnly && !allowedRoles.includes(user.role))) {
+    if (!user || !allowedRoles.includes(user.role)) {
         return null;
     }
 

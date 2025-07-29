@@ -12,7 +12,7 @@ const mapApiUserToUser = (apiUser: ApiUser): User => ({
     phoneNumber: apiUser.phoneNumber || "",
     avatar: undefined,
     createdAt: apiUser.createdAt ? new Date(apiUser.createdAt) : new Date(),
-    role: apiUser.role === 0 ? "parent" : apiUser.role === 1 ? "schoolnurse" : "admin",
+    role: apiUser.role === 0 ? "parent" : "schoolnurse"
 });
 
 const fetchUser = async (

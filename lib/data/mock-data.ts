@@ -1,8 +1,6 @@
 import {
     MedicalExamination,
     MedicalIncident,
-    Medication,
-    MedicineRequest,
     Student,
     VaccinationCampaign
 } from "@/types";
@@ -21,7 +19,7 @@ import {
     BookOpen,
     Bell,
     Phone,
-    Clock,
+    Clock
 } from "lucide-react";
 
 export const mockStudents: Student[] = [
@@ -109,35 +107,6 @@ export const mockStudents: Student[] = [
     }
 ]
 
-export const mockMedicineRequests: MedicineRequest[] = [
-    {
-        id: '1',
-        studentId: '1',
-        parentId: '2',
-        medicineName: 'Ống hít Albuterol',
-        dosage: '2 nhát',
-        frequency: 'Khi cần thiết',
-        duration: 'Liên tục',
-        instructions: 'Sử dụng khi có triệu chứng hen suyễn',
-        status: 'approved',
-        requestDate: new Date('2023-09-01'),
-        approvedBy: 'Bác sĩ Sarah Johnson',
-        notes: 'Để tại phòng y tế dùng khi khẩn cấp'
-    },
-    {
-        id: '2',
-        studentId: '2',
-        parentId: '2',
-        medicineName: 'Tylenol trẻ em',
-        dosage: '160mg',
-        frequency: 'Mỗi 6 giờ',
-        duration: '3 ngày',
-        instructions: 'Sử dụng khi sốt',
-        status: 'pending',
-        requestDate: new Date('2023-09-20')
-    }
-]
-
 export const mockMedicalIncidents: MedicalIncident[] = [
     {
         id: '1',
@@ -168,13 +137,6 @@ export const mockMedicalIncidents: MedicalIncident[] = [
         status: 'open'
     }
 ]
-
-export const mockMedicines: Medication[] = [
-  { id: 'med1', name: 'Paracetamol 500mg', type: 'Giảm đau, hạ sốt', description: 'Viên nén 500mg', stockQuantity: 200, expiryDate: new Date('2025-12-31'), storageInstructions: 'Nơi khô ráo, thoáng mát' },
-  { id: 'med2', name: 'Băng gạc y tế', type: 'Vật tư y tế', description: 'Cuộn băng gạc vô trùng', stockQuantity: 50, expiryDate: new Date('2026-06-30'), storageInstructions: 'Nơi khô ráo, sạch sẽ' },
-  { id: 'med3', name: 'Thuốc sát trùng Povidine', type: 'Dung dịch sát khuẩn', description: 'Chai 100ml, dung dịch 10%', stockQuantity: 10, expiryDate: new Date('2024-10-01'), storageInstructions: 'Tránh ánh nắng trực tiếp' },
-  { id: 'med4', name: 'Berberin', type: 'Kháng sinh', description: 'Viên trị tiêu chảy, lỵ', stockQuantity: 500, expiryDate: new Date('2025-08-15'), storageInstructions: 'Nơi khô ráo, nhiệt độ phòng' },
-];
 
 export const mockVaccinationCampaigns: VaccinationCampaign[] = [
     {
@@ -479,12 +441,6 @@ export const documents = [
         icon: AlertTriangle,
         color: "bg-yellow-500",
     },
-]
-
-export const allergies = [
-    { id: 1, allergen: "Penicillin", severity: "high", symptoms: "Phát ban, khó thở", dateReported: "2023-08-15" },
-    { id: 2, allergen: "Peanuts", severity: "medium", symptoms: "Ngứa, sưng môi", dateReported: "2023-09-20" },
-    { id: 3, allergen: "Dust mites", severity: "low", symptoms: "Hắt hơi, chảy nước mũi", dateReported: "2023-10-10" },
 ]
 
 export const medicalRequests = [

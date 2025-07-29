@@ -1,59 +1,50 @@
-"use client";
+"use client"
 
-import { useState, FormEvent, KeyboardEvent } from "react";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Save, Plus, X } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
-import { showSuccessAlert, showErrorAlert } from "@/lib/utils";
-import { CreateMedicalIncidentDto } from "@/lib/service/medical-record/incident/IIncident";
-import { createMedicalIncident } from "@/lib/service/medical-record/incident/incident";
-import { ChildDTO } from "@/types";
+import { useState, FormEvent, KeyboardEvent } from "react"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Loader2, Save, Plus, X } from "lucide-react"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { format } from "date-fns"
+import { vi } from "date-fns/locale"
+import { ChildDTO } from "@/types"
+import { showSuccessAlert, showErrorAlert } from "@/lib/utils"
+import { CreateMedicalIncidentDto } from "@/lib/service/medical-record/incident/IIncident"
+import { createMedicalIncident } from "@/lib/service/medical-record/incident/incident"
 
 interface NewIncidentModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSuccess?: () => void;
-    students: ChildDTO[];
+    isOpen: boolean
+    onClose: () => void
+    onSuccess?: (incidentId: number) => void
+    students?: ChildDTO[]
 }
 
 interface IncidentFormData {
-    studentId: number;
-    studentName: string;
-    incidentType: string;
-    description: string;
-    symptoms: string[];
-    treatment: string;
-    severity: string;
-    date: Date;
-    parentNotified: boolean;
+    studentId: number
+    studentName: string
+    incidentType: string
+    description: string
+    symptoms: string[]
+    treatment: string
+    severity: string
+    date: Date
+    parentNotified: boolean
 }
 
-const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModalProps) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [currentSymptom, setCurrentSymptom] = useState("");
+const IncidentModal = ({
+                           isOpen,
+                           onClose,
+                           onSuccess,
+                           students = []
+}: NewIncidentModalProps) => {
+    const [isLoading, setIsLoading] = useState(false)
+    const [currentSymptom, setCurrentSymptom] = useState("")
     const [formData, setFormData] = useState<IncidentFormData>({
         studentId: 0,
         studentName: "",
@@ -64,13 +55,12 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
         severity: "",
         date: new Date(),
         parentNotified: false,
-    });
+    })
 
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
+        e.preventDefault()
+        setIsLoading(true)
 
-        // Validation for incident fields
         if (
             !formData.studentId ||
             !formData.studentName ||
@@ -80,9 +70,9 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
             !formData.severity ||
             !formData.date
         ) {
-            await showErrorAlert("Vui lòng điền đầy đủ thông tin bắt buộc cho sự cố.");
-            setIsLoading(false);
-            return;
+            await showErrorAlert("Vui lòng điền đầy đủ thông tin bắt buộc cho sự cố.")
+            setIsLoading(false)
+            return
         }
 
         try {
@@ -96,28 +86,28 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                 severity: formData.severity as "Low" | "Medium" | "High",
                 incidentDate: formData.date.toISOString(),
                 parentNotified: formData.parentNotified,
-            };
+            }
 
-            const response = await createMedicalIncident(incidentData);
+            const response = await createMedicalIncident(incidentData)
 
-            if (response.success) {
-                await showSuccessAlert("Ghi nhận sự cố thành công!");
+            if (response.success && response.data?.id) {
+                await showSuccessAlert("Ghi nhận sự cố thành công!")
                 setTimeout(() => {
-                    resetForm();
-                    onSuccess?.();
-                    onClose();
-                }, 1500);
+                    resetForm()
+                    onSuccess?.(response.data.id)
+                    onClose()
+                }, 1500)
             } else {
-                await showErrorAlert(response.message || "Có lỗi xảy ra khi ghi nhận sự cố.");
+                await showErrorAlert(response.message || "Có lỗi xảy ra khi ghi nhận sự cố.")
             }
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định.";
-            await showErrorAlert(errorMessage);
-            console.error("Error creating incident:", error);
+            const errorMessage = error instanceof Error ? error.message : "Đã xảy ra lỗi không xác định."
+            await showErrorAlert(errorMessage)
+            console.error("Error creating incident:", error)
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
     const resetForm = () => {
         setFormData({
@@ -130,50 +120,50 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
             severity: "",
             date: new Date(),
             parentNotified: false,
-        });
-        setCurrentSymptom("");
-    };
+        })
+        setCurrentSymptom("")
+    }
 
     const handleClose = () => {
-        resetForm();
-        onClose();
-    };
+        resetForm()
+        onClose()
+    }
 
     const handleInputChange = <K extends keyof IncidentFormData>(field: K, value: IncidentFormData[K]) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
-        }));
-    };
+        }))
+    }
 
     const handleStudentSelect = (studentId: string) => {
         if (studentId === "") {
-            handleInputChange("studentId", 0);
-            handleInputChange("studentName", "");
+            handleInputChange("studentId", 0)
+            handleInputChange("studentName", "")
         } else {
-            const selectedStudent = students.find((student) => student.id.toString() === studentId);
+            const selectedStudent = students.find((student) => student.id.toString() === studentId)
             if (selectedStudent) {
-                handleInputChange("studentId", selectedStudent.id);
-                handleInputChange("studentName", selectedStudent.fullName);
+                handleInputChange("studentId", selectedStudent.id)
+                handleInputChange("studentName", selectedStudent.fullName)
             }
         }
-    };
+    }
 
     const handleAddSymptom = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter" && currentSymptom.trim()) {
-            e.preventDefault();
+            e.preventDefault()
             if (!formData.symptoms.includes(currentSymptom.trim())) {
-                handleInputChange("symptoms", [...formData.symptoms, currentSymptom.trim()]);
-                setCurrentSymptom("");
+                handleInputChange("symptoms", [...formData.symptoms, currentSymptom.trim()])
+                setCurrentSymptom("")
             }
         }
-    };
+    }
 
     const removeSymptom = (index: number) => {
-        const newSymptoms = [...formData.symptoms];
-        newSymptoms.splice(index, 1);
-        handleInputChange("symptoms", newSymptoms);
-    };
+        const newSymptoms = [...formData.symptoms]
+        newSymptoms.splice(index, 1)
+        handleInputChange("symptoms", newSymptoms)
+    }
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -203,31 +193,33 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                                     <Select
                                         value={formData.studentId === 0 ? "" : formData.studentId.toString()}
                                         onValueChange={handleStudentSelect}
-                                        disabled={isLoading || students.length === 0}
+                                        disabled={isLoading || !students || students.length === 0}
                                     >
                                         <SelectTrigger className="border-gray-300 focus:border-red-500 focus:ring-red-500">
                                             <SelectValue
-                                                placeholder={students.length === 0 ? "Không có học sinh" : "Chọn học sinh"}
+                                                placeholder={!students || students.length === 0 ? "Không có học sinh" : "Chọn học sinh"}
                                             />
                                         </SelectTrigger>
                                         <SelectContent className="bg-white">
-                                            {students.map((student) => (
-                                                <SelectItem
-                                                    key={student.id}
-                                                    value={student.id.toString()}
-                                                    className="flex justify-between items-center w-full"
-                                                >
-                                                    <span className="flex-1 min-w-0 truncate">
-                                                        {student.fullName}
-                                                    </span>
-                                                    <span className="mx-2 text-gray-500">
-                                                        {student.studentCode}
-                                                    </span>
-                                                    <span className="text-gray-600">
-                                                        {student.className}
-                                                    </span>
-                                                </SelectItem>
-                                            ))}
+                                            {students && students.length > 0 ? (
+                                                students.map((student) => (
+                                                    <SelectItem
+                                                        key={student.id}
+                                                        value={student.id.toString()}
+                                                        className="flex justify-between items-center w-full"
+                                                    >
+                                                        <span className="flex-1 min-w-0 truncate">
+                                                            {student.fullName}
+                                                        </span>
+                                                        <span className="mx-2 text-gray-500">
+                                                            {student.studentCode}
+                                                        </span>
+                                                        <span className="text-gray-600">
+                                                            {student.className}
+                                                        </span>
+                                                    </SelectItem>
+                                                ))
+                                            ) : null}
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -290,12 +282,7 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                                                     !formData.date && "text-gray-400"
                                                 }`}
                                             >
-                                                {
-                                                    formData.date ? format(formData.date, "PPP",
-                                                        { locale: vi }) : <span>
-                                                        Chọn ngày
-                                                    </span>
-                                                }
+                                                {formData.date ? format(formData.date, "PPP", { locale: vi }) : <span>Chọn ngày</span>}
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0 bg-white">
@@ -431,7 +418,7 @@ const IncidentModal = ({ isOpen, onClose, onSuccess, students }: NewIncidentModa
                 </form>
             </DialogContent>
         </Dialog>
-    );
-};
+    )
+}
 
-export default IncidentModal;
+export default IncidentModal

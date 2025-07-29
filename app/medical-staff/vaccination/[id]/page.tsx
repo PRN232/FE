@@ -571,7 +571,7 @@ export default function VaccinationDetailPage() {
 
             {/* Create/Edit Dialog */}
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-                <DialogContent className="sm:max-w-[600px]">
+                <DialogContent className="sm:max-w-[600px] bg-white">
                     <DialogHeader>
                         <DialogTitle>
                             {currentRecord ? "Cập nhật thông tin tiêm chủng" : "Thêm mới thông tin tiêm chủng"}

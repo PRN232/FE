@@ -39,8 +39,6 @@ const LoginPage = () => {
                 router.push("/");
             } else if (user.role === "schoolnurse") {
                 router.push("/medical-staff/incidents");
-            } else if (user.role === "admin") {
-                router.push("/dashboard");
             }
         }
     }, [user, error, router]);

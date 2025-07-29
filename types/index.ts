@@ -4,7 +4,7 @@ export interface User {
     email: string;
     phoneNumber: string;
     address?: string;
-    role: "student" | "child" | "parent" | "schoolnurse" | "admin";
+    role: "student" | "child" | "parent" | "schoolnurse";
     avatar?: string;
     createdAt: Date;
 }
@@ -134,13 +134,16 @@ export interface MedicalIncident {
 }
 
 export interface Medication {
-    id: string;
+    id: number;
     name: string;
     type: string;
     description: string;
     stockQuantity: number;
-    expiryDate: Date;
+    expiryDate: string;
     storageInstructions: string;
+    isExpired: boolean;
+    isLowStock: boolean;
+    daysToExpiry: number;
 }
 
 export interface VaccinationCampaign {
