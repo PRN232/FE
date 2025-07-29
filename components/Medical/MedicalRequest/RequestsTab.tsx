@@ -31,20 +31,7 @@ import { getStatusColor } from "@/lib/utils";
 import MedicalRequestModal from "@/components/Medical/MedicalRequest/MedicalRequestModal";
 import { ChildDTO } from "@/types";
 import { getChildrenByParentId } from "@/lib/service/parent/parent";
-
-interface StudentMedication {
-    id: number;
-    studentId: number;
-    medicationName: string;
-    dosage: string;
-    instructions: string;
-    administrationTime: string;
-    administrationTimeDisplay: string;
-    startDate: string;
-    endDate: string;
-    isApproved: boolean;
-    isActive: boolean;
-}
+import { StudentMedication } from "@/lib/service/medical-record/student-medication/IStudent-medication";
 
 interface RequestsTabProps {
     searchTerm: string;
@@ -52,6 +39,7 @@ interface RequestsTabProps {
     setSearchTerm: (value: string) => void;
     setFilterStatus: (value: string) => void;
     medicalRequests: StudentMedication[];
+    onRefresh: () => void;
 }
 
 const RequestsTab = ({
@@ -59,8 +47,9 @@ const RequestsTab = ({
                          filterStatus,
                          setSearchTerm,
                          setFilterStatus,
-                         medicalRequests
-                     }: RequestsTabProps) => {
+                         medicalRequests,
+                         onRefresh
+}: RequestsTabProps) => {
     const [isMedicalRequestModalOpen, setIsMedicalRequestModalOpen] = useState(false);
     const [students, setStudents] = useState<ChildDTO[]>([]);
     const [studentsLoading, setStudentsLoading] = useState(true);
@@ -113,7 +102,7 @@ const RequestsTab = ({
     });
 
     const handleMedicalRequestSuccess = () => {
-        console.log("New medical request created successfully");
+        onRefresh();
     };
 
     if (studentsLoading) {
