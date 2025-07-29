@@ -1,10 +1,11 @@
 import { getAuthHeaders } from "@/lib/utils";
-import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 import {
     CreateStudentMedicationDto,
     StudentMedication,
-    ApiResponse
+    ApiResponse,
+    UpdateStudentMedicationDto
 } from "@/lib/service/medical-record/student-medication/IStudent-medication";
+import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/student-medications`;
 
@@ -33,10 +34,7 @@ export const getStudentMedicationsByParentId = async (
 ): Promise<ApiResponse<StudentMedication[]>> => {
     const response = await fetch(`${BASE_URL}/parent/${parentId}`, {
         method: "GET",
-        headers: {
-            ...getAuthHeaders(),
-            "accept": "*/*"
-        },
+        headers: { ...getAuthHeaders() },
     });
 
     return handleApiResponse(response, `Failed to fetch medications for parent ID ${parentId}`);
@@ -47,13 +45,21 @@ export const getAllStudentMedications = async ():
 {
     const response = await fetch(`${BASE_URL}`, {
         method: "GET",
-        headers: {
-            ...getAuthHeaders(),
-            "accept": "*/*"
-        },
+        headers: { ...getAuthHeaders() },
     });
 
     return handleApiResponse(response, "Failed to fetch all student medications");
+};
+
+export const getStudentMedicationsByStudentId = async (
+    studentId: number
+): Promise<ApiResponse<StudentMedication[]>> => {
+    const response = await fetch(`${BASE_URL}/student/${studentId}`, {
+        method: "GET",
+        headers: { ...getAuthHeaders() },
+    });
+
+    return handleApiResponse(response, `Failed to fetch medications for student ID ${studentId}`);
 };
 
 export const createStudentMedication = async (
@@ -70,24 +76,33 @@ export const createStudentMedication = async (
     };
     const response = await fetch(`${BASE_URL}`, {
         method: "POST",
-        headers: {
-            ...getAuthHeaders(),
-            "Content-Type": "application/json",
-            "accept": "*/*"
-        },
+        headers: { ...getAuthHeaders() },
         body: JSON.stringify(payload),
     });
 
     return handleApiResponse(response, "Failed to create student medication");
 };
 
-export const getStudentMedicationsByStudentId = async (
-    studentId: number
-): Promise<ApiResponse<StudentMedication[]>> => {
-    const response = await fetch(`${BASE_URL}/student/${studentId}`, {
-        method: "GET",
+export const updateStudentMedicationApproval = async (
+    medicationData: UpdateStudentMedicationDto
+): Promise<ApiResponse<StudentMedication>> => {
+    const payload = {
+        id: medicationData.id,
+        studentId: medicationData.studentId,
+        MedicationName: medicationData.MedicationName,
+        Dosage: medicationData.Dosage,
+        Instructions: medicationData.Instructions,
+        administrationTime: medicationData.administrationTime,
+        startDate: medicationData.startDate,
+        endDate: medicationData.endDate,
+        isApproved: medicationData.isApproved,
+        isActive: medicationData.isActive
+    };
+    const response = await fetch(`${BASE_URL}/${medicationData.id}`, {
+        method: "PUT",
         headers: { ...getAuthHeaders() },
+        body: JSON.stringify(payload),
     });
 
-    return handleApiResponse(response, `Failed to fetch medications for student ID ${studentId}`);
+    return handleApiResponse(response, `Failed to update approval status for medication ID ${medicationData.id}`);
 };

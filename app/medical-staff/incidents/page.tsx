@@ -15,22 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Search, Plus } from "lucide-react";
-import
-  IncidentModal
-  from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
-import
-  ViewIncident
-  from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
-import
-  IncidentCard
-  from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
+import IncidentModal from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
+import ViewIncident from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
+import IncidentCard from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
+import MedicationRequestCard from "@/components/Medical/HealthCheckUpForm/RecordIncident/MedicationRequestCard";
 
 import {
   Incident,
   MedicationGiven,
   ChildDTO,
-  Medication
+  Medication,
 } from "@/types";
 import {
   getAllMedicalIncidents
@@ -43,9 +39,17 @@ import {
 } from "@/lib/service/medical-record/medication-given/medication-given";
 import { getAllStudents } from "@/lib/service/student/student";
 import { getAllMedications } from "@/lib/service/medications/medications";
-import {showSuccessAlert} from "@/lib/utils";
+import {
+  getAllStudentMedications,
+  updateStudentMedicationApproval
+} from "@/lib/service/medical-record/student-medication/student-medication";
+import { showSuccessAlert } from "@/lib/utils";
+import {
+  StudentMedication
+} from "@/lib/service/medical-record/student-medication/IStudent-medication";
 
 const IncidentsPage = () => {
+  const [activeTab, setActiveTab] = useState("incidents");
   const [isNewIncidentModalOpen, setIsNewIncidentModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
@@ -54,16 +58,24 @@ const IncidentsPage = () => {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [medications, setMedications] = useState<Medication[]>([]);
   const [medicationsGiven, setMedicationsGiven] = useState<MedicationGiven[]>([]);
+  const [studentMedications, setStudentMedications] = useState<StudentMedication[]>([]);
   const [students, setStudents] = useState<ChildDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAllData = async () => {
     try {
-      const [incidentsResponse, medicationsResponse, studentsResponse, allMedicationsResponse] = await Promise.all([
+      const [
+        incidentsResponse,
+        medicationsResponse,
+        studentsResponse,
+        allMedicationsResponse,
+        studentMedicationsResponse
+      ] = await Promise.all([
         getAllMedicalIncidents(),
         getAllMedicationsGiven(),
         getAllStudents(),
-        getAllMedications()
+        getAllMedications(),
+        getAllStudentMedications()
       ]);
 
       if (incidentsResponse.success) {
@@ -88,6 +100,12 @@ const IncidentsPage = () => {
         setStudents(studentsResponse.students);
       } else {
         setError(studentsResponse.error || "Failed to fetch students");
+      }
+
+      if (studentMedicationsResponse.success) {
+        setStudentMedications(studentMedicationsResponse.data);
+      } else {
+        setError(studentMedicationsResponse.message || "Failed to fetch student medications");
       }
     } catch (err) {
       setError("An error occurred while fetching data");
@@ -185,6 +203,52 @@ const IncidentsPage = () => {
     }
   }
 
+  const handleApproveMedication = async (
+      medicationId: number,
+      isApproved: boolean
+  ) => {
+    try {
+      const medication = studentMedications.find(m => m.id === medicationId);
+      if (!medication) {
+        setError("Medication not found");
+        return false;
+      }
+
+      const response = await updateStudentMedicationApproval({
+        id: medicationId,
+        studentId: medication.studentId,
+        MedicationName: medication.medicationName,
+        Dosage: medication.dosage,
+        Instructions: medication.instructions,
+        administrationTime: medication.administrationTime,
+        startDate: medication.startDate,
+        endDate: medication.endDate,
+        isApproved,
+        isActive: isApproved
+      });
+
+      if (response.success) {
+        setStudentMedications(prev =>
+            prev.map(m =>
+                m.id === medicationId ? { ...m, isApproved, isActive: isApproved } : m
+            )
+        );
+        await showSuccessAlert(
+            isApproved
+                ? "Đã phê duyệt yêu cầu thuốc"
+                : "Đã từ chối yêu cầu thuốc"
+        );
+        return true;
+      } else {
+        setError(response.message || "Failed to update medication approval");
+        return false;
+      }
+    } catch (error) {
+      console.error("Error updating medication approval:", error);
+      setError("An error occurred while updating medication approval");
+      return false;
+    }
+  };
 
   const filteredIncidents = incidents.filter((incident) => {
     const matchesSearch =
@@ -194,6 +258,12 @@ const IncidentsPage = () => {
         filterSeverity === "all" ||
         incident.severity?.toLowerCase() === filterSeverity.toLowerCase();
     return matchesSearch && matchesSeverity;
+  });
+
+  const filteredStudentMedications = studentMedications.filter((med) => {
+    const student = students.find(s => s.id === med.studentId);
+    const studentName = student ? `${student.fullName}` : "";
+    return studentName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
   return (
@@ -239,47 +309,91 @@ const IncidentsPage = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="md:col-span-2">
                   <Input
-                      placeholder="Tìm kiếm theo tên học sinh, loại sự cố, địa điểm..."
+                      placeholder="Tìm kiếm theo tên học sinh..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="border-red-200 focus:border-red-500"
                   />
                 </div>
-                <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-                  <SelectTrigger className="border-red-200 focus:border-red-500">
-                    <SelectValue placeholder="Filter by severity" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="all">Tất cả mức độ</SelectItem>
-                    <SelectItem value="high">Nghiêm trọng</SelectItem>
-                    <SelectItem value="medium">Trung bình</SelectItem>
-                    <SelectItem value="low">Nhẹ</SelectItem>
-                  </SelectContent>
-                </Select>
+                {activeTab === "incidents" && (
+                    <Select value={filterSeverity} onValueChange={setFilterSeverity}>
+                      <SelectTrigger className="border-red-200 focus:border-red-500">
+                        <SelectValue placeholder="Filter by severity" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="all">Tất cả mức độ</SelectItem>
+                        <SelectItem value="high">Nghiêm trọng</SelectItem>
+                        <SelectItem value="medium">Trung bình</SelectItem>
+                        <SelectItem value="low">Nhẹ</SelectItem>
+                      </SelectContent>
+                    </Select>
+                )}
               </div>
             </CardContent>
           </Card>
 
-          {/* Incidents List */}
-          <div className="grid py-5 gap-6">
-            {filteredIncidents.map((incident) => {
-              const incidentMedications = medicationsGiven.filter(
-                  med => med.incidentId === incident.id
-              );
+          {/* Tabs */}
+          <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="mt-6"
+          >
+            <TabsList className="grid w-full grid-cols-2 bg-red-100">
+              <TabsTrigger
+                  value="incidents"
+                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white"
+              >
+                Sự cố y tế
+              </TabsTrigger>
+              <TabsTrigger
+                  value="medications"
+                  className="data-[state=active]:bg-red-500 data-[state=active]:text-white"
+              >
+                Yêu cầu thuốc từ phụ huynh
+              </TabsTrigger>
+            </TabsList>
 
-              return (
-                  <IncidentCard
-                      key={incident.id}
-                      incident={incident}
-                      allMedications={medications}
-                      medicationsGiven={incidentMedications}
-                      onView={handleViewIncident}
-                      onAddOrUpdateMedication={handleAddOrUpdateMedication}
-                      onDeleteMedication={handleDeleteMedication}
-                  />
-              );
-            })}
-          </div>
+            {/* Incidents Tab */}
+            <TabsContent value="incidents">
+              <div className="grid py-5 gap-6">
+                {filteredIncidents.map((incident) => {
+                  const incidentMedications = medicationsGiven.filter(
+                      med => med.incidentId === incident.id
+                  );
+
+                  return (
+                      <IncidentCard
+                          key={incident.id}
+                          incident={incident}
+                          allMedications={medications}
+                          medicationsGiven={incidentMedications}
+                          onView={handleViewIncident}
+                          onAddOrUpdateMedication={handleAddOrUpdateMedication}
+                          onDeleteMedication={handleDeleteMedication}
+                      />
+                  );
+                })}
+              </div>
+            </TabsContent>
+
+            {/* Medications Tab */}
+            <TabsContent value="medications">
+              <div className="grid py-5 gap-6">
+                {filteredStudentMedications.map((medication) => {
+                  const student = students.find(s => s.id === medication.studentId);
+                  return (
+                      <MedicationRequestCard
+                          key={medication.id}
+                          medication={medication}
+                          student={student}
+                          onApprove={() => handleApproveMedication(medication.id, true)}
+                          onReject={() => handleApproveMedication(medication.id, false)}
+                      />
+                  );
+                })}
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
 
         {/* Modals */}

@@ -7,6 +7,20 @@ export interface CreateStudentMedicationDto {
     startDate: string;
     endDate: string;
 }
+
+export interface UpdateStudentMedicationDto {
+    id: number;
+    studentId: number;
+    MedicationName: string;
+    Dosage: string;
+    Instructions: string;
+    administrationTime: string;
+    startDate: string;
+    endDate: string;
+    isApproved: boolean;
+    isActive: boolean;
+}
+
 export interface StudentMedication {
     id: number;
     studentId: number;
