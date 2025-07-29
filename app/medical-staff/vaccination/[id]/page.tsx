@@ -251,8 +251,9 @@ export default function VaccinationDetailPage() {
             record.studentCode.toLowerCase().includes(search.toLowerCase()) ||
             record.nurseName.toLowerCase().includes(search.toLowerCase()) ||
             record.batchNumber.toLowerCase().includes(search.toLowerCase());
-
-        const matchesStatus = statusFilter === "all" || record.result === statusFilter;
+        // console.log(record)
+        console.log(statusFilter, record.result)
+        const matchesStatus = statusFilter === "all" || record.result == statusFilter;
 
         return matchesSearch && matchesStatus;
     });
@@ -405,10 +406,10 @@ export default function VaccinationDetailPage() {
                                 onChange={e => setStatusFilter(e.target.value as VaccinationStatus | "all")}
                             >
                                 <option value="all">Tất cả trạng thái</option>
-                                <option value={VaccinationStatus.Planned}>Đã lên lịch</option>
-                                <option value={VaccinationStatus.InProgress}>Đang tiến hành</option>
-                                <option value={VaccinationStatus.Completed}>Hoàn thành</option>
-                                <option value={VaccinationStatus.Cancelled}>Đã hủy</option>
+                                <option value={"Planned"}>Đã lên lịch</option>
+                                <option value={"InProgress"}>Đang tiến hành</option>
+                                <option value={"Completed"}>Hoàn thành</option>
+                                <option value={"Cancelled"}>Đã hủy</option>
                             </select>
                         </div>
                         <Button onClick={handleCreateNew} className="flex items-center gap-2">
