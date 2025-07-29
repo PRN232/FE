@@ -3,13 +3,15 @@ import { getCampaignById, updateCampaign } from '@/lib/service/health-check-camp
 import { Vaccination, UpdateVaccinationDto, VaccinationStatus } from '@/lib/service/health-check-campaign/IHealthCheckCampaign';
 import {
     getHealthCheckupResultsByCampaign,
-    // createHealthCheckupResult,
+    createHealthCheckupResult,
     updateHealthCheckupResult,
     deleteHealthCheckupResult
 } from '@/lib/service/health-checkup-result/health-checkup-result';
 import { HealthCheckupResult, CreateHealthCheckupResultDto, UpdateHealthCheckupResultDto } from '@/lib/service/health-checkup-result/IHealth-checkup-result';
+import { getAllStudents } from '@/lib/service/student/student';
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { ChildDTO } from '@/types';
 
 const HealthCheckDetailPage: React.FC = () => {
     const { id } = useParams();
@@ -25,10 +27,14 @@ const HealthCheckDetailPage: React.FC = () => {
     const [showEditForm, setShowEditForm] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [editingResult, setEditingResult] = useState<HealthCheckupResult | null>(null);
+    const [students, setStudents] = useState<ChildDTO[]>([]);
+    const [studentSearch, setStudentSearch] = useState("");
+    const [showStudentDropdown, setShowStudentDropdown] = useState(false);
+
     const [newResult, setNewResult] = useState<CreateHealthCheckupResultDto>({
         studentId: 0,
         studentName: '',
-        campaignId: 0,
+        campaignId: campaignId,
         height: 0,
         weight: 0,
         bloodPressure: '',
@@ -40,6 +46,7 @@ const HealthCheckDetailPage: React.FC = () => {
         nurseId: 0,
         checkupDate: new Date().toISOString().split('T')[0]
     });
+
     const [editResult, setEditResult] = useState<UpdateHealthCheckupResultDto>({
         id: 0,
         height: 0,
@@ -58,13 +65,8 @@ const HealthCheckDetailPage: React.FC = () => {
     const primaryHover = "hover:bg-red-700";
     const secondaryColor = "bg-white";
     const secondaryHover = "hover:bg-gray-50";
-    // const textPrimary = "text-red-800";
-    // const textSecondary = "text-gray-700";
     const borderColor = "border-red-200";
     const cardBg = "bg-white";
-    // const dangerBg = "bg-red-100";
-    // const warningBg = "bg-yellow-100";
-    // const successBg = "bg-green-100";
     const shadow = "shadow-lg";
 
     useEffect(() => {
@@ -91,6 +93,33 @@ const HealthCheckDetailPage: React.FC = () => {
             .catch(() => setLoading(false));
     }, [campaignId]);
 
+    useEffect(() => {
+        if (showAddForm || showEditForm) {
+            const fetchStudents = async () => {
+                try {
+                    const response = await getAllStudents();
+                    if (response.success && response.students) {
+                        setStudents(response.students);
+                    }
+                } catch (error) {
+                    console.error("Error fetching students:", error);
+                    alert("Error fetching students");
+                }
+            };
+            fetchStudents();
+        }
+    }, [showAddForm, showEditForm]);
+
+    const handleStudentSelect = (student: ChildDTO) => {
+        setNewResult(prev => ({
+            ...prev,
+            studentId: student.id,
+            studentName: student.fullName
+        }));
+        setStudentSearch(`${student.studentCode} - ${student.fullName}`);
+        setShowStudentDropdown(false);
+    };
+
     const handleEdit = () => {
         if (!campaign) return;
         setEditData({
@@ -100,9 +129,9 @@ const HealthCheckDetailPage: React.FC = () => {
             scheduledDate: campaign.scheduledDate,
             targetGrades: campaign.targetGrades,
             status: campaign.status === VaccinationStatus.Planned ? 0 :
-                    campaign.status === VaccinationStatus.InProgress ? 1 :
+                campaign.status === VaccinationStatus.InProgress ? 1 :
                     campaign.status === VaccinationStatus.Completed ? 2 :
-                    3 // Cancelled
+                        3 // Cancelled
         });
         setEditMode(true);
     };
@@ -138,38 +167,43 @@ const HealthCheckDetailPage: React.FC = () => {
         const { name, value, type } = e.target;
         setNewResult(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
-                   type === 'number' ? Number(value) : value
+            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked :
+                type === 'number' ? Number(value) : value
         }));
     };
 
     const handleAddResult = async () => {
         try {
             setLoading(true);
-            setErrorMessage(""); // Clear previous errors
-            // const result = await createHealthCheckupResult(newResult);
+            setErrorMessage("");
+            const result = await createHealthCheckupResult(newResult);
 
-            const res = await getHealthCheckupResultsByCampaign(campaignId);
-            if (res.success) {
-                setStudentDetails(res.data);
-                setShowAddForm(false);
-                setNewResult({
-                    studentId: 0,
-                    studentName: '',
-                    campaignId: campaignId,
-                    height: 0,
-                    weight: 0,
-                    bloodPressure: '',
-                    visionTest: '',
-                    hearingTest: '',
-                    generalHealth: '',
-                    requiresFollowup: false,
-                    recommendations: '',
-                    nurseId: 0,
-                    checkupDate: new Date().toISOString().split('T')[0]
-                });
+            if (result) {
+                const res = await getHealthCheckupResultsByCampaign(campaignId);
+                if (res.success) {
+                    setStudentDetails(res.data);
+                    setShowAddForm(false);
+                    setNewResult({
+                        studentId: 0,
+                        studentName: '',
+                        campaignId: campaignId,
+                        height: 0,
+                        weight: 0,
+                        bloodPressure: '',
+                        visionTest: '',
+                        hearingTest: '',
+                        generalHealth: '',
+                        requiresFollowup: false,
+                        recommendations: '',
+                        nurseId: 0,
+                        checkupDate: new Date().toISOString().split('T')[0]
+                    });
+                    setStudentSearch("");
+                } else {
+                    setErrorMessage(res.message || 'Failed to fetch updated results');
+                }
             } else {
-                setErrorMessage(res.message || 'Failed to fetch updated results');
+                setErrorMessage('Failed to create health record');
             }
         } catch (error) {
             setErrorMessage(
@@ -184,8 +218,8 @@ const HealthCheckDetailPage: React.FC = () => {
         const { name, value, type } = e.target;
         setEditResult(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : 
-                   type === 'number' ? Number(value) : value
+            [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked :
+                type === 'number' ? Number(value) : value
         }));
     };
 
@@ -279,7 +313,7 @@ const HealthCheckDetailPage: React.FC = () => {
                     </div>
                 </div>
             )}
-            
+
             <div className="mx-auto bg-white rounded-xl shadow-lg w-full max-w-7xl p-6 relative overflow-hidden border border-red-100">
                 {/* Back button */}
                 <button
@@ -466,11 +500,11 @@ const HealthCheckDetailPage: React.FC = () => {
                                     </svg>
                                 </button>
                             </div>
-                            
+
                             <div className="mb-4 p-4 bg-gray-50 rounded-lg">
                                 <p className="font-medium"><span className="text-gray-600">Học sinh:</span> {editingResult.studentName} (Mã: {editingResult.studentCode})</p>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
                                     <label className="block text-sm font-medium text-gray-700">Chiều cao (cm)</label>
@@ -578,7 +612,7 @@ const HealthCheckDetailPage: React.FC = () => {
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                                 <button
                                     className={`px-4 py-2 rounded-lg ${secondaryColor} ${secondaryHover} text-red-700 border ${borderColor} font-medium transition`}
@@ -608,25 +642,52 @@ const HealthCheckDetailPage: React.FC = () => {
                                 <h3 className="text-xl font-bold text-red-800">Thêm kết quả khám sức khỏe</h3>
                                 <button
                                     className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-100"
-                                    onClick={() => setShowAddForm(false)}
+                                    onClick={() => {
+                                        setShowAddForm(false);
+                                        setStudentSearch("");
+                                    }}
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">ID Học sinh</label>
-                                    <input
-                                        type="number"
-                                        name="studentId"
-                                        value={newResult.studentId}
-                                        onChange={handleAddResultChange}
-                                        className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
-                                        required
-                                    />
+                                    <label className="block text-sm font-medium text-gray-700">Học sinh</label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            placeholder="Nhập mã học sinh hoặc tên để tìm kiếm"
+                                            value={studentSearch}
+                                            onChange={(e) => {
+                                                setStudentSearch(e.target.value);
+                                                setShowStudentDropdown(true);
+                                            }}
+                                            onFocus={() => setShowStudentDropdown(true)}
+                                            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-red-300 focus:border-red-300"
+                                        />
+                                        {showStudentDropdown && (
+                                            <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+                                                {students
+                                                    .filter(student =>
+                                                        student.studentCode.includes(studentSearch) ||
+                                                        student.fullName.toLowerCase().includes(studentSearch.toLowerCase())
+                                                    )
+                                                    .map(student => (
+                                                        <div
+                                                            key={student.id}
+                                                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                                                            onClick={() => handleStudentSelect(student)}
+                                                        >
+                                                            <div className="font-medium">{student.studentCode} - {student.fullName}</div>
+                                                            <div className="text-sm text-gray-600">{student.className}</div>
+                                                        </div>
+                                                    ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="block text-sm font-medium text-gray-700">ID Y tá</label>
@@ -745,17 +806,21 @@ const HealthCheckDetailPage: React.FC = () => {
                                     </label>
                                 </div>
                             </div>
-                            
+
                             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
                                 <button
                                     className={`px-4 py-2 rounded-lg ${secondaryColor} ${secondaryHover} text-red-700 border ${borderColor} font-medium transition`}
-                                    onClick={() => setShowAddForm(false)}
+                                    onClick={() => {
+                                        setShowAddForm(false);
+                                        setStudentSearch("");
+                                    }}
                                 >
                                     Hủy bỏ
                                 </button>
                                 <button
                                     className={`px-4 py-2 rounded-lg ${primaryColor} ${primaryHover} text-white font-medium transition`}
                                     onClick={handleAddResult}
+                                    disabled={!newResult.studentId}
                                 >
                                     Thêm kết quả
                                 </button>
