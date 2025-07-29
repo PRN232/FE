@@ -1,210 +1,207 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Loader2, Save, Plus, CheckCircle, AlertTriangle, CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { vi } from "date-fns/locale"
-import { createMedicationGiven } from "@/lib/service/medical-record/medication-given/medication-given"
-import { CreateMedicationGivenDto } from "@/lib/service/medical-record/medication-given/IMedication-given"
-import { getAllMedications } from "@/lib/service/medications/medications"
-import { getChildrenByParentId } from "@/lib/service/parent/parent"
-import { ChildDTO, Medication } from "@/types"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Loader2, Save, Plus, CheckCircle, AlertTriangle, CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { vi } from "date-fns/locale";
+import { createStudentMedication } from "@/lib/service/medical-record/student-medication/student-medication";
+import { CreateStudentMedicationDto } from "@/lib/service/medical-record/student-medication/IStudent-medication";
+import { getAllMedications } from "@/lib/service/medications/medications";
+import { getChildrenByParentId } from "@/lib/service/parent/parent";
+import { ChildDTO, Medication } from "@/types";
 
 interface MedicalRequestModalProps {
-    isOpen: boolean
-    onClose: () => void
-    onSuccess?: () => void
-    incidentId?: number | null
+    isOpen: boolean;
+    onClose: () => void;
+    onSuccess?: () => void;
 }
 
 interface MedicalRequestFormData {
-    childId: number
-    childName: string
-    medicationName: string
-    dosage: string
-    duration: string
-    reason: string
-    urgency: string
-    requestType: string
-    giveAt: Date
-    specialInstructions: string
-    parentConsent: boolean
+    studentId: number;
+    studentName: string;
+    MedicationName: string;
+    Dosage: string;
+    Instructions: string;
+    administrationTime: string;
+    startDate: Date;
+    endDate: Date;
+    parentConsent: boolean;
 }
 
-const MedicalRequestModal = ({ isOpen, onClose, onSuccess, incidentId }: MedicalRequestModalProps) => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}")
-    const parentId = user?.id
-    const [isLoading, setIsLoading] = useState(false)
-    const [successMessage, setSuccessMessage] = useState("")
-    const [errorMessage, setErrorMessage] = useState("")
-    const [medications, setMedications] = useState<Medication[]>([])
-    const [isMedicationsLoading, setIsMedicationsLoading] = useState(true)
-    const [children, setChildren] = useState<ChildDTO[]>([])
-    const [isChildrenLoading, setIsChildrenLoading] = useState(true)
+const MedicalRequestModal = ({
+                                 isOpen,
+                                 onClose,
+                                 onSuccess
+}: MedicalRequestModalProps) => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const parentId = user?.id;
+    const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+    const [medications, setMedications] = useState<Medication[]>([]);
+    const [isMedicationsLoading, setIsMedicationsLoading] = useState(true);
+    const [children, setChildren] = useState<ChildDTO[]>([]);
+    const [isChildrenLoading, setIsChildrenLoading] = useState(true);
     const [formData, setFormData] = useState<MedicalRequestFormData>({
-        childId: 0,
-        childName: "",
-        medicationName: "",
-        dosage: "",
-        duration: "",
-        reason: "",
-        urgency: "",
-        requestType: "Medicine Administration",
-        giveAt: new Date(),
-        specialInstructions: "",
+        studentId: 0,
+        studentName: "",
+        MedicationName: "",
+        Dosage: "",
+        Instructions: "",
+        administrationTime: "",
+        startDate: new Date(),
+        endDate: new Date(),
         parentConsent: false,
-    })
+    });
 
     useEffect(() => {
         const fetchMedications = async () => {
             try {
-                setIsMedicationsLoading(true)
-                const response = await getAllMedications()
+                setIsMedicationsLoading(true);
+                const response = await getAllMedications();
                 if (response.success && response.data) {
-                    setMedications(response.data)
+                    setMedications(response.data);
                 } else {
-                    setErrorMessage("Không thể tải danh sách thuốc.")
+                    setErrorMessage("Không thể tải danh sách thuốc.");
                 }
             } catch (error) {
-                console.error("Error fetching medications:", error)
-                setErrorMessage("Không thể tải danh sách thuốc. Vui lòng thử lại.")
+                console.error("Error fetching medications:", error);
+                setErrorMessage("Không thể tải danh sách thuốc. Vui lòng thử lại.");
             } finally {
-                setIsMedicationsLoading(false)
+                setIsMedicationsLoading(false);
             }
-        }
+        };
 
-        void fetchMedications()
-    }, [])
+        void fetchMedications();
+    }, []);
 
     useEffect(() => {
         const fetchChildren = async () => {
             try {
-                setIsChildrenLoading(true)
-                const response = await getChildrenByParentId(parentId)
+                setIsChildrenLoading(true);
+                const response = await getChildrenByParentId(parentId);
                 if (response.success && response.children) {
-                    setChildren(response.children)
+                    setChildren(response.children);
                 } else {
-                    setErrorMessage("Không thể tải danh sách con em.")
+                    setErrorMessage("Không thể tải danh sách con em.");
                 }
             } catch (error) {
-                console.error("Error fetching children:", error)
-                setErrorMessage("Không thể tải danh sách con em. Vui lòng thử lại.")
+                console.error("Error fetching children:", error);
+                setErrorMessage("Không thể tải danh sách con em. Vui lòng thử lại.");
             } finally {
-                setIsChildrenLoading(false)
+                setIsChildrenLoading(false);
             }
-        }
+        };
 
-        void fetchChildren()
-    }, [parentId])
+        void fetchChildren();
+    }, [parentId]);
 
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-        setErrorMessage("")
-        setSuccessMessage("")
+        e.preventDefault();
+        setIsLoading(true);
+        setErrorMessage("");
+        setSuccessMessage("");
 
-        if (
-            !formData.childId ||
-            !formData.medicationName ||
-            !formData.dosage ||
-            !formData.duration ||
-            !formData.reason ||
-            !formData.urgency ||
-            !formData.parentConsent
-        ) {
-            setErrorMessage("Vui lòng điền đầy đủ thông tin bắt buộc và xác nhận đồng ý.")
-            setIsLoading(false)
-            return
+        const errors: string[] = [];
+        if (!formData.studentId) errors.push("Vui lòng chọn con em.");
+        if (!formData.MedicationName) errors.push("Vui lòng chọn tên thuốc.");
+        if (!formData.Dosage) errors.push("Vui lòng nhập liều dùng.");
+        if (!formData.Instructions) errors.push("Vui lòng nhập hướng dẫn sử dụng.");
+        if (!formData.administrationTime) errors.push("Vui lòng nhập thời gian sử dụng.");
+        if (!/^\d{2}:\d{2}:\d{2}$/.test(formData.administrationTime)) {
+            errors.push("Thời gian sử dụng phải có định dạng HH:mm:ss (ví dụ: 22:00:00).");
+        }
+        if (formData.startDate > formData.endDate) {
+            errors.push("Ngày bắt đầu phải trước ngày kết thúc.");
+        }
+        if (!formData.parentConsent) errors.push("Vui lòng xác nhận đồng ý.");
+
+        if (errors.length > 0) {
+            setErrorMessage(errors.join(" "));
+            setIsLoading(false);
+            return;
         }
 
         try {
-            const selectedMedication = medications.find((med) => med.name === formData.medicationName)
+            const medicationData: CreateStudentMedicationDto = {
+                studentId: formData.studentId,
+                medicationName: formData.MedicationName,
+                dosage: formData.Dosage,
+                instructions: formData.Instructions,
+                administrationTime: `${formData.administrationTime}.0000000`,
+                startDate: formData.startDate.toISOString(),
+                endDate: formData.endDate.toISOString(),
+            };
 
-            if (!selectedMedication) {
-                setErrorMessage("Thuốc không hợp lệ.")
-                return
-            }
-
-            const medicationData: CreateMedicationGivenDto = {
-                incidentId: incidentId || 0,
-                medicationId: selectedMedication.id,
-                dosage: formData.dosage,
-                giveAt: formData.giveAt.toISOString(),
-            }
-
-            const response = await createMedicationGiven(medicationData)
+            const response = await createStudentMedication(medicationData);
 
             if (response.success) {
-                setSuccessMessage("Yêu cầu y tế đã được gửi thành công!")
-
+                setSuccessMessage("Yêu cầu y tế đã được gửi thành công!");
                 setTimeout(() => {
-                    resetForm()
-                    onSuccess?.()
-                    onClose()
-                }, 1500)
+                    resetForm();
+                    onSuccess?.();
+                    onClose();
+                }, 1500);
             } else {
-                setErrorMessage(response.message || "Có lỗi xảy ra khi gửi yêu cầu")
-                return
+                setErrorMessage(response.message || "Có lỗi xảy ra khi gửi yêu cầu.");
             }
         } catch (error) {
-            console.error("Error creating medical request:", error)
-            setErrorMessage(error instanceof Error ? error.message : "Không thể gửi yêu cầu. Vui lòng thử lại.")
+            console.error("Error creating student medication:", error);
+            setErrorMessage(error instanceof Error ? error.message : "Không thể gửi yêu cầu. Vui lòng thử lại.");
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     const resetForm = () => {
         setFormData({
-            childId: 0,
-            childName: "",
-            medicationName: "",
-            dosage: "",
-            duration: "",
-            reason: "",
-            urgency: "",
-            requestType: "Medicine Administration",
-            giveAt: new Date(),
-            specialInstructions: "",
+            studentId: 0,
+            studentName: "",
+            MedicationName: "",
+            Dosage: "",
+            Instructions: "",
+            administrationTime: "",
+            startDate: new Date(),
+            endDate: new Date(),
             parentConsent: false,
-        })
-        setSuccessMessage("")
-        setErrorMessage("")
-    }
+        });
+        setSuccessMessage("");
+        setErrorMessage("");
+    };
 
     const handleClose = () => {
-        resetForm()
-        onClose()
-    }
+        resetForm();
+        onClose();
+    };
 
     const handleInputChange = (field: keyof MedicalRequestFormData, value: any) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
-        }))
-    }
+        }));
+    };
 
     const handleChildSelect = (childId: string) => {
-        const selectedChild = children.find((child) => child.id.toString() === childId)
+        const selectedChild = children.find((child) => child.id.toString() === childId);
         if (selectedChild) {
-            handleInputChange("childId", selectedChild.id)
-            handleInputChange("childName", selectedChild.fullName)
+            handleInputChange("studentId", selectedChild.id);
+            handleInputChange("studentName", selectedChild.fullName);
         } else {
-            handleInputChange("childId", 0)
-            handleInputChange("childName", "")
+            handleInputChange("studentId", 0);
+            handleInputChange("studentName", "");
         }
-    }
+    };
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -218,22 +215,22 @@ const MedicalRequestModal = ({ isOpen, onClose, onSuccess, incidentId }: Medical
                             Tạo Yêu Cầu Y Tế
                         </DialogTitle>
                         <DialogDescription className="text-gray-600">
-                            Gửi yêu cầu y tế cho con em của bạn tại trường
+                            Gửi yêu cầu sử dụng thuốc cho con em của bạn tại trường
                         </DialogDescription>
                     </DialogHeader>
 
                     <div className="grid gap-6 py-4">
-                        {/* Child Selection */}
+                        {/* Student Selection */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">
                                 Thông tin học sinh
                             </h3>
                             <div className="grid gap-2">
-                                <Label htmlFor="child" className="text-red-800 font-semibold">
+                                <Label htmlFor="studentId" className="text-red-800 font-semibold">
                                     Chọn con em <span className="text-red-500">*</span>
                                 </Label>
                                 <Select
-                                    value={formData.childId.toString()}
+                                    value={formData.studentId.toString()}
                                     onValueChange={handleChildSelect}
                                     disabled={isLoading || isChildrenLoading || children.length === 0}
                                 >
@@ -259,64 +256,17 @@ const MedicalRequestModal = ({ isOpen, onClose, onSuccess, incidentId }: Medical
                             </div>
                         </div>
 
-                        {/* Request Type and Urgency */}
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Loại yêu cầu</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="grid gap-2">
-                                    <Label htmlFor="requestType" className="text-red-800 font-semibold">
-                                        Loại yêu cầu <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Select
-                                        value={formData.requestType}
-                                        onValueChange={(value) => handleInputChange("requestType", value)}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger className="border-red-200 focus:border-red-500">
-                                            <SelectValue placeholder="Chọn loại yêu cầu" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white">
-                                            <SelectItem value="Medicine Administration">Cho uống thuốc</SelectItem>
-                                            <SelectItem value="Emergency Contact">Liên hệ khẩn cấp</SelectItem>
-                                            <SelectItem value="Vaccination Follow-up">Theo dõi sau tiêm chủng</SelectItem>
-                                            <SelectItem value="Medical Examination">Khám sức khỏe</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-
-                                <div className="grid gap-2">
-                                    <Label htmlFor="urgency" className="text-red-800 font-semibold">
-                                        Mức độ khẩn cấp <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Select
-                                        value={formData.urgency}
-                                        onValueChange={(value) => handleInputChange("urgency", value)}
-                                        disabled={isLoading}
-                                    >
-                                        <SelectTrigger className="border-red-200 focus:border-red-500">
-                                            <SelectValue placeholder="Chọn mức độ khẩn cấp" />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-white">
-                                            <SelectItem value="low">Thấp - Không khẩn cấp</SelectItem>
-                                            <SelectItem value="medium">Trung bình - Cần chú ý</SelectItem>
-                                            <SelectItem value="high">Cao - Khẩn cấp</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Medication Details */}
                         <div className="space-y-4">
                             <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Thông tin thuốc</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="medicationName" className="text-red-800 font-semibold">
+                                    <Label htmlFor="MedicationName" className="text-red-800 font-semibold">
                                         Tên thuốc <span className="text-red-500">*</span>
                                     </Label>
                                     <Select
-                                        value={formData.medicationName}
-                                        onValueChange={(value) => handleInputChange("medicationName", value)}
+                                        value={formData.MedicationName}
+                                        onValueChange={(value) => handleInputChange("MedicationName", value)}
                                         disabled={isLoading || isMedicationsLoading || medications.length === 0}
                                     >
                                         <SelectTrigger className="border-red-200 focus:border-red-500">
@@ -341,30 +291,46 @@ const MedicalRequestModal = ({ isOpen, onClose, onSuccess, incidentId }: Medical
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="dosage" className="text-red-800 font-semibold">
+                                    <Label htmlFor="Dosage" className="text-red-800 font-semibold">
                                         Liều dùng <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
-                                        id="dosage"
-                                        name="dosage"
-                                        placeholder="Ví dụ: 1 viên, 2 lần/ngày"
-                                        value={formData.dosage}
-                                        onChange={(e) => handleInputChange("dosage", e.target.value)}
+                                        id="Dosage"
+                                        name="Dosage"
+                                        placeholder="Ví dụ: 2 viên"
+                                        value={formData.Dosage}
+                                        onChange={(e) => handleInputChange("Dosage", e.target.value)}
                                         className="border-red-200 focus:border-red-500"
                                         disabled={isLoading}
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="duration" className="text-red-800 font-semibold">
-                                        Thời gian sử dụng <span className="text-red-500">*</span>
+                                    <Label htmlFor="Instructions" className="text-red-800 font-semibold">
+                                        Hướng dẫn sử dụng <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Textarea
+                                        id="Instructions"
+                                        name="Instructions"
+                                        placeholder="Ví dụ: Dùng nếu đau đầu"
+                                        value={formData.Instructions}
+                                        onChange={(e) => handleInputChange("Instructions", e.target.value)}
+                                        className="border-red-200 focus:border-red-500 min-h-20"
+                                        disabled={isLoading}
+                                    />
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="administrationTime" className="text-red-800 font-semibold">
+                                        Thời gian sử dụng mỗi ngày <span className="text-red-500">*</span>
                                     </Label>
                                     <Input
-                                        id="duration"
-                                        name="duration"
-                                        placeholder="Ví dụ: 3 ngày, 1 tuần"
-                                        value={formData.duration}
-                                        onChange={(e) => handleInputChange("duration", e.target.value)}
+                                        id="administrationTime"
+                                        name="administrationTime"
+                                        type="time"
+                                        step="1"
+                                        value={formData.administrationTime}
+                                        onChange={(e) => handleInputChange("administrationTime", e.target.value)}
                                         className="border-red-200 focus:border-red-500"
                                         disabled={isLoading}
                                     />
@@ -372,69 +338,59 @@ const MedicalRequestModal = ({ isOpen, onClose, onSuccess, incidentId }: Medical
 
                                 <div className="grid gap-2">
                                     <Label className="text-red-800 font-semibold">
-                                        Thời gian cho uống <span className="text-red-500">*</span>
+                                        Ngày bắt đầu <span className="text-red-500">*</span>
                                     </Label>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant="outline"
                                                 className={`border-red-200 focus:border-red-500 justify-start text-left font-normal w-full ${
-                                                    !formData.giveAt && "text-gray-400"
+                                                    !formData.startDate && "text-gray-400"
                                                 }`}
                                             >
                                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                                {formData.giveAt ? format(formData.giveAt, "PPP", { locale: vi }) : <span>Chọn ngày</span>}
+                                                {formData.startDate ? format(formData.startDate, "PPP", { locale: vi }) : <span>Chọn ngày bắt đầu</span>}
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-auto p-0 bg-white">
                                             <Calendar
                                                 mode="single"
-                                                selected={formData.giveAt}
-                                                onSelect={(date) => date && handleInputChange("giveAt", date)}
+                                                selected={formData.startDate}
+                                                onSelect={(date) => date && handleInputChange("startDate", date)}
                                                 autoFocus={true}
                                                 locale={vi}
                                             />
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* Medical Reason */}
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Lý do y tế</h3>
-                            <div className="grid gap-2">
-                                <Label htmlFor="reason" className="text-red-800 font-semibold">
-                                    Lý do cần thuốc <span className="text-red-500">*</span>
-                                </Label>
-                                <Textarea
-                                    id="reason"
-                                    name="reason"
-                                    placeholder="Mô tả chi tiết lý do y tế và triệu chứng..."
-                                    value={formData.reason}
-                                    onChange={(e) => handleInputChange("reason", e.target.value)}
-                                    className="border-red-200 focus:border-red-500 min-h-24"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Special Instructions */}
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Hướng dẫn đặc biệt</h3>
-                            <div className="grid gap-2">
-                                <Label htmlFor="specialInstructions" className="text-red-800 font-semibold">
-                                    Hướng dẫn đặc biệt
-                                </Label>
-                                <Textarea
-                                    id="specialInstructions"
-                                    name="specialInstructions"
-                                    placeholder="Hướng dẫn đặc biệt hoặc lưu ý quan trọng..."
-                                    value={formData.specialInstructions}
-                                    onChange={(e) => handleInputChange("specialInstructions", e.target.value)}
-                                    className="border-red-200 focus:border-red-500 min-h-20"
-                                    disabled={isLoading}
-                                />
+                                <div className="grid gap-2">
+                                    <Label className="text-red-800 font-semibold">
+                                        Ngày kết thúc <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                className={`border-red-200 focus:border-red-500 justify-start text-left font-normal w-full ${
+                                                    !formData.endDate && "text-gray-400"
+                                                }`}
+                                            >
+                                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                                {formData.endDate ? format(formData.endDate, "PPP", { locale: vi }) : <span>Chọn ngày kết thúc</span>}
+                                            </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-auto p-0 bg-white">
+                                            <Calendar
+                                                mode="single"
+                                                selected={formData.endDate}
+                                                onSelect={(date) => date && handleInputChange("endDate", date)}
+                                                autoFocus={true}
+                                                locale={vi}
+                                            />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
                             </div>
                         </div>
 
@@ -502,7 +458,7 @@ const MedicalRequestModal = ({ isOpen, onClose, onSuccess, incidentId }: Medical
                 </form>
             </DialogContent>
         </Dialog>
-    )
-}
+    );
+};
 
-export default MedicalRequestModal
+export default MedicalRequestModal;

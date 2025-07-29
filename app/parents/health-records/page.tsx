@@ -6,7 +6,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, User, AlertTriangle, HeartPulse, Syringe, Plus } from "lucide-react";
+import {
+    Search,
+    User,
+    AlertTriangle,
+    HeartPulse,
+    Syringe,
+    Plus
+} from "lucide-react";
 import StudentInfoCard from "@/components/Medical/MedicalRecord/StudentInfoCard";
 import OverviewTab from "@/components/Medical/MedicalRecord/MedicalTabs/OverviewTab";
 import AllergiesTab from "@/components/Medical/MedicalRecord/MedicalTabs/AllergiesTab";
@@ -101,7 +108,7 @@ const HealthRecord = () => {
 
         let attempts = 0;
         const maxAttempts = 5;
-        const pollInterval = 2000; // 2 seconds
+        const pollInterval = 2000;
 
         while (attempts < maxAttempts) {
             await fetchMedicalProfile();

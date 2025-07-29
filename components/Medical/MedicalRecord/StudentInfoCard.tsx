@@ -5,12 +5,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
     HeartPulse,
     Ruler,
     Scale,
     CalendarCheck,
-    Droplet
+    Droplet,
+    RefreshCw
 } from "lucide-react";
 import { calculateBMI, getBMICategory } from "@/lib/utils";
 import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
@@ -57,7 +59,24 @@ const StudentInfoCard = ({
                             </CardDescription>
                         </div>
                     </div>
+                    <Button
+                        onClick={() => window.location.reload()}
+                        variant="ghost"
+                        className="relative group bg-gradient-to-r from-red-500 to-red-600 text-white border border-red-400/30 hover:border-red-400/50 transition-all duration-300 shadow-lg hover:shadow-red-500/20 overflow-hidden"
+                    >
+                        {/* Gradient overlay on hover */}
+                        <span className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                        {/* Shine effect on hover */}
+                        <span className="absolute top-0 left-1/2 transform -translate-x-1/2 h-[2px] w-3/4 bg-white/30 group-hover:animate-shine" />
+                        {/* Button content */}
+                        <span className="relative z-10 flex items-center">
+                            <RefreshCw className="w-4 h-4 mr-2 group-hover:animate-spin" />
+                            Làm mới
+                        </span>
+                    </Button>
                 </div>
+
             </CardHeader>
 
             <CardContent className="p-6">
