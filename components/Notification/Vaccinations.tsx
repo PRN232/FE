@@ -21,7 +21,7 @@ import { getStatusColor } from "@/lib/utils";
 import { getVaccinationCampaigns } from "@/lib/service/vaccination/campain/campain";
 import { VaccinationCampaign } from "@/lib/service/vaccination/campain/ICampain";
 
-const VaccinationsTab = () => {
+const Vaccinations = () => {
     const [campaigns, setCampaigns] = useState<VaccinationCampaign[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -186,4 +186,4 @@ const VaccinationsTab = () => {
     );
 };
 
-export default VaccinationsTab;
+export default Vaccinations;

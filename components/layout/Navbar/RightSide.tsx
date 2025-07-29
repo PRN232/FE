@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth/auth-context";
+import { cn } from "@/lib/utils";
 
 interface RightSideProps {
     onLogin: () => void;
@@ -29,89 +30,124 @@ const RightSide = ({
     return (
         <>
             {isAuthenticated ? (
-                <>
-                    <div className="flex items-center gap-3">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="relative rounded-full hover:bg-muted/50"
-                            aria-label="Thông báo"
+                <div className="flex items-center gap-4">
+                    {/* Notification Bell with Modern Badge */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                            "relative rounded-full hover:bg-muted/50 transition-all",
+                            "group transform hover:-translate-y-0.5 active:translate-y-0"
+                        )}
+                        aria-label="Thông báo"
+                    >
+                        <Bell className="h-[1.75rem] w-[1.75rem] transition-transform group-hover:scale-110" />
+                        <Badge
+                            variant="destructive"
+                            className={cn(
+                                "absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full p-0",
+                                "text-xs font-semibold shadow-sm animate-pulse",
+                                "bg-red-500 text-white border-2 border-background"
+                            )}
                         >
-                            <Bell className="h-[1.75rem] w-[1.75rem]" />
-                            <Badge
-                                variant="destructive"
-                                className="absolute text-black -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full p-0 text-sm font-medium"
-                            >
-                                3
-                            </Badge>
-                        </Button>
+                            3
+                        </Badge>
+                    </Button>
 
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="relative h-9 w-9 rounded-full
-                                    focus-visible:ring-2 focus-visible:ring-ring"
-                                    aria-label="Menu Người dùng"
-                                >
-                                    <Avatar className="h-9 w-9">
-                                        <AvatarImage
-                                            src={user?.avatar || "/images/placeholder.svg"}
-                                            alt="Hồ sơ Người dùng"
-                                        />
-                                        <AvatarFallback className="bg-primary/10 text-primary text-base">
-                                            {user?.name
-                                                ?.split(" ")
-                                                .map((n) => n[0])
-                                                .join("") || "U"}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                className="w-60 bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg"
-                                align="start"
-                                sideOffset={8}
+                    {/* User Avatar Dropdown */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                className={cn(
+                                    "relative h-10 w-10 rounded-full p-0",
+                                    "transition-all duration-200 hover:scale-105",
+                                    "ring-offset-background focus-visible:outline-none focus-visible:ring-2",
+                                    "focus-visible:ring-ring focus-visible:ring-offset-2"
+                                )}
+                                aria-label="Menu Người dùng"
                             >
-                                <DropdownMenuLabel className="font-normal p-3">
-                                    <div className="flex flex-col space-y-1.5">
-                                        <p className="text-base font-medium leading-none">
-                                            {user?.name}
-                                        </p>
-                                        <p className="text-sm leading-none text-muted-foreground">
-                                            {user?.email}
-                                        </p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild className="px-3 py-2">
-                                    <Link
-                                        href="/profile"
-                                        className="w-full cursor-pointer focus:bg-accent
-                                        focus:text-accent-foreground text-base"
+                                <Avatar className="h-10 w-10 border-2 border-primary/10">
+                                    <AvatarImage
+                                        src={user?.avatar || "/images/placeholder.svg"}
+                                        alt="Hồ sơ Người dùng"
+                                        className="object-cover"
+                                    />
+                                    <AvatarFallback
+                                        delayMs={600}
+                                        className={cn(
+                                            "bg-gradient-to-br from-primary/10 to-primary/20",
+                                            "text-primary font-medium text-lg"
+                                        )}
                                     >
-                                        <User className="mr-3 h-5 w-5" />
-                                        <span>Hồ sơ</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    className="text-destructive focus:text-destructive
-                                    cursor-pointer px-3 py-2 text-base"
-                                    onClick={onLogout}
+                                        {user?.name
+                                            ?.split(" ")
+                                            .map((n) => n[0])
+                                            .join("") || "U"}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            className={cn(
+                                "w-64 rounded-lg p-1.5 shadow-xl",
+                                "bg-white/95 backdrop-blur-md border border-border/50",
+                                "animate-in zoom-in-95 fade-in-0"
+                            )}
+                            align="end"
+                            sideOffset={8}
+                        >
+                            <DropdownMenuLabel className="px-3 py-3">
+                                <div className="flex flex-col space-y-1">
+                                    <p className="text-base font-semibold leading-none">
+                                        {user?.name}
+                                    </p>
+                                    <p className="text-sm leading-none text-muted-foreground truncate">
+                                        {user?.email}
+                                    </p>
+                                </div>
+                            </DropdownMenuLabel>
+
+                            <DropdownMenuSeparator className="bg-border/50" />
+
+                            <DropdownMenuItem asChild className="px-3 py-2.5">
+                                <Link
+                                    href="/profile"
+                                    className="w-full flex items-center focus:bg-accent/50 focus:text-accent-foreground"
                                 >
-                                    <LogOut className="mr-3 h-5 w-5" />
-                                    <span>Đăng xuất</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
-                </>
+                                    <User className="mr-3 h-5 w-5 text-muted-foreground" />
+                                    <span className="text-base">Hồ sơ</span>
+                                </Link>
+                            </DropdownMenuItem>
+
+                            <DropdownMenuSeparator className="bg-border/50" />
+
+                            <DropdownMenuItem
+                                className={cn(
+                                    "px-3 py-2.5 text-base focus:bg-destructive/10",
+                                    "focus:text-destructive text-destructive"
+                                )}
+                                onClick={onLogout}
+                            >
+                                <LogOut className="mr-3 h-5 w-5" />
+                                <span>Đăng xuất</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             ) : (
                 <Button
-                    variant="outline"
+                    variant="default"
                     onClick={onLogin}
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-6 py-3 rounded-md shadow-md transition-transform duration-200 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary/70"
+                    className={cn(
+                        "relative overflow-hidden px-6 py-3 text-base font-medium",
+                        "bg-gradient-to-r from-primary to-primary/90 text-primary-foreground",
+                        "shadow-lg hover:shadow-primary/30 transition-all duration-300",
+                        "hover:scale-[1.03] active:scale-95",
+                        "focus:outline-none focus:ring-2 focus:ring-primary/70 focus:ring-offset-2",
+                        "after:absolute after:inset-0 after:bg-gradient-to-r after:from-white/20 after:to-transparent",
+                        "after:opacity-0 hover:after:opacity-100 after:transition-opacity"
+                    )}
                 >
                     Đăng nhập
                 </Button>

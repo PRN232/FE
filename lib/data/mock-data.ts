@@ -58,7 +58,7 @@ export const parentFeatures = [
         href: "/parents/medicine-requests",
         description: "Gửi và theo dõi yêu cầu quản lý thuốc cho con bạn.",
         icon: Shield,
-    },
+    }
 ]
 
 export const medicalFeatures = [
@@ -256,51 +256,6 @@ export const documents = [
         color: "bg-yellow-500",
     },
 ]
-
-export const medicalRequests = [
-    {
-        id: "MR001",
-        studentName: "Nguyễn Văn An",
-        class: "10A1",
-        requestType: "Medicine Administration",
-        medicine: "Paracetamol 500mg",
-        dosage: "1 viên, 3 lần/ngày",
-        duration: "3 ngày",
-        reason: "Sốt cao, đau đầu",
-        status: "pending",
-        requestDate: "2024-01-15",
-        parentName: "Nguyễn Thị Bình",
-        urgency: "medium",
-    },
-    {
-        id: "MR002",
-        studentName: "Trần Thị Mai",
-        class: "9B2",
-        requestType: "Emergency Contact",
-        medicine: "Ventolin Inhaler",
-        dosage: "2 nhả khi khó thở",
-        duration: "Khi cần thiết",
-        reason: "Hen suyễn cấp tính",
-        status: "approved",
-        requestDate: "2024-01-14",
-        parentName: "Trần Văn Cường",
-        urgency: "high",
-    },
-    {
-        id: "MR003",
-        studentName: "Lê Minh Tuấn",
-        class: "11C1",
-        requestType: "Vaccination Follow-up",
-        medicine: "Vitamin C",
-        dosage: "1 viên/ngày",
-        duration: "7 ngày",
-        reason: "Tăng cường miễn dịch sau tiêm",
-        status: "completed",
-        requestDate: "2024-01-13",
-        parentName: "Lê Thị Hoa",
-        urgency: "low",
-    },
-];
 
 export const features = [
     {

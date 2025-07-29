@@ -56,8 +56,6 @@ const AllergiesTab = ({
                           profile,
                           onUpdate
 }: AllergiesTabProps) => {
-    console.log(profile)
-
     const [allergies, setAllergies] = useState<Allergy[]>(profile?.allergies || []);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [editingAllergy, setEditingAllergy] = useState<Allergy | null>(null);
@@ -69,7 +67,7 @@ const AllergiesTab = ({
 
     const handleAddAllergy = async (formData: AllergyFormData): Promise<void> => {
         if (!profile?.id) {
-            showErrorAlert("Không tìm thấy thông tin hồ sơ y tế.");
+            await showErrorAlert("Không tìm thấy thông tin hồ sơ y tế.");
             return;
         }
 

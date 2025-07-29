@@ -78,6 +78,14 @@ const LeftSide = ({user}: {
                         {isParent ? (
                             <>
                                 <NavigationMenuItem>
+                                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                        <Link href="/parents/notification" className="text-xl">
+                                            Thông báo
+                                        </Link>
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+
+                                <NavigationMenuItem>
                                     <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
                                     <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
                                         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -93,6 +101,14 @@ const LeftSide = ({user}: {
                         ) : (
                             <>
                                 <NavigationMenuItem>
+                                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                        <Link href="/medical-staff/student" className="text-xl">
+                                            Học Sinh
+                                        </Link>
+                                    </NavigationMenuLink>
+                                </NavigationMenuItem>
+
+                                <NavigationMenuItem>
                                     <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
                                     <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
                                         <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
@@ -103,14 +119,6 @@ const LeftSide = ({user}: {
                                             ))}
                                         </ul>
                                     </NavigationMenuContent>
-                                </NavigationMenuItem>
-
-                                <NavigationMenuItem>
-                                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                        <Link href="/medical-staff/student" className="text-xl">
-                                            Học Sinh
-                                        </Link>
-                                    </NavigationMenuLink>
                                 </NavigationMenuItem>
                             </>
                         )}
