@@ -25,21 +25,24 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { getAllMedications } from "@/lib/service/medications/medications";
-import { Medication } from "@/types";
+import { Medication, MedicationGiven } from "@/types";
 import { showErrorAlert } from "@/lib/utils";
+import {vi} from "date-fns/locale";
 
 interface AddMedicationDialogProps {
     isOpen: boolean;
     onClose: () => void;
     incidentId: number;
+    medicationGiven?: MedicationGiven | null;
+    allMedications: Medication[];
     onAddMedication: (
         incidentId: number,
         medicationData: {
             medicationId: number;
             dosage: string;
             giveAt: string;
-        }
+        },
+        medicationId?: number
     ) => Promise<boolean>;
 }
 
@@ -47,33 +50,26 @@ const AddMedicine = ({
                          isOpen,
                          onClose,
                          incidentId,
+                         medicationGiven,
+                         allMedications,
                          onAddMedication
                      }: AddMedicationDialogProps) => {
     const [medicationId, setMedicationId] = useState<string>("");
     const [dosage, setDosage] = useState("");
     const [giveAt, setGiveAt] = useState<Date>(new Date());
     const [isLoading, setIsLoading] = useState(false);
-    const [medications, setMedications] = useState<Medication[]>([]);
-    const [medicationLoadError, setMedicationLoadError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchMedications = async () => {
-            try {
-                const response = await getAllMedications();
-                if (response.success && response.data) {
-                    setMedications(response.data);
-                } else {
-                    setMedicationLoadError(response.message || "Không thể tải danh sách thuốc.");
-                }
-            } catch (error) {
-                setMedicationLoadError("Đã xảy ra lỗi khi tải danh sách thuốc.");
-            }
-        };
-
-        if (isOpen) {
-            void fetchMedications();
+        if (medicationGiven && isOpen) {
+            setMedicationId(medicationGiven.medicationId.toString());
+            setDosage(medicationGiven.dosage);
+            setGiveAt(new Date(medicationGiven.giveAt));
+        } else {
+            setMedicationId("");
+            setDosage("");
+            setGiveAt(new Date());
         }
-    }, [isOpen]);
+    }, [medicationGiven, isOpen]);
 
     const handleSubmit = async () => {
         if (!medicationId || !dosage) {
@@ -83,11 +79,15 @@ const AddMedicine = ({
 
         setIsLoading(true);
         try {
-            const success = await onAddMedication(incidentId, {
-                medicationId: parseInt(medicationId),
-                dosage,
-                giveAt: giveAt.toISOString()
-            });
+            const success = await onAddMedication(
+                incidentId,
+                {
+                    medicationId: parseInt(medicationId),
+                    dosage,
+                    giveAt: giveAt.toISOString()
+                },
+                medicationGiven?.id
+            );
             if (success) {
                 onClose();
                 setMedicationId("");
@@ -95,8 +95,8 @@ const AddMedicine = ({
                 setGiveAt(new Date());
             }
         } catch (error) {
-            await showErrorAlert("Đã xảy ra lỗi khi thêm thuốc.");
-            console.error("Error adding medication:", error);
+            await showErrorAlert("Đã xảy ra lỗi khi thêm/cập nhật thuốc.");
+            console.error("Error processing medication:", error);
         } finally {
             setIsLoading(false);
         }
@@ -113,10 +113,12 @@ const AddMedicine = ({
                         </div>
                         <div>
                             <DialogTitle className="text-gray-800">
-                                Thêm thuốc cho sự cố
+                                {medicationGiven ? "Cập nhật thuốc" : "Thêm thuốc cho sự cố"}
                             </DialogTitle>
                             <DialogDescription className="text-gray-500">
-                                Nhập thông tin thuốc đã sử dụng cho học sinh
+                                {medicationGiven
+                                    ? "Chỉnh sửa thông tin thuốc đã sử dụng"
+                                    : "Nhập thông tin thuốc đã sử dụng cho học sinh"}
                             </DialogDescription>
                         </div>
                     </div>
@@ -129,19 +131,19 @@ const AddMedicine = ({
                         <Select
                             value={medicationId}
                             onValueChange={setMedicationId}
-                            disabled={isLoading || medications.length === 0}
+                            disabled={isLoading || allMedications.length === 0}
                         >
                             <SelectTrigger className="border-gray-300 focus:border-red-300 focus:ring-red-200">
                                 <SelectValue
                                     placeholder={
-                                        medications.length === 0
+                                        allMedications.length === 0
                                             ? "Không có thuốc nào"
                                             : "Chọn thuốc"
                                     }
                                 />
                             </SelectTrigger>
                             <SelectContent className="bg-white">
-                                {medications.map((medication) => (
+                                {allMedications.map((medication) => (
                                     <SelectItem
                                         key={medication.id}
                                         value={medication.id.toString()}
@@ -151,11 +153,6 @@ const AddMedicine = ({
                                 ))}
                             </SelectContent>
                         </Select>
-                        {medicationLoadError && (
-                            <p className="text-sm text-red-600 mt-1">
-                                {medicationLoadError}
-                            </p>
-                        )}
                     </div>
                     <div className="space-y-1">
                         <Label htmlFor="dosage" className="text-gray-700 font-medium">
@@ -197,6 +194,7 @@ const AddMedicine = ({
                                     selected={giveAt}
                                     onSelect={(date) => date && setGiveAt(date)}
                                     autoFocus={true}
+                                    locale={vi}
                                     className="border-0"
                                     disabled={isLoading}
                                 />
@@ -238,10 +236,10 @@ const AddMedicine = ({
                         {isLoading ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Đang thêm...
+                                {medicationGiven ? "Đang cập nhật..." : "Đang thêm..."}
                             </>
                         ) : (
-                            "Thêm thuốc"
+                            medicationGiven ? "Cập nhật thuốc" : "Thêm thuốc"
                         )}
                     </Button>
                 </DialogFooter>

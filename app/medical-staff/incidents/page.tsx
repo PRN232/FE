@@ -26,15 +26,24 @@ import
   IncidentCard
   from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
 
-import { Incident, MedicationGiven, ChildDTO } from "@/types";
+import {
+  Incident,
+  MedicationGiven,
+  ChildDTO,
+  Medication
+} from "@/types";
 import {
   getAllMedicalIncidents
 } from "@/lib/service/medical-record/incident/incident";
 import {
   createMedicationGiven,
-  getAllMedicationsGiven
+  deleteMedicationGiven,
+  getAllMedicationsGiven,
+  updateMedicationGiven
 } from "@/lib/service/medical-record/medication-given/medication-given";
 import { getAllStudents } from "@/lib/service/student/student";
+import { getAllMedications } from "@/lib/service/medications/medications";
+import {showSuccessAlert} from "@/lib/utils";
 
 const IncidentsPage = () => {
   const [isNewIncidentModalOpen, setIsNewIncidentModalOpen] = useState(false);
@@ -43,16 +52,18 @@ const IncidentsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterSeverity, setFilterSeverity] = useState("all");
   const [incidents, setIncidents] = useState<Incident[]>([]);
+  const [medications, setMedications] = useState<Medication[]>([]);
   const [medicationsGiven, setMedicationsGiven] = useState<MedicationGiven[]>([]);
   const [students, setStudents] = useState<ChildDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAllData = async () => {
     try {
-      const [incidentsResponse, medicationsResponse, studentsResponse] = await Promise.all([
+      const [incidentsResponse, medicationsResponse, studentsResponse, allMedicationsResponse] = await Promise.all([
         getAllMedicalIncidents(),
         getAllMedicationsGiven(),
-        getAllStudents()
+        getAllStudents(),
+        getAllMedications()
       ]);
 
       if (incidentsResponse.success) {
@@ -65,6 +76,12 @@ const IncidentsPage = () => {
         setMedicationsGiven(medicationsResponse.data);
       } else {
         setError(medicationsResponse.message || "Failed to fetch medications");
+      }
+
+      if (allMedicationsResponse.success) {
+        setMedications(allMedicationsResponse.data);
+      } else {
+        setError(allMedicationsResponse.message || "Failed to fetch medications");
       }
 
       if (studentsResponse.success && studentsResponse.students) {
@@ -101,34 +118,73 @@ const IncidentsPage = () => {
     }
   };
 
-  const handleAddMedication = async (
+  const handleAddOrUpdateMedication = async (
       incidentId: number,
       medicationData: {
-        medicationId: number,
-        dosage: string
-      }
+        medicationId: number;
+        dosage: string;
+        giveAt: string;
+      },
+      medicationId?: number
   ) => {
     try {
-      const response = await createMedicationGiven({
-        incidentId,
-        medicationId: medicationData.medicationId,
-        dosage: medicationData.dosage,
-        giveAt: new Date().toISOString()
-      });
-
-      if (response.success) {
-        setMedicationsGiven(prev => [...prev, response.data]);
+      if (medicationId) {
+        const response = await updateMedicationGiven(medicationId, {
+          incidentId,
+          medicationId: medicationData.medicationId,
+          dosage: medicationData.dosage,
+          giveAt: medicationData.giveAt
+        });
+        setMedicationsGiven(prev =>
+            prev.map(med =>
+                med.id === medicationId ? { ...med, ...response } : med
+            )
+        );
+        await showSuccessAlert("Cập nhật thuốc thành công!");
         return true;
       } else {
-        setError(response.message || "Failed to add medication");
-        return false;
+        const response = await createMedicationGiven({
+          incidentId,
+          medicationId: medicationData.medicationId,
+          dosage: medicationData.dosage,
+          giveAt: medicationData.giveAt
+        });
+        if (response.success) {
+          setMedicationsGiven(prev => [...prev, response.data]);
+          await showSuccessAlert("Thêm thuốc thành công!");
+          return true;
+        } else {
+          setError(response.message || "Failed to add medication");
+          return false;
+        }
       }
     } catch (error) {
-      console.error("Error adding medication:", error);
-      setError("An error occurred while adding medication");
+      console.error("Error processing medication:", error);
+      setError("An error occurred while processing medication");
       return false;
     }
   };
+
+  const handleDeleteMedication = async (medicationId: number) => {
+    try {
+      const response = await deleteMedicationGiven(medicationId)
+
+      if (response.success) {
+        setMedicationsGiven(prev =>
+            prev.filter(med => med.id !== medicationId)
+        )
+        return true
+      } else {
+        setError(response.message || "Failed to delete medication")
+        return false
+      }
+    } catch (error) {
+      console.error("Error deleting medication:", error)
+      setError("An error occurred while deleting medication")
+      return false
+    }
+  }
+
 
   const filteredIncidents = incidents.filter((incident) => {
     const matchesSearch =
@@ -215,9 +271,11 @@ const IncidentsPage = () => {
                   <IncidentCard
                       key={incident.id}
                       incident={incident}
+                      allMedications={medications}
                       medicationsGiven={incidentMedications}
                       onView={handleViewIncident}
-                      onAddMedication={handleAddMedication}
+                      onAddOrUpdateMedication={handleAddOrUpdateMedication}
+                      onDeleteMedication={handleDeleteMedication}
                   />
               );
             })}
