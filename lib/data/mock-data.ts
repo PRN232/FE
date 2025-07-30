@@ -15,6 +15,92 @@ import {
     Phone,
     Clock
 } from "lucide-react";
+import { NotificationItem } from "@/types";
+
+export const examinationNotifications: NotificationItem[] = [
+    {
+        id: "exam-1",
+        title: "Khám sức khỏe định kỳ học kỳ I",
+        description:
+            "Khám sức khỏe tổng quát cho tất cả học sinh từ lớp 1 đến lớp 12. Bao gồm đo chiều cao, cân nặng, kiểm tra thị lực, răng miệng.",
+        date: "2024-02-15",
+        time: "08:00 - 16:00",
+        location: "Phòng y tế trường học",
+        status: "upcoming",
+        participants: 245,
+        maxParticipants: 300,
+        priority: "high",
+        requirements: ["Mang theo sổ sức khỏe", "Nhịn ăn sáng (nếu cần xét nghiệm máu)", "Mặc đồng phục"],
+    },
+    {
+        id: "exam-2",
+        title: "Khám chuyên khoa mắt",
+        description: "Khám chuyên sâu về mắt cho học sinh có vấn đề về thị lực được phát hiện trong đợt khám định kỳ.",
+        date: "2024-02-20",
+        time: "09:00 - 12:00",
+        location: "Bệnh viện Mắt Trung ương",
+        status: "upcoming",
+        participants: 45,
+        maxParticipants: 50,
+        priority: "medium",
+        requirements: ["Mang theo kết quả khám trước", "Có phụ huynh đi cùng"],
+    },
+    {
+        id: "exam-3",
+        title: "Khám sức khỏe tuyển sinh",
+        description: "Khám sức khỏe cho học sinh lớp 12 chuẩn bị thi tuyển sinh đại học.",
+        date: "2024-01-30",
+        time: "07:30 - 11:30",
+        location: "Trung tâm Y tế Quận 1",
+        status: "completed",
+        participants: 120,
+        maxParticipants: 120,
+        priority: "high",
+        requirements: ["Hoàn thành"],
+    },
+]
+
+export const vaccinationNotifications: NotificationItem[] = [
+    {
+        id: "vacc-1",
+        title: "Tiêm vaccine COVID-19 mũi bổ sung",
+        description: "Tiêm vaccine COVID-19 mũi bổ sung cho học sinh từ 12 tuổi trở lên theo chỉ đạo của Bộ Y tế.",
+        date: "2024-02-18",
+        time: "08:00 - 15:00",
+        location: "Sân trường - Khu A",
+        status: "upcoming",
+        participants: 180,
+        maxParticipants: 200,
+        priority: "high",
+        requirements: ["Mang theo thẻ BHYT", "Có phiếu đồng ý của phụ huynh", "Không bị sốt trong 7 ngày qua"],
+    },
+    {
+        id: "vacc-2",
+        title: "Tiêm vaccine Viêm gan B",
+        description: "Tiêm vaccine Viêm gan B cho học sinh lớp 1 theo chương trình tiêm chủng mở rộng.",
+        date: "2024-02-25",
+        time: "09:00 - 11:00",
+        location: "Phòng y tế trường học",
+        status: "upcoming",
+        participants: 85,
+        maxParticipants: 90,
+        priority: "medium",
+        requirements: ["Phiếu đồng ý phụ huynh", "Sổ tiêm chủng", "Học sinh khỏe mạnh"],
+    },
+    {
+        id: "vacc-3",
+        title: "Tiêm vaccine Sởi - Rubella",
+        description: "Chiến dịch tiêm vaccine Sởi - Rubella cho học sinh từ 1-5 tuổi.",
+        date: "2024-01-25",
+        time: "08:30 - 12:00",
+        location: "Phòng đa năng",
+        status: "completed",
+        participants: 150,
+        maxParticipants: 150,
+        priority: "high",
+        requirements: ["Đã hoàn thành"],
+    },
+]
 
 export const mockBlogPosts = [
     {

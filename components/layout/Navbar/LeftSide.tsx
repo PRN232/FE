@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, useEffect } from "react";
 import {
     ComponentPropsWithoutRef,
     ComponentType
@@ -46,11 +49,19 @@ function ListItem({
     );
 }
 
-const LeftSide = ({user}: {
+const LeftSide = ({ user }: {
     user: {
         role: string
     } | null
 }) => {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    if (!isMounted) return null;
+
     const isParent = user?.role === "parent";
 
     return (

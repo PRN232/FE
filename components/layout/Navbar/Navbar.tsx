@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import LeftSide from "@/components/Layout/Navbar/LeftSide";
-import RightSide from "@/components/Layout/Navbar/RightSide";
+import LeftSide from "@/components/layout/Navbar/LeftSide";
+import RightSide from "@/components/layout/Navbar/RightSide";
 import { useAuth } from "@/lib/auth/auth-context";
 
 const Navbar = () => {

@@ -70,3 +70,17 @@ export interface Medication {
     isLowStock: boolean;
     daysToExpiry: number;
 }
+
+export interface NotificationItem {
+    id: string
+    title: string
+    description: string
+    date: string
+    time: string
+    location: string
+    status: "upcoming" | "ongoing" | "completed"
+    participants: number
+    maxParticipants?: number
+    priority: "high" | "medium" | "low"
+    requirements?: string[]
+}
