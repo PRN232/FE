@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,12 +16,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent
+} from "@/components/ui/tabs";
 import { Search, Plus } from "lucide-react";
-import IncidentModal from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
-import ViewIncident from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
-import IncidentCard from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
-import MedicationRequestCard from "@/components/Medical/HealthCheckUpForm/RecordIncident/MedicationRequestCard";
+import
+  IncidentModal
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/Incident";
+import
+  ViewIncident
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/VIewIncident";
+import
+  IncidentCard
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/IncidentCard";
+import
+  MedicationRequestCard
+  from "@/components/Medical/HealthCheckUpForm/RecordIncident/MedicationRequestCard";
 
 import {
   Incident,
@@ -47,6 +61,7 @@ import { showSuccessAlert } from "@/lib/utils";
 import {
   StudentMedication
 } from "@/lib/service/medical-record/student-medication/IStudent-medication";
+import Pagination from "@/components/Pagination";
 
 const IncidentsPage = () => {
   const [activeTab, setActiveTab] = useState("incidents");
@@ -61,6 +76,8 @@ const IncidentsPage = () => {
   const [studentMedications, setStudentMedications] = useState<StudentMedication[]>([]);
   const [students, setStudents] = useState<ChildDTO[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchAllData = async () => {
     try {
@@ -265,6 +282,23 @@ const IncidentsPage = () => {
     return studentName.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
+  const paginatedIncidents = filteredIncidents.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+  );
+
+  const paginatedMedications = filteredStudentMedications.slice(
+      (currentPage - 1) * itemsPerPage,
+      currentPage * itemsPerPage
+  );
+
+  const totalIncidentPages = Math.ceil(filteredIncidents.length / itemsPerPage);
+  const totalMedicationPages = Math.ceil(filteredStudentMedications.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
       <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100">
         {/* Header */}
@@ -334,9 +368,11 @@ const IncidentsPage = () => {
           {/* Tabs */}
           <Tabs
               value={activeTab}
-              onValueChange={setActiveTab}
-              className="mt-6"
-          >
+              onValueChange={(tab) => {
+                setActiveTab(tab);
+                setCurrentPage(1)
+              }}
+              className="mt-6">
             <TabsList className="grid w-full grid-cols-2 bg-red-100">
               <TabsTrigger
                   value="incidents"
@@ -355,7 +391,7 @@ const IncidentsPage = () => {
             {/* Incidents Tab */}
             <TabsContent value="incidents">
               <div className="grid py-5 gap-6">
-                {filteredIncidents.map((incident) => {
+                {paginatedIncidents.map((incident) => {
                   const incidentMedications = medicationsGiven.filter(
                       med => med.incidentId === incident.id
                   );
@@ -373,12 +409,23 @@ const IncidentsPage = () => {
                   );
                 })}
               </div>
+
+              {/* Pagination for Incidents */}
+              {filteredIncidents.length > itemsPerPage && (
+                  <div className="flex justify-center mt-6">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalIncidentPages}
+                        onPageChange={handlePageChange}
+                    />
+                  </div>
+              )}
             </TabsContent>
 
             {/* Medications Tab */}
             <TabsContent value="medications">
               <div className="grid py-5 gap-6">
-                {filteredStudentMedications.map((medication) => {
+                {paginatedMedications.map((medication) => {
                   const student = students.find(s => s.id === medication.studentId);
                   return (
                       <MedicationRequestCard
@@ -391,6 +438,17 @@ const IncidentsPage = () => {
                   );
                 })}
               </div>
+
+              {/* Pagination for Medications */}
+              {filteredStudentMedications.length > itemsPerPage && (
+                  <div className="flex justify-center mt-6">
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalMedicationPages}
+                        onPageChange={handlePageChange}
+                    />
+                  </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>

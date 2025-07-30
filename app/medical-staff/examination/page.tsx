@@ -68,7 +68,7 @@ export default function ExaminationPage() {
         targetGrades: "",
       });
       fetchCampaigns();
-    } catch (err) {
+    } catch {
       alert("Tạo đợt khám thất bại");
     } finally {
       setCreating(false);
@@ -80,7 +80,7 @@ export default function ExaminationPage() {
     try {
       await deleteCampaign(id);
       fetchCampaigns();
-    } catch (err) {
+    } catch {
       alert("Xóa đợt khám thất bại");
     }
   };
