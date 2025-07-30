@@ -50,9 +50,7 @@ function ListItem({
 }
 
 const LeftSide = ({ user }: {
-    user: {
-        role: string
-    } | null
+    user: { role: string } | null
 }) => {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -62,6 +60,7 @@ const LeftSide = ({ user }: {
 
     if (!isMounted) return null;
 
+    const isAuthenticated = localStorage.getItem('token');
     const isParent = user?.role === "parent";
 
     return (
@@ -86,53 +85,63 @@ const LeftSide = ({ user }: {
                             </NavigationMenuLink>
                         </NavigationMenuItem>
 
-                        {isParent ? (
-                            <>
-                                <NavigationMenuItem>
-                                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                        <Link href="/parents/notification" className="text-xl">
-                                            Thông báo
-                                        </Link>
-                                    </NavigationMenuLink>
-                                </NavigationMenuItem>
+                        {isAuthenticated ? (
+                            isParent ? (
+                                <>
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                            <Link href="/notification" className="text-xl">
+                                                Thông báo
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
 
-                                <NavigationMenuItem>
-                                    <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
-                                    <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                            {parentFeatures.map((feature) => (
-                                                <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
-                                                    {feature.description}
-                                                </ListItem>
-                                            ))}
-                                        </ul>
-                                    </NavigationMenuContent>
-                                </NavigationMenuItem>
-                            </>
-                        ) : (
-                            <>
-                                <NavigationMenuItem>
-                                    <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                        <Link href="/medical-staff/student" className="text-xl">
-                                            Học Sinh
-                                        </Link>
-                                    </NavigationMenuLink>
-                                </NavigationMenuItem>
+                                    <NavigationMenuItem>
+                                        <NavigationMenuTrigger className="text-lg">Phụ huynh</NavigationMenuTrigger>
+                                        <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                                {parentFeatures.map((feature) => (
+                                                    <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                        {feature.description}
+                                                    </ListItem>
+                                                ))}
+                                            </ul>
+                                        </NavigationMenuContent>
+                                    </NavigationMenuItem>
+                                </>
+                            ) : (
+                                <>
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                            <Link href="/medical-staff/student" className="text-xl">
+                                                Học Sinh
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
 
-                                <NavigationMenuItem>
-                                    <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
-                                    <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
-                                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                                            {medicalFeatures.map((feature) => (
-                                                <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
-                                                    {feature.description}
-                                                </ListItem>
-                                            ))}
-                                        </ul>
-                                    </NavigationMenuContent>
-                                </NavigationMenuItem>
-                            </>
-                        )}
+                                    <NavigationMenuItem>
+                                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                                            <Link href="/medical-staff/paper-approve" className="text-xl">
+                                                Giấy tờ
+                                            </Link>
+                                        </NavigationMenuLink>
+                                    </NavigationMenuItem>
+
+                                    <NavigationMenuItem>
+                                        <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
+                                        <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
+                                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                                {medicalFeatures.map((feature) => (
+                                                    <ListItem key={feature.title} title={feature.title} href={feature.href} icon={feature.icon}>
+                                                        {feature.description}
+                                                    </ListItem>
+                                                ))}
+                                            </ul>
+                                        </NavigationMenuContent>
+                                    </NavigationMenuItem>
+                                </>
+                            )
+                        ) : null}
 
                         <NavigationMenuItem>
                             <NavigationMenuTrigger className="text-lg">Tài nguyên</NavigationMenuTrigger>

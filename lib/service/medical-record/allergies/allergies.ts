@@ -1,11 +1,11 @@
 import {
     Allergy,
     CreateAllergyDto,
-    UpdateAllergyDto,
-    ApiResponse
+    UpdateAllergyDto
 } from "@/lib/service/medical-record/allergies/IAllergies";
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
+import {ApiResponse} from "@/types";
 
 const API_BASE_URL = `${NEXT_PUBLIC_API_URL}/medicalprofiles`;
 

@@ -14,7 +14,7 @@ import { getChildrenByParentId } from "@/lib/service/parent/parent";
 import { ChildDTO } from "@/types";
 
 interface ChildrenSectionProps {
-    user: { id: string | number } | null | undefined;
+    user: { parentId?: number } | null | undefined;
 }
 
 const ChildrenSection = ({
@@ -24,15 +24,13 @@ const ChildrenSection = ({
     const [childrenData, setChildrenData] = useState<ChildDTO[]>([]);
     const [childrenLoading, setChildrenLoading] = useState(true);
     const [fetchError, setFetchError] = useState<string | null>(null);
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const [selectedChildId, setSelectedChildId] = useState<number | null>(null);
 
     useEffect(() => {
         const loadChildrenData = async () => {
-            if (user?.id) {
+            if (user?.parentId) {
                 try {
                     setChildrenLoading(true);
-                    const childrenResponse = await getChildrenByParentId(Number(user.id));
+                    const childrenResponse = await getChildrenByParentId(Number(user.parentId));
 
                     if (childrenResponse.success && childrenResponse.children) {
                         const mappedChildren = childrenResponse.children.map((user) => ({
@@ -62,7 +60,7 @@ const ChildrenSection = ({
         (async () => {
             await loadChildrenData();
         })();
-    }, [user?.id]);
+    }, [user?.parentId]);
 
     if (fetchError) {
         return (
@@ -81,13 +79,8 @@ const ChildrenSection = ({
         );
     }
 
-    const handleViewProfile = (id: number) => {
+    const handleViewProfile = () => {
         router.push("/parents/health-records");
-    };
-
-    const handleCloseProfile = () => {
-        setIsProfileOpen(false);
-        setSelectedChildId(null);
     };
 
     return (
@@ -168,7 +161,7 @@ const ChildrenSection = ({
                                                 variant="outline"
                                                 size="sm"
                                                 className="border-red-200 text-red-700 hover:bg-red-50 hover:border-red-300 bg-transparent"
-                                                onClick={() => handleViewProfile(child.id)}
+                                                onClick={() => handleViewProfile()}
                                             >
                                                 Xem hồ sơ
                                             </Button>

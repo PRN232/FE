@@ -1,6 +1,7 @@
 export interface User {
     id: string;
     name: string;
+    parentId?: number;
     email: string;
     phoneNumber: string;
     address?: string;
@@ -71,16 +72,55 @@ export interface Medication {
     daysToExpiry: number;
 }
 
+export interface MedicalConsent {
+    id: number;
+    consentType: string;
+    campaignId: number;
+    campaignName: string;
+    studentId: number;
+    studentName: string;
+    parentId: number;
+    parentName: string;
+    consentGiven: boolean;
+    consentDate: string;
+    parentSignature: string;
+    note: string;
+}
+
+export interface MedicalConsentStatus {
+    studentId: number;
+    studentName: string;
+    className: string;
+    parentId: number;
+    parentName: string;
+    consentGiven: boolean;
+    consentDate: string;
+    consentType: string;
+    campaignId: number;
+}
+
 export interface NotificationItem {
-    id: string
-    title: string
-    description: string
-    date: string
-    time: string
-    location: string
-    status: "upcoming" | "ongoing" | "completed"
-    participants: number
-    maxParticipants?: number
-    priority: "high" | "medium" | "low"
-    requirements?: string[]
+    id: string;
+    title: string;
+    description: string;
+    targetGrades: string;
+    date: string;
+    time: string;
+    location: string;
+    status: "upcoming" | "ongoing" | "completed" | "pending" | "approved";
+    participants: number;
+    maxParticipants: number;
+    priority: "high" | "medium" | "low";
+    requirements: string[];
+    consentType: "Vaccine" | "HealthCheckup";
+    campaignId: number;
+    parentSignature?: string,
+    note?: string
+}
+
+export interface ApiResponse<T> {
+    success: boolean;
+    data: T;
+    message: string;
+    errors: string[];
 }

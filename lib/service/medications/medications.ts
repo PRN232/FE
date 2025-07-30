@@ -1,8 +1,8 @@
 
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
-import { Medication } from "@/types";
-import { ApiResponse, CreateMedicationDto } from "./IMedications";
+import { ApiResponse, Medication } from "@/types";
+import { CreateMedicationDto } from "./IMedications";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/medications`;
 

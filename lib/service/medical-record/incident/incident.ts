@@ -1,8 +1,7 @@
-import { Incident } from "@/types";
+import {ApiResponse, Incident } from "@/types";
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 import {
-    ApiResponse,
     CreateMedicalIncidentDto,
     UpdateMedicalIncidentDto
 } from "@/lib/service/medical-record/incident/IIncident";
@@ -83,10 +82,7 @@ export const updateMedicalIncident = async (
 ): Promise<ApiResponse<Incident>> => {
     const response = await fetch(`${BASE_URL}/${incidentId}`, {
         method: "PUT",
-        headers: {
-            ...getAuthHeaders(),
-            "Content-Type": "application/json",
-        },
+        headers: { ...getAuthHeaders() },
         body: JSON.stringify(incidentData),
     });
 

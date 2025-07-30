@@ -15,10 +15,3 @@ export interface UpdateMedicationDto {
     expiryDate: string;
     storageInstructions: string;
 }
-
-export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message: string;
-    errors: string[];
-}

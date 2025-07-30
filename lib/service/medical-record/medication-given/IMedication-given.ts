@@ -11,10 +11,3 @@ export interface UpdateMedicationGivenDto {
     dosage: string;
     giveAt: string;
 }
-
-export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message: string;
-    errors: string[];
-}

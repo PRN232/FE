@@ -1,6 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  useEffect,
+  useState
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -80,11 +85,11 @@ export default function MedicineInventoryPage() {
         setLoading(false);
       }
     };
-    fetchMedications();
+    void fetchMedications();
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -100,7 +105,7 @@ export default function MedicineInventoryPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -498,8 +503,8 @@ export default function MedicineInventoryPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {paginatedMedications.map((med) => {
               let cardClass = `${cardBg} border-2 ${borderColor} rounded-xl ${shadow} p-5 flex flex-col h-full transition-all hover:shadow-xl`;
-              let statusClass = "";
-              let statusText = "";
+              let statusClass;
+              let statusText;
 
               if (med.isExpired) {
                 cardClass = `${dangerBg} border-2 border-red-300 rounded-xl ${shadow} p-5 flex flex-col h-full`;

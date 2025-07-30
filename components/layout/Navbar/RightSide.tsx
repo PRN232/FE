@@ -222,7 +222,7 @@ const RightSide = ({
                                 <>
                                     <DropdownMenuSeparator className="bg-border/50" />
                                     <div className="p-3">
-                                        <Link href="/parents/notification">
+                                        <Link href="/notification">
                                             <Button
                                                 variant="ghost"
                                                 className="w-full text-sm text-red-600 hover:text-red-700 hover:bg-red-50"

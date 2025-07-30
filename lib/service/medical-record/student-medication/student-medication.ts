@@ -1,4 +1,7 @@
-import { getAuthHeaders } from "@/lib/utils";
+import {
+    getAuthHeaders,
+    handleApiResponse
+} from "@/lib/utils";
 import {
     CreateStudentMedicationDto,
     StudentMedication,
@@ -8,26 +11,6 @@ import {
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/student-medications`;
-
-const handleApiResponse = async <T>(
-    response: Response,
-    defaultErrorMessage: string
-): Promise<ApiResponse<T>> => {
-    const result = await response.json();
-
-    if (!response.ok) {
-        const errorMessage = result.errors
-            ? Array.isArray(result.errors)
-                ? result.errors.join("; ")
-                : Object.entries(result.errors)
-                    .map(([field, messages]) => `${field}: ${(messages as string[]).join(", ")}`)
-                    .join("; ")
-            : result.message || defaultErrorMessage;
-        throw new Error(errorMessage);
-    }
-
-    return result;
-};
 
 export const getStudentMedicationsByParentId = async (
     parentId: number

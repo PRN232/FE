@@ -1,4 +1,4 @@
-import type { User } from "@/types";
+import { User } from "@/types";
 import { JwtPayload } from "./JWTPayload";
 import { jwtDecode } from "jwt-decode";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook"
@@ -79,6 +79,7 @@ export const authenticate = async (
             const mappedUser: User = {
                 id: decodedToken.sub.toString(),
                 name: decodedToken.email || "Unknown",
+                parentId: parseInt(decodedToken.ParentId, 10),
                 email: decodedToken.email,
                 phoneNumber: "",
                 role: normalizedRole,

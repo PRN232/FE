@@ -17,12 +17,14 @@ export interface Vaccination {
     completionRate: number;
     consentRate: number;
 }
+
 export interface CreateVaccinationDto {
     campaignName: string;
     checkupTypes: string;
     scheduledDate: string;
     targetGrades: string;
 }
+
 export interface UpdateVaccinationDto {
     id: number;
     campaignName: string;
@@ -30,10 +32,4 @@ export interface UpdateVaccinationDto {
     scheduledDate: string;
     targetGrades: string;
     status: number;
-}
-export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message: string;
-    errors: string[];
 }

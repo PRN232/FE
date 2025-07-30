@@ -80,7 +80,7 @@ const HealthRecord = () => {
         const fetchChildren = async () => {
             setLoading(true);
             try {
-                const parentId = parseInt(user.id, 10);
+                const parentId = user.parentId || 0;
                 const response = await getChildrenByParentId(parentId);
                 if (response.success && response.children) {
                     setChildren(response.children);

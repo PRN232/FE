@@ -1,7 +1,7 @@
-
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
-import { ApiResponse, CreateVaccinationDto, UpdateVaccinationDto, Vaccination } from "./IHealthCheckCampaign";
+import { CreateVaccinationDto, UpdateVaccinationDto, Vaccination } from "./IHealthCheckCampaign";
+import { ApiResponse } from "@/types";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/campaigns`;
 

@@ -1,6 +1,11 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import Swal from "sweetalert2";
+import {
+  ApiResponse,
+  NotificationItem
+} from "@/types";
+import {VaccinationStatus} from "@/lib/service/health-check-campaign/IHealthCheckCampaign";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -13,6 +18,26 @@ export const getAuthHeaders = (): HeadersInit => {
     accept: "*/*",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
+};
+
+export const handleApiResponse = async <T>(
+    response: Response,
+    defaultErrorMessage: string
+): Promise<ApiResponse<T>> => {
+  const result = await response.json();
+
+  if (!response.ok) {
+    const errorMessage = result.errors
+        ? Array.isArray(result.errors)
+            ? result.errors.join("; ")
+            : Object.entries(result.errors)
+                .map(([field, messages]) => `${field}: ${(messages as string[]).join(", ")}`)
+                .join("; ")
+        : result.message || defaultErrorMessage;
+    throw new Error(errorMessage);
+  }
+
+  return result;
 };
 
 export const getSeverityColor = (severity: string) => {
@@ -71,6 +96,24 @@ export const getNotificationColor = (status: string) => {
   }
 }
 
+export const mapCampaignStatus = (
+    status: VaccinationStatus | string
+): NotificationItem["status"] => {
+  const statusStr = typeof status === 'string' ? status.toLowerCase() : VaccinationStatus[status].toLowerCase();
+  switch (statusStr) {
+    case "planned":
+      return "upcoming"
+    case "inprogress":
+      return "ongoing"
+    case "completed":
+      return "completed"
+    case "cancelled":
+      return "pending"
+    default:
+      return "upcoming"
+  }
+}
+
 export const getPriorityColor = (priority: string) => {
   switch (priority) {
     case "high":
@@ -115,13 +158,16 @@ export const showSuccessAlert = async (
 };
 
 export const showErrorAlert = async (
-    message: string
+    message: string,
+    timer?: number
 ): Promise<void> => {
   await Swal.fire({
     title: 'Lỗi!',
     text: message,
     icon: 'error',
     confirmButtonText: 'OK',
-    confirmButtonColor: '#F44336'
+    confirmButtonColor: '#F44336',
+    timer: timer,
+    timerProgressBar: !!timer
   });
 };

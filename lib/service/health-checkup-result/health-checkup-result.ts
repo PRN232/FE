@@ -1,11 +1,11 @@
 import {
     HealthCheckupResult,
     CreateHealthCheckupResultDto,
-    UpdateHealthCheckupResultDto,
-    ApiResponse
+    UpdateHealthCheckupResultDto
 } from "./IHealth-checkup-result";
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
+import { ApiResponse } from "@/types";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/results`;
 

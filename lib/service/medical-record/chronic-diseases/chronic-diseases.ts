@@ -1,11 +1,11 @@
 import { getAuthHeaders } from "@/lib/utils";
 import {
-    ApiResponse,
     ChronicDisease,
     CreateChronicDiseaseDto,
     UpdateChronicDiseaseDto
 } from "@/lib/service/medical-record/chronic-diseases/IChronic-diseases";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
+import {ApiResponse} from "@/types";
 
 const BASE_URL = `${NEXT_PUBLIC_API_URL}/medicalprofiles`;
 

@@ -1,8 +1,10 @@
-import { MedicationGiven } from "@/types";
+import {
+    ApiResponse,
+    MedicationGiven
+} from "@/types";
 import {
     CreateMedicationGivenDto,
-    UpdateMedicationGivenDto,
-    ApiResponse
+    UpdateMedicationGivenDto
 } from "./IMedication-given";
 import { getAuthHeaders } from "@/lib/utils";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";

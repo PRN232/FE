@@ -47,10 +47,3 @@ export interface UpdateHealthCheckupResultDto {
     recommendations: string;
     checkupDate: string;
 }
-
-export interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message: string;
-    errors: string[];
-}

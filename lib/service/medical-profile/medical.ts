@@ -1,5 +1,6 @@
 import { ApiMedicalProfile } from "@/lib/service/medical-profile/IMedical";
 import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
+import {getAuthHeaders} from "@/lib/utils";
 
 export interface MedicalProfileResponse {
     success: boolean;
@@ -18,10 +19,7 @@ export const getMedicalProfileByStudentId = async (
         const response = await fetch(`${BASE_URL}/${studentId}`,
             {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    accept: "*/*",
-                },
+                headers: { ...getAuthHeaders() },
             }
         );
 
