@@ -11,12 +11,44 @@ import Footer from "@/components/layout/Footer/Footer";
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://schoolmedical.hyudequeue.xyz'), // ✅ thêm dòng này
+
   title: {
     default: 'HealthCare School - Hệ Thống Y Tế Học Đường',
-    template: '%s | HealthCare School'
+    template: '%s | HealthCare School',
   },
-  description: "Comprehensive health management system for schools, managing student health records, medical incidents, vaccinations, and health examinations.",
-}
+  description: "Nền tảng quản lý y tế học đường toàn diện, hỗ trợ theo dõi hồ sơ sức khỏe học sinh, xử lý sự cố y tế, quản lý tiêm chủng và khám sức khỏe định kỳ.",
+
+  icons: {
+    icon: '/images/longchaulogo.jpg',
+  },
+
+  openGraph: {
+    title: 'HealthCare School - Hệ Thống Y Tế Học Đường',
+    description: 'Nền tảng quản lý y tế học đường toàn diện, hỗ trợ theo dõi hồ sơ sức khỏe học sinh, xử lý sự cố y tế, quản lý tiêm chủng và khám sức khỏe định kỳ.',
+    url: 'https://schoolmedical.hyudequeue.xyz/',
+    siteName: 'HealthCare School',
+    images: [
+      {
+        url: '/images/previewcard.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'HealthCare School Preview',
+      },
+    ],
+    locale: 'vi_VN',
+    type: 'website',
+  },
+
+  twitter: {
+    card: 'summary_large_image',
+    title: 'HealthCare School - Hệ Thống Y Tế Học Đường',
+    description: 'Giải pháp số hóa và quản lý toàn diện y tế học đường cho các trường học tại Việt Nam.',
+    images: ['/images/previewcard.jpg'],
+  },
+};
+
+
 
 export default function RootLayout({children}: { children: ReactNode }) {
     return (
