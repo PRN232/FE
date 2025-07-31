@@ -12,7 +12,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import Credentials from "@/components/Credentials";
 import Branding from "@/components/Branding";
 
 import { useAuth } from "@/lib/auth/auth-context";
@@ -182,9 +181,6 @@ const LoginPage = () => {
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* Demo Credentials */}
-                    <Credentials />
                 </div>
             </div>
 
