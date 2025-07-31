@@ -7,7 +7,7 @@ const TeamMemberGrid = () => {
     return (
         <section className="py-24 bg-muted/50 relative overflow-hidden">
             {/* Animated background pattern */}
-            <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-[0.03] animate-[pulse_20s_linear_infinite]" />
+            <div className="absolute inset-0 bg-[length:300px_300px] opacity-[0.03] animate-[pulse_20s_linear_infinite]" />
 
             {/* Subtle gradient overlay */}
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-red-50/10 pointer-events-none" />

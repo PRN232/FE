@@ -3,7 +3,7 @@ const Hero = () => {
         <section className="relative bg-gradient-to-br from-red-600 via-red-500 to-red-100 text-white overflow-hidden">
             {/* Decorative elements */}
             <div className="absolute inset-0 opacity-10">
-                <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-20"></div>
+                <div className="absolute inset-0 bg-[length:300px_300px] opacity-20"></div>
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-transparent via-transparent to-red-700/20"></div>
             </div>
 

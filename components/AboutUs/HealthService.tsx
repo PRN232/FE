@@ -7,7 +7,7 @@ const HealthService = () => {
     return (
         <section className="py-24 bg-background relative overflow-hidden">
             {/* Decorative elements */}
-            <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-[0.02]" />
+            <div className="absolute inset-0 bg-[length:300px_300px] opacity-[0.02]" />
 
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
                 {/* Section header */}

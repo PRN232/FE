@@ -5,7 +5,7 @@ const HeroSection = () => {
         <section className="relative bg-gradient-to-r from-red-600 to-orange-600 text-white overflow-hidden">
             {/* Decorative elements */}
             <div className="absolute inset-0 opacity-20">
-                <div className="absolute inset-0 bg-[url('/images/medical-pattern.svg')] bg-[length:300px_300px] opacity-30"/>
+                <div className="absolute inset-0 bg-[length:300px_300px] opacity-30"/>
                 <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-transparent via-transparent to-red-700/20" />
             </div>
 

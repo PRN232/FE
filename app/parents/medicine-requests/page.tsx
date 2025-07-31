@@ -82,7 +82,7 @@ const MedicalRequest = () => {
             >
                 {/* Animated header elements */}
                 <div
-                    className="absolute inset-0 bg-[url('/images/medical-pattern.svg')]
+                    className="absolute inset-0]
                     bg-[length:300px_300px] opacity-[0.03]"
                 />
                 <div
