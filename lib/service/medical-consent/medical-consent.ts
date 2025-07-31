@@ -44,7 +44,7 @@ export const getMedicalConsentStatusByCampaign = async (
 export const getMedicalConsentsById = async (
     id: number
 ): Promise<ApiResponse<MedicalConsent[]>> => {
-    const response = await fetch(`${BASE_URL}/${id}`, {
+    const response = await fetch(`${BASE_URL}/student/${id}`, {
         method: "GET",
         headers: { ...getAuthHeaders() },
     });

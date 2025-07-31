@@ -222,7 +222,10 @@ const StudentEditModal = ({
                                 </SelectTrigger>
                                 <SelectContent className="bg-white">
                                     {parents.map((parent) => (
-                                        <SelectItem key={parent.id} value={parent.id}>
+                                        <SelectItem
+                                            key={parent.id}
+                                            value={parent.userId?.toString()}
+                                        >
                                             {parent.name} ({parent.email})
                                         </SelectItem>
                                     ))}

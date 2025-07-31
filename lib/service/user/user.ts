@@ -7,6 +7,7 @@ const API_URL = `${NEXT_PUBLIC_API_URL}/Users`;
 
 const mapApiUserToUser = (apiUser: ApiUser): User => ({
     id: apiUser.id?.toString() || "",
+    userId: apiUser.userId,
     name: apiUser.username,
     email: apiUser.email,
     phoneNumber: apiUser.phoneNumber || "",

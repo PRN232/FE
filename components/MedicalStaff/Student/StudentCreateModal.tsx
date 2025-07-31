@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import {
+    FormEvent,
+    useState
+} from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,6 +41,7 @@ const StudentCreateModal = ({
         className: "",
         parentId: 0,
     });
+
     const [isLoading, setIsLoading] = useState(false);
     const [date, setDate] = useState<Date>();
 
@@ -55,7 +59,7 @@ const StudentCreateModal = ({
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
 
@@ -84,7 +88,7 @@ const StudentCreateModal = ({
             } else {
                 await showErrorAlert(response.error || "Tạo học sinh thất bại.");
             }
-        } catch (error) {
+        } catch {
             await showErrorAlert("Đã xảy ra lỗi khi tạo học sinh.");
         } finally {
             setIsLoading(false);
@@ -197,7 +201,10 @@ const StudentCreateModal = ({
                                 </SelectTrigger>
                                 <SelectContent className="bg-white">
                                     {parents.map((parent) => (
-                                        <SelectItem key={parent.id} value={parent.id}>
+                                        <SelectItem
+                                            key={parent.id}
+                                            value={parent.userId?.toString()}
+                                        >
                                             {parent.name} ({parent.email})
                                         </SelectItem>
                                     ))}
