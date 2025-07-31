@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
     ArrowLeft,
     Calendar,
@@ -67,7 +67,6 @@ const BlogDetailPage = async ({ params }: BlogDetailPageProps) => {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
                                 <Avatar className="h-12 w-12">
-                                    <AvatarImage src="/images/placeholder.svg" />
                                     <AvatarFallback>
                                         {post.author
                                             .split(" ")
@@ -111,7 +110,7 @@ const BlogDetailPage = async ({ params }: BlogDetailPageProps) => {
                         {/* Featured Image */}
                         <div className="mb-8">
                             <Image
-                                src="/images/placeholder.svg"
+                                src={"null"}
                                 alt={post.title}
                                 width={800}
                                 height={400}
@@ -146,7 +145,6 @@ const BlogDetailPage = async ({ params }: BlogDetailPageProps) => {
                                 <CardContent className="p-6">
                                     <div className="flex items-start space-x-4">
                                         <Avatar className="h-16 w-16">
-                                            <AvatarImage src="/images/placeholder.svg" />
                                             <AvatarFallback className="text-lg">
                                                 {post.author
                                                     .split(" ")
@@ -201,7 +199,7 @@ const BlogDetailPage = async ({ params }: BlogDetailPageProps) => {
                             <Card key={relatedPost.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                                 <div className="aspect-video bg-muted">
                                     <Image
-                                        src="/images/placeholder.svg"
+                                        src={"null"}
                                         alt={relatedPost.title}
                                         width={400}
                                         height={200}

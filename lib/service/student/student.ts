@@ -9,7 +9,9 @@ import { NEXT_PUBLIC_API_URL } from "@/lib/hook";
 
 const API_URL = `${NEXT_PUBLIC_API_URL}/Student`;
 
-const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
+const mapApiStudentToUser = (
+    apiStudent: ApiStudent
+): User => ({
     id: apiStudent.id.toString(),
     name: apiStudent.fullName,
     email: "",
@@ -19,7 +21,9 @@ const mapApiStudentToUser = (apiStudent: ApiStudent): User => ({
     role: "student",
 });
 
-const mapApiStudentToChildDTO = (student: ApiStudent): ChildDTO => ({
+const mapApiStudentToChildDTO = (
+    student: ApiStudent
+): ChildDTO => ({
     id: student.id,
     studentCode: student.studentCode,
     fullName: student.fullName,
@@ -74,7 +78,11 @@ export const getAllStudents = async (): Promise<{
 
 export const createStudent = async (
     studentData: CreateStudentRequest
-): Promise<{ success: boolean; student?: User; error?: string }> => {
+): Promise<{
+    success: boolean;
+    student?: User;
+    error?: string
+}> => {
     try {
         const res = await fetch(API_URL, {
             method: "POST",

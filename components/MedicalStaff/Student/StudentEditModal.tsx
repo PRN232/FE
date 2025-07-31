@@ -118,7 +118,7 @@ const StudentEditModal = ({
             } else {
                 await showErrorAlert(response.error || "Cập nhật học sinh thất bại.");
             }
-        } catch (error) {
+        } catch {
             await showErrorAlert("Đã xảy ra lỗi khi cập nhật học sinh.");
         } finally {
             setIsLoading(false);

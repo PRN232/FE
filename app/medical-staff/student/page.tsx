@@ -43,7 +43,7 @@ const StudentPage = () => {
                 } else {
                     setError((prev) => prev || "Failed to fetch parents");
                 }
-            } catch (err) {
+            } catch {
                 setError("An error occurred while fetching data");
             } finally {
                 setLoading(false);

@@ -120,14 +120,6 @@ const LeftSide = ({ user }: {
                                     </NavigationMenuItem>
 
                                     <NavigationMenuItem>
-                                        <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                                            <Link href="/medical-staff/paper-approve" className="text-xl">
-                                                Giấy tờ
-                                            </Link>
-                                        </NavigationMenuLink>
-                                    </NavigationMenuItem>
-
-                                    <NavigationMenuItem>
                                         <NavigationMenuTrigger className="text-lg">Nhân viên Y tế</NavigationMenuTrigger>
                                         <NavigationMenuContent className="bg-white/95 backdrop-blur-sm border border-border/50 shadow-lg">
                                             <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">

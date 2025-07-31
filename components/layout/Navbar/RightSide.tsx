@@ -48,7 +48,7 @@ const RightSide = ({
                             >
                                 <Avatar className="h-10 w-10 border-2 border-primary/10">
                                     <AvatarImage
-                                        src={user?.avatar || "/images/placeholder.svg"}
+                                        src={user?.avatar}
                                         alt="Hồ sơ Người dùng"
                                         className="object-cover"
                                     />
