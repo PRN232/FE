@@ -74,17 +74,33 @@ export interface Medication {
 
 export interface MedicalConsent {
     id: number;
-    consentType: string;
+    consentType: "Vaccine" | "HealthCheckup";
     campaignId: number;
     campaignName: string;
+    vaccineType?: string;
+
     studentId: number;
     studentName: string;
+    studentCode?: string;
+    className?: string;
+
     parentId: number;
     parentName: string;
+    parentPhone?: string;
+
     consentGiven: boolean;
     consentDate: string;
     parentSignature: string;
     note: string;
+
+    scheduledDate?: string;
+    location?: string;
+    targetGrades?: string;
+    status?: "Pending" | "Approved" | "Rejected" | "Completed";
+
+    participants?: number;
+    totalStudents?: number;
+    completionRate?: number
 }
 
 export interface MedicalConsentStatus {
@@ -114,8 +130,10 @@ export interface NotificationItem {
     requirements: string[];
     consentType: "Vaccine" | "HealthCheckup";
     campaignId: number;
-    parentSignature?: string,
-    note?: string
+    parentSignature?: string;
+    note?: string;
+    consentGiven?: boolean;
+    medicalConsentId: number;
 }
 
 export interface ApiResponse<T> {

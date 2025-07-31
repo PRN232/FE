@@ -1,11 +1,7 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import Swal from "sweetalert2";
-import {
-  ApiResponse,
-  NotificationItem
-} from "@/types";
-import {VaccinationStatus} from "@/lib/service/health-check-campaign/IHealthCheckCampaign";
+import { ApiResponse } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -93,24 +89,6 @@ export const getNotificationColor = (status: string) => {
       return "bg-gray-100 text-gray-800 border-gray-200"
     default:
       return "bg-gray-100 text-gray-800 border-gray-200"
-  }
-}
-
-export const mapCampaignStatus = (
-    status: VaccinationStatus | string
-): NotificationItem["status"] => {
-  const statusStr = typeof status === 'string' ? status.toLowerCase() : VaccinationStatus[status].toLowerCase();
-  switch (statusStr) {
-    case "planned":
-      return "upcoming"
-    case "inprogress":
-      return "ongoing"
-    case "completed":
-      return "completed"
-    case "cancelled":
-      return "pending"
-    default:
-      return "upcoming"
   }
 }
 

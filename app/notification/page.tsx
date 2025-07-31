@@ -3,21 +3,17 @@
 import { useState, useEffect, useCallback } from "react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Bell, Stethoscope, Syringe } from "lucide-react"
-import {
-    mapCampaignStatus,
-    showErrorAlert
-} from "@/lib/utils"
+import { showErrorAlert } from "@/lib/utils"
 import NotificationCard from "@/components/Notification/NotificationCard"
 import {
-    VaccinationCampaign
-} from "@/lib/service/vaccination/campain/ICampain"
-import { NotificationItem } from "@/types"
+    MedicalConsent,
+    NotificationItem
+} from "@/types"
 import {
-    getVaccinationCampaigns
-} from "@/lib/service/vaccination/campain/campain";
-import { getAllCampaigns as getHealthCheckCampaigns } from "@/lib/service/health-check-campaign/healthCheckCampaign";
-import { Vaccination } from "@/lib/service/health-check-campaign/IHealthCheckCampaign";
-import {updateMedicalConsent} from "@/lib/service/medical-consent/medical-consent";
+    getMedicalConsentsById,
+    updateMedicalConsent
+} from "@/lib/service/medical-consent/medical-consent";
+import { getChildrenByParentId } from "@/lib/service/parent/parent";
 
 const NotificationPage = () => {
     const [activeTab, setActiveTab] = useState("examinations")
@@ -27,81 +23,97 @@ const NotificationPage = () => {
     }>({ examinations: [], vaccinations: [] })
     const [loading, setLoading] = useState(true)
 
-    const transformHealthCheckToNotification = useCallback((
-        campaign: Vaccination
-    ): NotificationItem => {
-        return {
-            id: campaign.id.toString(),
-            title: campaign.campaignName,
-            description: `Khám sức khỏe`,
-            targetGrades: campaign.targetGrades,
-            date: campaign.scheduledDate,
-            time: "08:00 - 17:00",
-            location: "Tại trường",
-            status: mapCampaignStatus(campaign.statusDisplay),
-            participants: campaign.consentReceived,
-            maxParticipants: campaign.totalStudents,
-            priority: "medium",
-            requirements: [
-                "Mang hồ so bệnh",
-                "Nhanh nếu cân xét nghiệm máu"
-            ],
-            consentType: "HealthCheckup",
-            campaignId: campaign.id
-        }
-    }, [])
+    const transformConsentToNotification = useCallback(
+        (consent: MedicalConsent): NotificationItem => {
+            const isExamination = consent.consentType === "HealthCheckup"
+            const statusMapping: Record<
+                NonNullable<MedicalConsent['status']>,
+                NotificationItem['status']
+            > = {
+                "Pending": "pending",
+                "Approved": "approved",
+                "Rejected": "pending",
+                "Completed": "completed"
+            };
 
-    const transformVaccinationToNotification = useCallback((
-        campaign: VaccinationCampaign
-    ): NotificationItem => {
-        return {
-            id: campaign.id.toString(),
-            title: campaign.campaignName,
-            description: `${campaign.vaccineType}`,
-            targetGrades: campaign.targetGrades,
-            date: campaign.scheduledDate,
-            time: "08:00 - 17:00",
-            location: "Tại trường",
-            status: mapCampaignStatus(campaign.statusDisplay),
-            participants: campaign.consentReceived,
-            maxParticipants: campaign.totalStudents,
-            priority: "medium",
-            requirements: [
-                "Mang hồ so tiêm chủng",
-                "Mang đơn đồng ý của ba mẹ"
-            ],
-            consentType: "Vaccine",
-            campaignId: campaign.id
-        }
-    }, [])
+            return {
+                id: consent.id.toString(),
+                title: consent.campaignName,
+                description: isExamination ? "Khám sức khỏe" : `Tiêm chủng ${consent.vaccineType || ''}`,
+                targetGrades: consent.targetGrades || "Toàn trường",
+                date: consent.consentDate || new Date().toISOString(),
+                time: "08:00 - 17:00",
+                location: "Tại trường",
+                status: consent.status ? statusMapping[consent.status] || "pending" : "pending",
+                participants: consent.participants || 0,
+                maxParticipants: consent.totalStudents || 0,
+                priority: "medium",
+                requirements: [
+                    isExamination ? "Mang hồ sơ bệnh" : "Mang hồ sơ tiêm chủng",
+                    "Mang đơn đồng ý của ba mẹ"
+                ],
+                consentType: consent.consentType,
+                campaignId: consent.campaignId,
+                medicalConsentId: consent.id,
+                parentSignature: consent.parentSignature,
+                note: consent.note,
+                consentGiven: consent.consentGiven
+            }
+        },
+        []
+    )
 
     const fetchData = useCallback(async () => {
         try {
             setLoading(true)
 
-            const [healthCheckResponse, vaccinationResponse] = await Promise.all([
-                getHealthCheckCampaigns(),
-                getVaccinationCampaigns()
-            ])
+            const user = JSON.parse(localStorage.getItem("user") || "{}")
+            const parentId = user.parentId
 
-            const examinations = healthCheckResponse.success &&
-            healthCheckResponse.data
-                ? healthCheckResponse.data.map(transformHealthCheckToNotification)
-                : []
+            if (!parentId) {
+                console.error("[NotificationPage] No parent ID found")
+                throw new Error("Không tìm thấy ID phụ huynh")
+            }
 
-            const vaccinations = vaccinationResponse.success &&
-            vaccinationResponse.data
-                ? vaccinationResponse.data.map(transformVaccinationToNotification)
-                : []
+            const childrenResponse = await getChildrenByParentId(parentId)
+
+            if (!childrenResponse.success || !childrenResponse.children) {
+                throw new Error(childrenResponse.error || "Không thể lấy danh sách học sinh")
+            }
+
+            const allConsents = await Promise.all(
+                childrenResponse.children.map(async (child) => {
+                    try {
+                        const response = await getMedicalConsentsById(child.id)
+                        return response.success ? response.data : []
+                    } catch (error) {
+                        console.error(`[NotificationPage] Error fetching consents for child ${child.id}:`, error)
+                        return []
+                    }
+                })
+            )
+
+            const flattenedConsents = allConsents.flat()
+
+            const transformedConsents = flattenedConsents.map(transformConsentToNotification)
+
+            const examinations = transformedConsents.filter(
+                consent => consent.consentType === "HealthCheckup"
+            )
+            const vaccinations = transformedConsents.filter(
+                consent => consent.consentType === "Vaccine"
+            )
 
             setNotifications({ examinations, vaccinations })
         } catch (error) {
-            console.error("Error fetching campaigns:", error)
-            await showErrorAlert("Không thể tải thông tin chiến dịch")
+            console.error("[NotificationPage] Error in fetchData:", error)
+            await showErrorAlert(
+                error instanceof Error ? error.message : "Không thể tải thông tin đồng ý y tế"
+            )
         } finally {
             setLoading(false)
         }
-    }, [transformHealthCheckToNotification, transformVaccinationToNotification])
+    }, [transformConsentToNotification])
 
     const handleUpdateConsent = async (
         id: number,
@@ -115,16 +127,18 @@ const NotificationPage = () => {
                 consentGiven,
                 parentSignature: signature,
                 note
-            });
+            })
 
-            if (!response.success) {
-                throw new Error(response.errors?.join(', ') || "Failed to update consent");
+            if (response.success) {
+                await fetchData()
+                return
             }
+            throw new Error(response.message || "Cập nhật đồng ý thất bại")
         } catch (error) {
-            console.error("Error updating consent:", error);
-            throw error;
+            console.error("Error updating consent:", error)
+            throw error
         }
-    };
+    }
 
     useEffect(() => {
         void fetchData()

@@ -1,26 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
     AlertCircle,
     Calendar,
+    CalendarDays,
+    Check,
     CheckCircle,
     Clock,
     Info,
     MapPin,
+    NotepadText,
+    PenLine,
     Stethoscope,
     Syringe,
     Users
 } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getNotificationColor, showErrorAlert, showSuccessAlert } from "@/lib/utils";
+import {
+    getNotificationColor,
+    showErrorAlert,
+    showSuccessAlert
+} from "@/lib/utils";
 import { NotificationItem } from "@/types";
 
 const getStatusIcon = (status: string) => {
@@ -35,7 +49,10 @@ const getStatusIcon = (status: string) => {
 };
 
 interface NotificationCardProps {
-    notification: NotificationItem;
+    notification: NotificationItem & {
+        campaignId: number;
+        medicalConsentId: number;
+    };
     type: "examination" | "vaccination";
     onUpdateConsent: (
         id: number,
@@ -50,7 +67,6 @@ const NotificationCard = ({
                               type,
                               onUpdateConsent
                           }: NotificationCardProps) => {
-    const router = useRouter();
     const Icon = type === "examination" ? Stethoscope : Syringe;
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [signature, setSignature] = useState(notification.parentSignature || "");
@@ -61,17 +77,25 @@ const NotificationCard = ({
     const handleSubmitConsent = async (consentGiven: boolean) => {
         setIsSubmitting(true);
         try {
-            await onUpdateConsent(Number(notification.id), consentGiven, signature, note);
+            await onUpdateConsent(
+                notification.medicalConsentId,
+                consentGiven,
+                signature,
+                note
+            );
+
             await showSuccessAlert("Đã cập nhật đồng ý thành công!");
             setIsSuccess(true);
+
             setTimeout(() => {
                 setIsDialogOpen(false);
                 setIsSuccess(false);
-                setSignature("");
-                setNote("");
             }, 1500);
-        } catch {
-            await showErrorAlert("Có lỗi xảy ra khi cập nhật đồng ý", 3000);
+        } catch (error) {
+            await showErrorAlert(
+                error instanceof Error ? error.message : "Có lỗi xảy ra khi cập nhật đồng ý",
+                3000
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -83,10 +107,6 @@ const NotificationCard = ({
         month: 'numeric',
         year: 'numeric'
     });
-
-    const participationPercentage = notification.maxParticipants > 0
-        ? Math.round((notification.participants / notification.maxParticipants) * 100)
-        : 0;
 
     return (
         <>
@@ -110,18 +130,10 @@ const NotificationCard = ({
                                 <div>
                                     <CardTitle className="text-lg font-semibold tracking-tight">{notification.title}</CardTitle>
                                     <div className="mt-2 flex items-center space-x-2">
-                                        <Badge className={`${getNotificationColor(notification.status)} text-xs transition-all duration-300 group-hover:shadow-md`}>
-                                            {getStatusIcon(notification.status)}
+                                        <Badge className={`${getNotificationColor(notification.consentGiven ? "approved" : "pending")} text-xs transition-all duration-300 group-hover:shadow-md`}>
+                                            {getStatusIcon(notification.consentGiven ? "approved" : "pending")}
                                             <span className="ml-1">
-                                                {notification.status === "upcoming"
-                                                    ? "Sắp diễn ra"
-                                                    : notification.status === "ongoing"
-                                                        ? "Đang diễn ra"
-                                                        : notification.status === "completed"
-                                                            ? "Đã hoàn thành"
-                                                            : notification.status === "pending"
-                                                                ? "Chưa đồng ý"
-                                                                : "Đã đồng ý"}
+                                                {notification.consentGiven ? "Đã đồng ý" : "Chưa đồng ý"}
                                             </span>
                                         </Badge>
                                         <Badge variant="outline" className="bg-white/10 border-white/20 text-white">
@@ -171,22 +183,6 @@ const NotificationCard = ({
                         </div>
                     </div>
 
-                    {/* Participation Progress */}
-                    <div className="space-y-2">
-                        <div className="flex justify-between text-sm text-gray-600">
-                            <span>Đăng ký tham gia:</span>
-                            <span className="font-medium">
-                                {notification.participants}/{notification.maxParticipants} ({participationPercentage}%)
-                            </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                                className="bg-red-600 h-2.5 rounded-full"
-                                style={{ width: `${participationPercentage}%` }}
-                            ></div>
-                        </div>
-                    </div>
-
                     {notification.requirements && notification.requirements.length > 0 && (
                         <div className="rounded-lg border border-red-100 bg-gradient-to-br from-red-50 to-red-100 p-4 transition-all duration-300 hover:border-red-200 hover:shadow-sm">
                             <h4 className="mb-2 flex items-center font-semibold text-red-800">
@@ -202,29 +198,18 @@ const NotificationCard = ({
                     )}
 
                     <div className="flex space-x-3 pt-4">
-                        {notification.status === "pending" ? (
-                            <>
-                                <Button
-                                    className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md hover:from-red-600 hover:to-red-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
-                                    onClick={() => setIsDialogOpen(true)}
-                                >
-                                    Đăng ký tham gia
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="border-red-200 bg-transparent text-red-600 shadow-sm hover:bg-red-50 hover:shadow-md transition-all duration-300"
-                                    onClick={() => router.push(`/notification/${notification.id}`)}
-                                >
-                                    Xem chi tiết
-                                </Button>
-                            </>
-                        ) : (
+                        {notification.status === "pending" && !notification.consentGiven && (
                             <Button
-                                variant="outline"
-                                className="border-gray-200 bg-transparent text-gray-600 hover:bg-gray-50 transition-all duration-300 hover:border-red-200 hover:text-red-600"
-                                onClick={() => router.push(`/notification/${notification.id}`)}
+                                className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md hover:from-red-600 hover:to-red-700 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+                                onClick={() => setIsDialogOpen(true)}
                             >
-                                Xem kết quả
+                                Đăng ký tham gia
+                            </Button>
+                        )}
+                        {notification.consentGiven && (
+                            <Button variant="outline" className="border-green-500 text-green-600 hover:bg-green-50">
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Đã đăng ký tham gia
                             </Button>
                         )}
                     </div>
@@ -238,88 +223,126 @@ const NotificationCard = ({
                     setIsSuccess(false);
                 }
             }}>
-                <DialogContent className="bg-gradient-to-br from-white to-red-50 border border-red-100 rounded-lg">
-                    <DialogHeader>
-                        <DialogTitle className="text-red-800">Xác nhận đồng ý tham gia</DialogTitle>
-                        <DialogDescription className="text-red-600">
-                            Vui lòng điền thông tin để xác nhận đồng ý tham gia chiến dịch {notification.title}
+                <DialogContent className="bg-gradient-to-br from-white to-red-50 border-2 border-red-200 rounded-xl shadow-xl max-w-md md:max-w-lg">
+                    <DialogHeader className="px-6 pt-6 pb-2">
+                        <DialogTitle className="text-2xl font-bold text-red-800 flex items-center gap-2">
+                            <CheckCircle className="w-6 h-6" />
+                            Xác nhận đồng ý tham gia
+                        </DialogTitle>
+                        <DialogDescription className="text-red-600/90 mt-1">
+                            Vui lòng điền thông tin để xác nhận đồng ý tham gia chiến dịch <span className="font-medium">{notification.title}</span>
                         </DialogDescription>
                     </DialogHeader>
 
                     {isSuccess ? (
-                        <div className="text-center py-4">
-                            <CheckCircle className="mx-auto h-12 w-12 text-green-500 mb-4" />
-                            <h3 className="text-lg font-medium text-green-800">Đã gửi đồng ý thành công!</h3>
-                            <p className="text-green-600 mt-2">Thông tin của bạn đã được cập nhật</p>
+                        <div className="text-center py-8 px-6">
+                            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+                                <CheckCircle className="h-10 w-10 text-green-600" />
+                            </div>
+                            <h3 className="text-xl font-semibold text-green-800 mb-2">Đã gửi đồng ý thành công!</h3>
+                            <p className="text-green-600/90">Thông tin của bạn đã được cập nhật</p>
+                            <Button
+                                onClick={() => setIsDialogOpen(false)}
+                                className="mt-6 bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                Đóng
+                            </Button>
                         </div>
                     ) : (
                         <>
-                            <div className="space-y-4">
-                                <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                                    <h4 className="text-sm font-medium text-blue-800 mb-2">Thông tin chiến dịch</h4>
-                                    <div className="grid grid-cols-2 gap-2 text-sm">
-                                        <div>
-                                            <span className="text-gray-500">Ngày:</span>
-                                            <span className="font-medium ml-1">{formattedDate}</span>
+                            <div className="px-6 py-2 space-y-5">
+                                <div className="bg-blue-50/80 p-4 rounded-lg border border-blue-200 shadow-sm">
+                                    <h4 className="text-sm font-semibold text-blue-800 mb-3 flex items-center gap-2">
+                                        <Info className="w-4 h-4" />
+                                        Thông tin chiến dịch
+                                    </h4>
+                                    <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div className="space-y-1">
+                                            <p className="text-gray-500 flex items-center gap-1">
+                                                <CalendarDays className="w-4 h-4" />
+                                                Ngày:
+                                            </p>
+                                            <p className="font-medium text-gray-800">{formattedDate}</p>
                                         </div>
-                                        <div>
-                                            <span className="text-gray-500">Thời gian:</span>
-                                            <span className="font-medium ml-1">{notification.time}</span>
+                                        <div className="space-y-1">
+                                            <p className="text-gray-500 flex items-center gap-1">
+                                                <Clock className="w-4 h-4" />
+                                                Thời gian:
+                                            </p>
+                                            <p className="font-medium text-gray-800">{notification.time}</p>
                                         </div>
-                                        <div>
-                                            <span className="text-gray-500">Địa điểm:</span>
-                                            <span className="font-medium ml-1">{notification.location}</span>
+                                        <div className="col-span-2 space-y-1">
+                                            <p className="text-gray-500 flex items-center gap-1">
+                                                <MapPin className="w-4 h-4" />
+                                                Địa điểm:
+                                            </p>
+                                            <p className="font-medium text-gray-800">{notification.location}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div>
-                                    <Label htmlFor="signature" className="text-red-700">Chữ ký phụ huynh*</Label>
-                                    <Input
-                                        id="signature"
-                                        value={signature}
-                                        onChange={(e) => setSignature(e.target.value)}
-                                        placeholder="Nhập họ tên đầy đủ"
-                                        className="border-red-200 focus:border-red-500 focus:ring-red-500"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <Label htmlFor="note" className="text-red-700">Ghi chú</Label>
-                                    <Textarea
-                                        id="note"
-                                        value={note}
-                                        onChange={(e) => setNote(e.target.value)}
-                                        placeholder="Nhập ghi chú (nếu có)"
-                                        className="border-red-200 focus:border-red-500 focus:ring-red-500"
-                                    />
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="signature" className="text-red-700 flex items-center gap-1">
+                                            <PenLine className="w-4 h-4" />
+                                            Chữ ký phụ huynh*
+                                        </Label>
+                                        <Input
+                                            id="signature"
+                                            value={signature}
+                                            onChange={(e) => setSignature(e.target.value)}
+                                            placeholder="Nhập họ tên đầy đủ"
+                                            className="border-2 border-red-200 focus:border-red-500 focus:ring-1 focus:ring-red-300 h-11 rounded-lg"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="note" className="text-red-700 flex items-center gap-1">
+                                            <NotepadText className="w-4 h-4" />
+                                            Ghi chú
+                                        </Label>
+                                        <Textarea
+                                            id="note"
+                                            value={note}
+                                            onChange={(e) => setNote(e.target.value)}
+                                            placeholder="Nhập ghi chú (nếu có)"
+                                            className="border-2 border-red-200 focus:border-red-500 focus:ring-1 focus:ring-red-300 min-h-[100px] rounded-lg"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
-                            <DialogFooter>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setIsDialogOpen(false)}
-                                    disabled={isSubmitting}
-                                    className="border-red-200 text-red-600 hover:bg-red-50"
-                                >
-                                    Hủy
-                                </Button>
-                                <Button
-                                    className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md hover:from-red-600 hover:to-red-700 hover:shadow-lg transition-all duration-300"
-                                    onClick={() => handleSubmitConsent(true)}
-                                    disabled={isSubmitting || !signature.trim()}
-                                >
-                                    {isSubmitting ? (
-                                        <span className="flex items-center">
-                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
-                                            Đang xử lý...
-                                        </span>
-                                    ) : "Xác nhận đồng ý"}
-                                </Button>
+                            <DialogFooter className="px-6 pb-6 pt-4 bg-gray-50/50 rounded-b-xl">
+                                <div className="flex w-full gap-3">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setIsDialogOpen(false)}
+                                        disabled={isSubmitting}
+                                        className="border-2 border-red-200 text-red-600 hover:bg-red-50/80 hover:text-red-700 flex-1 h-11 rounded-lg"
+                                    >
+                                        Hủy
+                                    </Button>
+                                    <Button
+                                        className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md hover:from-red-600 hover:to-red-700 hover:shadow-lg transition-all duration-300 flex-1 h-11 rounded-lg"
+                                        onClick={() => handleSubmitConsent(true)}
+                                        disabled={isSubmitting || !signature.trim()}
+                                    >
+                                        {isSubmitting ? (
+                                            <span className="flex items-center justify-center">
+                                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Đang xử lý...
+                                </span>
+                                        ) : (
+                                            <span className="flex items-center justify-center gap-1">
+                                    <Check className="w-4 h-4" />
+                                    Xác nhận đồng ý
+                                </span>
+                                        )}
+                                    </Button>
+                                </div>
                             </DialogFooter>
                         </>
                     )}

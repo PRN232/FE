@@ -60,15 +60,42 @@ export const updateMedicalConsent = async (
         note: string;
     }
 ): Promise<ApiResponse<MedicalConsent>> => {
-    const response = await fetch(`${BASE_URL}/${data.id}`, {
-        method: "PUT",
-        headers: { ...getAuthHeaders() },
-        body: JSON.stringify({
-            consentGiven: data.consentGiven,
-            parentSignature: data.parentSignature,
-            note: data.note
-        }),
-    });
+    try {
+        const response = await fetch(`${BASE_URL}/${data.id}`, {
+            method: "PUT",
+            headers: { ...getAuthHeaders() },
+            body: JSON.stringify({
+                consentGiven: data.consentGiven,
+                parentSignature: data.parentSignature,
+                note: data.note
+            }),
+        });
 
-    return handleApiResponse(response, `Failed to update medical consent ID ${data.id}`);
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            console.error("[API] Update failed with status:", response.status);
+            return {
+                success: false,
+                data: {} as MedicalConsent,
+                message: responseData.message || `Failed to update medical consent ID ${data.id}`,
+                errors: responseData.errors || []
+            };
+        }
+
+        return {
+            success: true,
+            data: responseData,
+            message: responseData.message || "Update successful",
+            errors: []
+        };
+    } catch (error) {
+        console.error("[API] Update error:", error);
+        return {
+            success: false,
+            data: {} as MedicalConsent,
+            message: `Failed to update medical consent ID ${data.id}`,
+            errors: [error instanceof Error ? error.message : "Unknown error"]
+        };
+    }
 };
