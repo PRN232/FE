@@ -8,6 +8,7 @@ const API_URL = `${NEXT_PUBLIC_API_URL}/Parent`;
 const mapApiParentToUser = (apiParent: ApiParent): User => ({
     id: apiParent.userId.toString(),
     name: apiParent.fullName || apiParent.userId.toString(),
+    userId: apiParent.userId,
     email: apiParent.email || "",
     phoneNumber: apiParent.phoneNumber || "",
     address: apiParent.address || "",

@@ -79,6 +79,7 @@ export const authenticate = async (
             const mappedUser: User = {
                 id: decodedToken.sub.toString(),
                 name: decodedToken.email || "Unknown",
+                userId: parseInt(decodedToken.UserId, 10),
                 parentId: parseInt(decodedToken.ParentId, 10),
                 email: decodedToken.email,
                 phoneNumber: "",
