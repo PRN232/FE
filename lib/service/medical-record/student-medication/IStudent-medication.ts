@@ -17,7 +17,7 @@ export interface UpdateStudentMedicationDto {
     administrationTime: string;
     startDate: string;
     endDate: string;
-    isApproved: boolean;
+    isApproved: "Pending" | "Approved" | "Rejected";
     isActive: boolean;
 }
 
@@ -31,7 +31,7 @@ export interface StudentMedication {
     administrationTimeDisplay: string;
     startDate: string;
     endDate: string;
-    isApproved: boolean;
+    isApproved: "Pending" | "Approved" | "Rejected";
     isActive: boolean;
 }
 

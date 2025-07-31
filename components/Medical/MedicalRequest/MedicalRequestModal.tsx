@@ -45,7 +45,7 @@ const MedicalRequestModal = ({
                                  onSuccess
 }: MedicalRequestModalProps) => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const parentId = user?.id;
+    const parentId = user?.parentId;
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -185,7 +185,10 @@ const MedicalRequestModal = ({
         onClose();
     };
 
-    const handleInputChange = (field: keyof MedicalRequestFormData, value: any) => {
+    const handleInputChange = (
+        field: keyof MedicalRequestFormData,
+        value: any
+    ) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,

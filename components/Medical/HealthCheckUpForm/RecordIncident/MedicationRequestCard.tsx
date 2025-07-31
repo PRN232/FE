@@ -18,10 +18,11 @@ const MedicationRequestCard = ({
     onReject: (id: number) => void;
 }) => {
     const getRequestStatus = (med: StudentMedication) => {
-        if (!med.isApproved && med.isActive) return "pending";
-        if (med.isApproved && med.isActive) return "approved";
-        if (med.isApproved && !med.isActive) return "completed";
-        return "rejected";
+        if (med.isApproved === "Pending" && !med.isActive) return "pending";
+        if (med.isApproved === "Approved" && med.isActive) return "approved";
+        if (med.isApproved === "Approved" && !med.isActive) return "completed";
+        if (med.isApproved === "Rejected") return "rejected";
+        return "pending"; 
     };
 
     const status = getRequestStatus(medication);
@@ -103,8 +104,8 @@ const MedicationRequestCard = ({
                             <div className="flex items-center space-x-2 mt-1 text-gray-800">
                                 <span className="font-medium">Đến:</span>
                                 <span className="bg-red-100/30 px-2 py-1 rounded text-sm">
-                  {new Date(medication.endDate).toLocaleDateString("vi-VN")}
-                </span>
+                                    {new Date(medication.endDate).toLocaleDateString("vi-VN")}
+                                </span>
                             </div>
                             <p className="text-sm text-red-600/90 mt-2">
                                 Thời điểm: <span className="font-medium">

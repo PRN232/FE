@@ -24,8 +24,7 @@ import {
     User,
     CalendarIcon,
     Search,
-    Plus,
-    Eye
+    Plus
 } from "lucide-react";
 import { getStatusColor } from "@/lib/utils";
 import MedicalRequestModal from "@/components/Medical/MedicalRequest/MedicalRequestModal";
@@ -55,7 +54,7 @@ const RequestsTab = ({
     const [studentsLoading, setStudentsLoading] = useState(true);
     const [studentsError, setStudentsError] = useState<string | null>(null);
 
-    const parentId = JSON.parse(localStorage.getItem("user") || "{}")?.id;
+    const parentId = JSON.parse(localStorage.getItem("user") || "{}")?.parentId;
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -84,10 +83,11 @@ const RequestsTab = ({
     }, [parentId]);
 
     const getRequestStatus = (request: StudentMedication) => {
-        if (!request.isApproved) return "pending";
-        if (request.isApproved && request.isActive) return "approved";
-        if (request.isApproved && !request.isActive) return "completed";
-        return "rejected";
+        if (request.isApproved === "Pending") return "pending";
+        if (request.isApproved === "Rejected") return "rejected";
+        if (request.isApproved === "Approved" && request.isActive) return "approved";
+        if (request.isApproved === "Approved" && !request.isActive) return "completed";
+        return "pending";
     };
 
     const filteredRequests = medicalRequests.filter((request) => {
@@ -198,9 +198,13 @@ const RequestsTab = ({
                                 <CardHeader className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
-                                            <div className={`w-3 h-3 rounded-full ${getStatusColor(getRequestStatus(request))}`}></div>
+                                            <div
+                                                className={`w-3 h-3 rounded-full 
+                                                ${getStatusColor(getRequestStatus(request))}`} />
                                             <div>
-                                                <CardTitle className="text-red-700">{student?.fullName || "Unknown Student"}</CardTitle>
+                                                <CardTitle className="text-red-700">
+                                                    {student?.fullName || "Unknown Student"}
+                                                </CardTitle>
                                                 <CardDescription className="text-red-600">
                                                     {student?.studentCode || "N/A"} • ID Yêu cầu: {request.id}
                                                 </CardDescription>
@@ -208,10 +212,16 @@ const RequestsTab = ({
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <Badge className={getStatusColor(getRequestStatus(request))}>
-                                                {getRequestStatus(request) === "pending" && "Đang chờ"}
-                                                {getRequestStatus(request) === "approved" && "Đã duyệt"}
-                                                {getRequestStatus(request) === "completed" && "Hoàn thành"}
-                                                {getRequestStatus(request) === "rejected" && "Từ chối"}
+                                                {(() => {
+                                                    const status = getRequestStatus(request);
+                                                    switch (status) {
+                                                        case "pending": return "Đang chờ";
+                                                        case "approved": return "Đã duyệt";
+                                                        case "completed": return "Hoàn thành";
+                                                        case "rejected": return "Đã từ chối";
+                                                        default: return status;
+                                                    }
+                                                })()}
                                             </Badge>
                                         </div>
                                     </div>
@@ -256,16 +266,6 @@ const RequestsTab = ({
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="flex justify-end space-x-2 mt-6 pt-4 border-t border-red-100">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="border-red-200 text-red-700 hover:bg-red-50 bg-transparent"
-                                        >
-                                            <Eye className="w-4 h-4 mr-2" />
-                                            Xem Chi Tiết
-                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>

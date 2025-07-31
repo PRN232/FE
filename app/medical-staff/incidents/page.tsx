@@ -221,7 +221,7 @@ const IncidentsPage = () => {
 
   const handleApproveMedication = async (
       medicationId: number,
-      isApproved: boolean
+      approve: boolean
   ) => {
     try {
       const medication = studentMedications.find(m => m.id === medicationId);
@@ -239,18 +239,22 @@ const IncidentsPage = () => {
         administrationTime: medication.administrationTime,
         startDate: medication.startDate,
         endDate: medication.endDate,
-        isApproved,
-        isActive: isApproved
+        isApproved: approve ? "Approved" : "Rejected",
+        isActive: approve
       });
 
       if (response.success) {
         setStudentMedications(prev =>
             prev.map(m =>
-                m.id === medicationId ? { ...m, isApproved, isActive: isApproved } : m
+                m.id === medicationId ? {
+                  ...m,
+                  isApproved: approve ? "Approved" : "Rejected",
+                  isActive: approve
+                } : m
             )
         );
         await showSuccessAlert(
-            isApproved
+            approve
                 ? "Đã phê duyệt yêu cầu thuốc"
                 : "Đã từ chối yêu cầu thuốc"
         );

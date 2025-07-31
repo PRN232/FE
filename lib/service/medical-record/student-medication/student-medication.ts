@@ -69,22 +69,10 @@ export const createStudentMedication = async (
 export const updateStudentMedicationApproval = async (
     medicationData: UpdateStudentMedicationDto
 ): Promise<ApiResponse<StudentMedication>> => {
-    const payload = {
-        id: medicationData.id,
-        studentId: medicationData.studentId,
-        MedicationName: medicationData.MedicationName,
-        Dosage: medicationData.Dosage,
-        Instructions: medicationData.Instructions,
-        administrationTime: medicationData.administrationTime,
-        startDate: medicationData.startDate,
-        endDate: medicationData.endDate,
-        isApproved: medicationData.isApproved,
-        isActive: medicationData.isActive
-    };
     const response = await fetch(`${BASE_URL}/${medicationData.id}`, {
         method: "PUT",
         headers: { ...getAuthHeaders() },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(medicationData),
     });
 
     return handleApiResponse(response, `Failed to update approval status for medication ID ${medicationData.id}`);

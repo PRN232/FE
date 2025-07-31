@@ -1,16 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+    useCallback,
+    useEffect,
+    useState
+} from "react";
 
-import
-    RequestsTab
-    from "@/components/Medical/MedicalRequest/RequestsTab";
-import {
-    StudentMedication
-} from "@/lib/service/medical-record/student-medication/IStudent-medication";
-import {
-    getStudentMedicationsByParentId
-} from "@/lib/service/medical-record/student-medication/student-medication";
+import RequestsTab from "@/components/Medical/MedicalRequest/RequestsTab";
+import {StudentMedication} from "@/lib/service/medical-record/student-medication/IStudent-medication";
+import {getStudentMedicationsByParentId} from "@/lib/service/medical-record/student-medication/student-medication";
 
 const MedicalRequest = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -18,10 +16,9 @@ const MedicalRequest = () => {
     const [medications, setMedications] = useState<StudentMedication[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const parentId = JSON.parse(localStorage.getItem("user") || "{}")?.parentId;
 
-    const parentId = JSON.parse(localStorage.getItem("user") || "{}")?.id;
-
-    const fetchMedications = async () => {
+    const fetchMedications = useCallback(async () => {
         if (!parentId) {
             setError("Parent ID not found");
             setLoading(false);
@@ -41,11 +38,11 @@ const MedicalRequest = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [parentId]);
 
     useEffect(() => {
         void fetchMedications();
-    }, [parentId]);
+    }, [fetchMedications, parentId]);
 
     if (loading) {
         return (
