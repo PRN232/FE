@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import {
+    useState,
+    FormEvent,
+    useEffect
+} from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -109,71 +113,72 @@ const RegisterPage = () => {
         }
     };
 
+    useEffect(() => {
+        if (isSuccess) {
+            router.push("/login");
+        }
+    }, [isSuccess, router]);
+
     if (isSuccess) {
         return (
-            <div className="max-h-screen flex items-center justify-center">
-                <Card className="w-full max-w-md">
+            <div className="min-h-screen bg-gradient-to-br from-red-50 to-white flex items-center justify-center p-4">
+                <Card className="w-full max-w-md border-0 shadow-xl bg-gradient-to-br from-white to-red-50">
                     <CardHeader className="text-center">
-                        <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                            <CheckCircle className="h-6 w-6 text-green-600" />
+                        <div className="mx-auto w-16 h-16 bg-gradient-to-br from-red-100 to-red-50 rounded-full flex items-center justify-center mb-4 border-2 border-red-200">
+                            <CheckCircle className="h-8 w-8 text-red-600 animate-pulse" />
                         </div>
-                        <CardTitle className="text-2xl font-bold text-green-600">
-                            Đăng ký thanh công
+                        <CardTitle className="text-2xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                            Đăng ký thành công
                         </CardTitle>
-                        <CardDescription>
-                            Tài khoản của bạn đã đăng ký thanh cong. Vui lóng đăng nhập với tài khoản mẫu.
+                        <CardDescription className="text-gray-600">
+                            Đang chuyển hướng đến trang đăng nhập...
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="text-center">
-                        <Button asChild className="w-full">
-                            <Link href="/login">
-                                Đi đến Đăng nhập
-                            </Link>
-                        </Button>
-                    </CardContent>
                 </Card>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen flex">
+        <div className="min-h-screen bg-gradient-to-br from-red-50 to-white flex flex-col lg:flex-row">
             {/* Left side - Registration Form */}
-            <div className="flex-1 flex items-center justify-center p-8">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
                 <div className="w-full max-w-md space-y-6">
                     {/* Back to Home */}
                     <Link
                         href="/"
-                        className="inline-flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+                        className="inline-flex items-center text-sm font-medium text-red-600 hover:text-orange-600 transition-colors group"
                     >
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Trờ về trang chính
+                        <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
+                        Trở về trang chính
                     </Link>
 
-                    <Card>
+                    <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-red-50 hover:shadow-lg transition-shadow duration-300">
                         <CardHeader className="space-y-1">
-                            <CardTitle className="text-2xl font-bold text-center">
-                                Tạo tài khoản
-                            </CardTitle>
-                            <CardDescription className="text-center">
-                                Tham gia hệ thống quản lý sức khỏe học đường của chúng tôi.
-                            </CardDescription>
+                            <div className="text-center">
+                                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                                    Tạo tài khoản
+                                </CardTitle>
+                                <CardDescription className="text-gray-600 mt-2">
+                                    Tham gia hệ thống quản lý sức khỏe học đường của chúng tôi
+                                </CardDescription>
+                            </div>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 {/* Full Name */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="fullName">Họ và Tên</Label>
+                                    <Label htmlFor="fullName" className="text-gray-700">Họ và Tên</Label>
                                     <Input
                                         id="fullName"
-                                        placeholder="John Doe"
+                                        placeholder="Nguyễn Văn A"
                                         value={formData.fullName}
                                         onChange={(e) => handleInputChange("fullName", e.target.value)}
                                         disabled={isLoading}
-                                        className={errors.fullName ? "border-red-500" : ""}
+                                        className={`${errors.fullName ? "border-red-500" : "border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-200"} bg-white/80 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200`}
                                     />
                                     {errors.fullName && (
-                                        <p className="text-xs text-red-500 flex items-center">
+                                        <p className="text-xs text-red-600 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
                                             {errors.fullName}
                                         </p>
@@ -182,18 +187,18 @@ const RegisterPage = () => {
 
                                 {/* Email */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
+                                    <Label htmlFor="email" className="text-gray-700">Email</Label>
                                     <Input
                                         id="email"
                                         type="email"
-                                        placeholder="john.doe@email.com"
+                                        placeholder="nguyenvana@email.com"
                                         value={formData.email}
                                         onChange={(e) => handleInputChange("email", e.target.value)}
                                         disabled={isLoading}
-                                        className={errors.email ? "border-red-500" : ""}
+                                        className={`${errors.email ? "border-red-500" : "border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-200"} bg-white/80 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200`}
                                     />
                                     {errors.email && (
-                                        <p className="text-xs text-red-500 flex items-center">
+                                        <p className="text-xs text-red-600 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
                                             {errors.email}
                                         </p>
@@ -202,17 +207,17 @@ const RegisterPage = () => {
 
                                 {/* Username */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="username">Tên đăng nhập</Label>
+                                    <Label htmlFor="username" className="text-gray-700">Tên đăng nhập</Label>
                                     <Input
                                         id="username"
-                                        placeholder="johndoe"
+                                        placeholder="nguyenvana"
                                         value={formData.username}
                                         onChange={(e) => handleInputChange("username", e.target.value)}
                                         disabled={isLoading}
-                                        className={errors.username ? "border-red-500" : ""}
+                                        className={`${errors.username ? "border-red-500" : "border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-200"} bg-white/80 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200`}
                                     />
                                     {errors.username && (
-                                        <p className="text-xs text-red-500 flex items-center">
+                                        <p className="text-xs text-red-600 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
                                             {errors.username}
                                         </p>
@@ -221,18 +226,17 @@ const RegisterPage = () => {
 
                                 {/* Phone Number */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="phoneNumber">Số điện thoại</Label>
+                                    <Label htmlFor="phoneNumber" className="text-gray-700">Số điện thoại</Label>
                                     <Input
                                         id="phoneNumber"
                                         type="tel"
-                                        placeholder="+1 (555) 123-4567"
                                         value={formData.phoneNumber}
                                         onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
                                         disabled={isLoading}
-                                        className={errors.phoneNumber ? "border-red-500" : ""}
+                                        className={`${errors.phoneNumber ? "border-red-500" : "border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-200"} bg-white/80 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200`}
                                     />
                                     {errors.phoneNumber && (
-                                        <p className="text-xs text-red-500 flex items-center">
+                                        <p className="text-xs text-red-600 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
                                             {errors.phoneNumber}
                                         </p>
@@ -241,16 +245,16 @@ const RegisterPage = () => {
 
                                 {/* Address */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="address">Địa chỉ</Label>
+                                    <Label htmlFor="address" className="text-gray-700">Địa chỉ</Label>
                                     <Input
                                         id="address"
                                         value={formData.address}
                                         onChange={(e) => handleInputChange("address", e.target.value)}
                                         disabled={isLoading}
-                                        className={errors.address ? "border-red-500" : ""}
+                                        className={`${errors.address ? "border-red-500" : "border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-200"} bg-white/80 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200`}
                                     />
                                     {errors.address && (
-                                        <p className="text-xs text-red-500 flex items-center">
+                                        <p className="text-xs text-red-600 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
                                             {errors.address}
                                         </p>
@@ -259,8 +263,8 @@ const RegisterPage = () => {
 
                                 {/* Password */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="password">Mật khẩu</Label>
-                                    <div className="relative">
+                                    <Label htmlFor="password" className="text-gray-700">Mật khẩu</Label>
+                                    <div className="relative group">
                                         <Input
                                             id="password"
                                             type={showPassword ? "text" : "password"}
@@ -268,21 +272,25 @@ const RegisterPage = () => {
                                             value={formData.password}
                                             onChange={(e) => handleInputChange("password", e.target.value)}
                                             disabled={isLoading}
-                                            className={errors.password ? "border-red-500" : ""}
+                                            className={`${errors.password ? "border-red-500" : "border-gray-300 focus:border-red-500 focus:ring-1 focus:ring-red-200"} bg-white/80 focus-visible:ring-red-500 focus-visible:ring-offset-2 transition-all duration-200 pr-10`}
                                         />
                                         <Button
                                             type="button"
                                             variant="ghost"
-                                            size="sm"
-                                            className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                            size="icon"
+                                            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent text-gray-500 hover:text-red-600 transition-colors"
                                             onClick={() => setShowPassword(!showPassword)}
                                             disabled={isLoading}
                                         >
-                                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                            {showPassword ? (
+                                                <EyeOff className="h-4 w-4 transition-all duration-200" />
+                                            ) : (
+                                                <Eye className="h-4 w-4 transition-all duration-200" />
+                                            )}
                                         </Button>
                                     </div>
                                     {errors.password && (
-                                        <p className="text-xs text-red-500 flex items-center">
+                                        <p className="text-xs text-red-600 flex items-center">
                                             <AlertCircle className="h-3 w-3 mr-1" />
                                             {errors.password}
                                         </p>
@@ -290,17 +298,23 @@ const RegisterPage = () => {
                                 </div>
 
                                 {errors.general && (
-                                    <p className="text-xs text-red-500 flex items-center">
-                                        <AlertCircle className="h-3 w-3 mr-1" />
-                                        {errors.general}
-                                    </p>
+                                    <div className="rounded-lg bg-red-50 border border-red-200 p-3">
+                                        <p className="text-sm text-red-600 flex items-center">
+                                            <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                                            {errors.general}
+                                        </p>
+                                    </div>
                                 )}
 
-                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                <Button
+                                    type="submit"
+                                    className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+                                    disabled={isLoading}
+                                >
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Creating Account...
+                                            Đang tạo tài khoản...
                                         </>
                                     ) : (
                                         "Tạo tài khoản"
@@ -308,9 +322,12 @@ const RegisterPage = () => {
                                 </Button>
                             </form>
 
-                            <div className="mt-6 text-center text-sm text-muted-foreground">
-                                Đã có tài khoản?{" "}
-                                <Link href="/login" className="text-primary hover:underline">
+                            <div className="mt-6 text-center text-sm text-gray-600">
+                                Đã có tài khoản?{" "}
+                                <Link
+                                    href="/login"
+                                    className="font-medium text-red-600 hover:text-orange-600 hover:underline transition-colors"
+                                >
                                     Đăng nhập ở đây
                                 </Link>
                             </div>
@@ -320,7 +337,9 @@ const RegisterPage = () => {
             </div>
 
             {/* Right side - Information */}
-            <SignUpInfo />
+            <div className="w-full lg:w-1/2 bg-gradient-to-br from-red-600 to-orange-600 hidden lg:flex items-center justify-center p-12">
+                <SignUpInfo />
+            </div>
         </div>
     );
 };

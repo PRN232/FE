@@ -72,16 +72,6 @@ const SignUpInfo = () => {
                             </div>
                         </div>
                     </div>
-
-                    {/* Testimonial with fade-in effect */}
-                    <div className="mt-8 p-4 border border-white/20 rounded-lg bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
-                        <p className="italic text-red-100/90 animate-[fadeIn_2s_ease-in-out]">
-                            `&quot;`Hệ thống này đã thay đổi hoàn toàn công tác quản lý y tế học đường của chúng tôi, trở nên hiệu quả và minh bạch hơn.`&quot;`
-                        </p>
-                        <p className="mt-2 text-sm font-medium text-white">
-                            - Ban Giám Hiệu Nhà Trường
-                        </p>
-                    </div>
                 </div>
 
                 {/* Decorative elements */}

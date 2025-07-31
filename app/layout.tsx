@@ -11,7 +11,7 @@ import Footer from "@/components/layout/Footer/Footer";
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://schoolmedical.hyudequeue.xyz'), // ✅ thêm dòng này
+  metadataBase: new URL('https://schoolmedical.hyudequeue.xyz'),
 
   title: {
     default: 'HealthCare School - Hệ Thống Y Tế Học Đường',
@@ -43,8 +43,6 @@ export const metadata: Metadata = {
     images: ['/images/previewcard.jpg'],
   },
 };
-
-
 
 export default function RootLayout({children}: { children: ReactNode }) {
     return (
