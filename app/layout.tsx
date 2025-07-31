@@ -19,10 +19,6 @@ export const metadata: Metadata = {
   },
   description: "Nền tảng quản lý y tế học đường toàn diện, hỗ trợ theo dõi hồ sơ sức khỏe học sinh, xử lý sự cố y tế, quản lý tiêm chủng và khám sức khỏe định kỳ.",
 
-  icons: {
-    icon: '/images/longchaulogo.jpg',
-  },
-
   openGraph: {
     title: 'HealthCare School - Hệ Thống Y Tế Học Đường',
     description: 'Nền tảng quản lý y tế học đường toàn diện, hỗ trợ theo dõi hồ sơ sức khỏe học sinh, xử lý sự cố y tế, quản lý tiêm chủng và khám sức khỏe định kỳ.',
